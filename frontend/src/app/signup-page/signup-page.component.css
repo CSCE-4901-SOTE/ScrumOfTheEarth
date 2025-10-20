@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px; 
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+
+/* Align Logo */
+.logo-box img {
+  max-width: 400px; 
+  height: 400px;
+}
+
+form {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px 40px;
+  width: 320px;
+  text-align: left;
+  
+}
+
+/* Title Signup */
+form h1 {
+  text-align: center;
+  color: #237327;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  font-size: 26px;
+}
+
+label {
+  display: block;        
+  font-weight: 600;      
+  color: #333;           
+  font-size: 14px;      
+  margin-bottom: 0px;    
+}
+
+/* Input and Select */
+input[type="text"],
+input[type="tel"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Signup button */
+button {
+  width: 100%;
+  background-color: #3C8E3F;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #237327;
+}
+
+.login-text{
+  text-align: center;
+  font-size: 12px;
+}
