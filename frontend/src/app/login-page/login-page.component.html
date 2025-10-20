@@ -1,1 +1,42 @@
-<p>login-page works!</p>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name ="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Farmra Login</title>
+    </head>
+
+    <body>
+        <div class="logo-box">
+            <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo"/>
+        </div>
+        <form>
+            <h1>LOG IN</h1>
+            <!-- label and input for email -->
+            <label for="email"><b>Email</b></label>
+            <input
+                type = "text"
+                placeholder="Enter your email"
+                name = "email"
+                id = "email"
+                required 
+            />
+            <!-- label and input for password -->
+            <label for="password"><b>Password</b></label>
+            <input
+                type = "password"
+                placeholder="Enter your password"
+                name = "password"
+                id = "password"
+                required 
+            />
+
+            <!---Log-in button--->
+            <button type="submit">
+                Log In 
+            </button>
+            <p class = "signup-text">Don't have an account?<a href="/signup-page" class="signup">Signup.</a></p>
+        </form>
+    </body>
+</html>
+
