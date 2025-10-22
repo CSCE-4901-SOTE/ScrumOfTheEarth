@@ -7,11 +7,11 @@ import { Router } from '@angular/router';
   selector: 'app-signup-page',
   standalone: true,
   imports: [CommonModule, FormsModule], 
-  templateUrl: './signup-page.html',
-  styleUrls: ['./signup-page.css']
+  templateUrl: './signup-page.component.html',
+  styleUrls: ['./signup-page.component.css']
 })
 
-export class SignupPage { 
+export class SignupPageComponent { 
   email='';
   phone ='';
   role='';
@@ -21,7 +21,7 @@ export class SignupPage {
   errorMessage='';
 
   constructor(private router: Router) {
-     console.log('✅ SignupPage component loaded');
+     console.log('✅ SignupPageComponent loaded');
   }
   
   signup(){
