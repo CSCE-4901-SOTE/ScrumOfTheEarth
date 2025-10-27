@@ -1,5 +1,20 @@
-<div class="dash-container">
-    <div class="navbar">
-      <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="nav-logo">
+<header class="navbar">
+    <div class="navbar-left">
+      <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo">
     </div>
-  </div>
+  
+    <div class="navbar-center">
+      <nav>
+        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/historical-trends" routerLinkActive="active">Historical Trends</a>
+        <a routerLink="/alerts" routerLinkActive="active">Alerts</a>
+      </nav>
+    </div>
+  
+    <button class="menu-button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+  
