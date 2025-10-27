@@ -6,6 +6,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 export const routes: Routes = [
 //  { path: 'signup-page', component: SignupPageComponent },
   { path: 'login-page', component: LoginPageComponent },
+  { path: '', redirectTo: 'signup-page', pathMatch: 'full' }, // default opens login
   { path: 'dashboard', component: DashboardComponent},
   { path: '', redirectTo: '/signup-page', pathMatch: 'full' }
 ];
+
+

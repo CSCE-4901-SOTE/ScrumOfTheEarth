@@ -10,7 +10,7 @@
         <div class="logo-box">
             <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo"/>
         </div>
-        <form>
+        <form (ngSubmit)="signup()" #signupForm = "ngForm">
             <h1>SIGN UP</h1>
             <!-- label and input for email -->
             <label for="email"><b>Email</b></label>
@@ -19,8 +19,14 @@
                 placeholder="Enter your email"
                 name = "email"
                 id = "email"
+                [(ngModel)]="email" 
+                #emailCtrl="ngModel"
                 required 
             />
+            <p *ngIf = "emailCtrl.invalid && emailCtrl.touched" class="errorText">
+                Invalid email address. Please try a different one
+            </p>
+
             <!-- label and input for phone number -->
             <label for="phone"><b>Phone Number</b></label>
             <input
@@ -28,11 +34,17 @@
                 placeholder="Enter phone number"
                 name = "phone"
                 id = "phone"
+                [(ngModel)]="phone" 
+                #phoneCtrl="ngModel"
                 required 
             />
+            <p *ngIf = "phoneCtrl.invalid && phoneCtrl.touched" class="errorText">
+                Invalid phone number. Please try a different one
+            </p>
+
             <!-- label and selection for role -->
             <label for="role"><b>Role</b></label>
-            <select id="role" name="role" required>
+            <select id="role" name="role" [(ngModel)]="role" #roleCtrl="ngModel" required>
                 <option value="" disabled selected hidden>Select your role</option>
                 <option value="farmer">
                     I am a farmer
@@ -41,6 +53,10 @@
                     I am a technician
                 </option>
             </select>
+            <p *ngIf = "roleCtrl.invalid && roleCtrl.touched" class="errorText">
+                Please select your role
+            </p>
+
             <!-- label and input for password -->
             <label for="password"><b>Password</b></label>
             <input
@@ -48,8 +64,11 @@
                 placeholder="Enter your password"
                 name = "password"
                 id = "password"
+                [(ngModel)]="password" 
+                #passwordCtrl="ngModel"
                 required 
             />
+          
             <!-- label and input for confirm password -->
             <label for="confirmPassword"><b>Confirm Password</b></label>
             <input
@@ -57,8 +76,14 @@
                 placeholder="Confirm your password"
                 name = "password"
                 id = "confirmPassword"
+                [(ngModel)]="confirmPassword" 
+                #confirmPasswordCtrl="ngModel"
                 required 
             />
+            <p *ngIf= "confirmPasswordCtrl.touched && password!==confirmPassword" class="errorText">
+                Please make sure your passwords match
+            </p>
+
             <!---Sign up button--->
             <button type="submit">
                 Sign Up 
