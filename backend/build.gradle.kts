@@ -6,7 +6,7 @@ plugins {
 
 group = "com.sote"
 version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
+description = "FarmRa Project"
 
 java {
 	toolchain {
@@ -26,8 +26,11 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
