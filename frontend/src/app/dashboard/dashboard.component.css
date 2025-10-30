@@ -41,6 +41,7 @@
 }
 
 .navbar-center a {
+    cursor: pointer;
     text-decoration: none;
     color: #000000;
     font-size: 30px;
