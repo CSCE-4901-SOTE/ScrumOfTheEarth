@@ -5,8 +5,17 @@ FarmRa has the goal of letting farmers easily keep track of the conditions of th
 Angular frontend and Springboot backend
 
 # Setting up backend
-After pulling the project, make sure you have a local postgres database running.
-I use DBeaver to connect to mine to make sure its working.
+
+### Java
+If you don't have java installed, installing the Coding Pack for Java is an easy way to get up and running.
+https://code.visualstudio.com/docs/java/java-tutorial
+
+### Database
+After pulling the project, make sure you have a local postgres database running. And fill out the environment variables with your appropriate data
+
+I installed postgres from this link https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+
+I use DBeaver to connect to mine to make sure its working and view whats in the tables
 
 ### Env Variables
 
