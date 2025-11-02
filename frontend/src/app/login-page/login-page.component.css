@@ -82,3 +82,17 @@ button:hover {
   text-align: center;
   font-size: 12px;
 }
+
+.input-error{
+  border: 1px solid #e00e0e !important;
+  background-color: #f7ebeb !important;
+}
+
+.errorText{
+  color: #e00e0e;
+  font-size: 10px;
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 20px;         
+  display: block;         
+}
