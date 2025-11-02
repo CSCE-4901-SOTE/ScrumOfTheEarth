@@ -85,10 +85,9 @@ button:hover {
   font-size: 12px;
 }
 
-input.ng-invalid.ng-touched,
-select.ng-invalid.ng-touched{
-  border: 1px solid #e00e0e;
-  background-color: #f7ebeb;
+.input-error{
+  border: 1px solid #e00e0e !important;
+  background-color: #f7ebeb !important;
 }
 
 .errorText{
@@ -99,3 +98,6 @@ select.ng-invalid.ng-touched{
   margin-bottom: 20px;         
   display: block;         
 }
+
+
+
