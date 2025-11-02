@@ -1,49 +1,87 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import {  HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-signup-page',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './signup-page.component.html',
   styleUrls: ['./signup-page.component.css']
 })
+export class SignupPageComponent {
+  email = '';
+  phone = '';
+  role = '';
+  password = '';
+  confirmPassword = '';
+  showSuccessMessage = false;
 
-export class SignupPageComponent { 
-  email='';
-  phone ='';
-  role='';
-  password='';
-  confirmPassword='';
-  showSuccessMessage=false;
-  errorMessage='';
+  // Separate error variables for each field
+  emailError = '';
+  phoneError = '';
+  roleError = '';
+  passwordError = '';
 
-  constructor(private router: Router) {
-     console.log('✅ SignupPageComponent loaded');
-  }
-  
-  signup(){
-    const form = document.querySelector('form');
-    if (form) {
-      form.querySelectorAll('input, select').forEach(el => el.dispatchEvent(new Event('blur')));
+  constructor(private http: HttpClient, private router: Router) {}
+
+  signup() {
+    // Reset old errors
+    this.emailError = '';
+    this.phoneError = '';
+    this.roleError = '';
+    this.passwordError = '';
+
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.email)) {
+      this.emailError = 'Invalid email address.';
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailPattern.test(this.email)) return;
-    
-    if(!/^\d+$/.test(this.phone)) return;
-    
-    if(!this.role) return;
+    // Phone validation
+    if (!/^\d+$/.test(this.phone)) {
+      this.phoneError = 'Phone must contain digits only.';
+    }
 
-    if(this.password !== this.confirmPassword) return;
+    // Role validation
+    if (!this.role) {
+      this.roleError = 'Please select your role.';
+    }
 
-    this.errorMessage ="";
-    this.showSuccessMessage = true;
+    // Password validation
+    const strongPasswordPattern =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!strongPasswordPattern.test(this.password)) {
+      this.passwordError = 'Password must be 8+ chars with uppercase, number, and symbol.';
+    } else if (this.password !== this.confirmPassword) {
+      this.passwordError = 'Passwords do not match.';
+    }
 
-    alert('✅ Account created successfully!');
+    // Stop submission if any error exists
+    if (this.emailError || this.phoneError || this.roleError || this.passwordError) {
+      return;
+    }
 
-    setTimeout(() => (this.router.navigate(['/login-page'])), 500);
-  }
+    // NEW: send data to backend
+    const userData = {
+      email: this.email,
+      phone: this.phone,
+      passwordHash: this.password,
+      role: { name: this.role }  // backend reads "role.name"
+    };
+
+    this.http.post('http://localhost:8080/api/signup', userData)
+      .subscribe({
+        next: (res) => {
+          this.showSuccessMessage = true;
+          alert('✅ Account created successfully!');
+          setTimeout(() =>this.router.navigate(['/login-page']),500);
+        },
+        error: (err) => {
+          alert('❌ Signup failed: ' + err.error);
+        }
+      });
+    }
 }
