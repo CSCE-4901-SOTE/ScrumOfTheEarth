@@ -10,7 +10,7 @@
         <div class="logo-box">
             <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo"/>
         </div>
-        <form>
+        <form (ngSubmit)="login()" #loginForm="ngForm" novalidate>
             <h1>LOG IN</h1>
             <!-- label and input for email -->
             <label for="email"><b>Email</b></label>
@@ -19,8 +19,13 @@
                 placeholder="Enter your email"
                 name = "email"
                 id = "email"
-                required 
+                [(ngModel)]="email"
+                required
+                [ngClass]="{'input-error': emailError}"
+                (focus)="emailError = ''"
             />
+            <p *ngIf="emailError" class="errorText">{{ emailError }}</p>
+
             <!-- label and input for password -->
             <label for="password"><b>Password</b></label>
             <input
@@ -28,8 +33,12 @@
                 placeholder="Enter your password"
                 name = "password"
                 id = "password"
+                [(ngModel)]="password"
                 required 
+                [ngClass]="{'input-error': passwordError}"
+                (focus)="passwordError = ''"
             />
+            <p *ngIf="passwordError" class="errorText">{{ passwordError }}</p>
 
             <!---Log-in button--->
             <button type="submit">
