@@ -1,94 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name ="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Farmra Registration</title>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmra Registration</title>
+  </head>
 
-    <body>
-        <div class="logo-box">
-            <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo"/>
-        </div>
-        <form (ngSubmit)="signup()" #signupForm = "ngForm">
-            <h1>SIGN UP</h1>
-            <!-- label and input for email -->
-            <label for="email"><b>Email</b></label>
-            <input
-                type = "text"
-                placeholder="Enter your email"
-                name = "email"
-                id = "email"
-                [(ngModel)]="email" 
-                #emailCtrl="ngModel"
-                required 
-            />
-            <p *ngIf = "emailCtrl.invalid && emailCtrl.touched" class="errorText">
-                Invalid email address. Please try a different one
-            </p>
+  <body>
+    <div class="logo-box">
+      <img src="assets/large_logo.png" alt="Farmra Logo" class="logo" />
+    </div>
 
-            <!-- label and input for phone number -->
-            <label for="phone"><b>Phone Number</b></label>
-            <input
-                type = "tel"
-                placeholder="Enter phone number"
-                name = "phone"
-                id = "phone"
-                [(ngModel)]="phone" 
-                #phoneCtrl="ngModel"
-                required 
-            />
-            <p *ngIf = "phoneCtrl.invalid && phoneCtrl.touched" class="errorText">
-                Invalid phone number. Please try a different one
-            </p>
+    <form (ngSubmit)="signup()" #signupForm="ngForm" novalidate>
+      <h1>SIGN UP</h1>
 
-            <!-- label and selection for role -->
-            <label for="role"><b>Role</b></label>
-            <select id="role" name="role" [(ngModel)]="role" #roleCtrl="ngModel" required>
-                <option value="" disabled selected hidden>Select your role</option>
-                <option value="farmer">
-                    I am a farmer
-                </option>
-                 <option value="technician">
-                    I am a technician
-                </option>
-            </select>
-            <p *ngIf = "roleCtrl.invalid && roleCtrl.touched" class="errorText">
-                Please select your role
-            </p>
+      <!-- label and input for email -->
+      <label for="email"><b>Email</b></label>
+      <input
+        type="text"
+        id="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="Enter your email"
+        required
+        [ngClass]="{'input-error': emailError}"
+        (focus)="emailError = ''"
+      />
+      <p *ngIf="emailError" class="errorText">{{ emailError }}</p>
 
-            <!-- label and input for password -->
-            <label for="password"><b>Password</b></label>
-            <input
-                type = "password"
-                placeholder="Enter your password"
-                name = "password"
-                id = "password"
-                [(ngModel)]="password" 
-                #passwordCtrl="ngModel"
-                required 
-            />
-          
-            <!-- label and input for confirm password -->
-            <label for="confirmPassword"><b>Confirm Password</b></label>
-            <input
-                type = "password"
-                placeholder="Confirm your password"
-                name = "password"
-                id = "confirmPassword"
-                [(ngModel)]="confirmPassword" 
-                #confirmPasswordCtrl="ngModel"
-                required 
-            />
-            <p *ngIf= "confirmPasswordCtrl.touched && password!==confirmPassword" class="errorText">
-                Please make sure your passwords match
-            </p>
+      <!-- label and input for phone number -->
+      <label for="phone"><b>Phone Number</b></label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        [(ngModel)]="phone"
+        placeholder="Enter phone number"
+        required
+        [ngClass]="{'input-error': phoneError }"
+        (focus)="phoneError = ''"
+      />
+      <p *ngIf="phoneError" class="errorText">{{ phoneError }}</p>
 
-            <!---Sign up button--->
-            <button type="submit">
-                Sign Up 
-            </button>
-            <p class = "login-text">Already have an account?<a href="/login-page" class="login-link">Login.</a></p>
-        </form>
-    </body>
+      <!-- label and selection for role -->
+      <label for="role"><b>Role</b></label>
+      <select
+        id="role"
+        name="role"
+        [(ngModel)]="role"
+        required
+        [ngClass]="{'input-error': roleError }"
+        (focus)="roleError = ''"
+      >
+        <option value="" disabled selected hidden>Select your role</option>
+        <option value="farmer">I am a farmer</option>
+        <option value="technician">I am a technician</option>
+      </select>
+      <p *ngIf="roleError" class="errorText">{{ roleError }}</p>
+
+      <!-- label and input for password -->
+      <label for="password"><b>Password</b></label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Enter your password"
+        required
+        [ngClass]="{'input-error': passwordError && !passwordError.includes('match')}"
+        (focus)="passwordError = ''"
+      />
+      <p
+        *ngIf="passwordError && !passwordError.includes('match')"
+        class="errorText"
+      >
+        {{ passwordError }}
+      </p>
+
+      <!-- label and input for confirm password -->
+      <label for="confirmPassword"><b>Confirm Password</b></label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        placeholder="Confirm your password"
+        required
+        [ngClass]="{'input-error': passwordError && passwordError.includes('match')}"
+        (focus)="passwordError = ''"
+      />
+      <p *ngIf="passwordError.includes('match')" class="errorText">
+        {{ passwordError }}
+      </p>
+
+      <!---Sign up button--->
+      <button type="submit">Sign Up</button>
+
+      <p class = "login-text">Already have an account?<a href="/login-page" class="login-link">Login.</a></p>
+    </form>
+  </body>
 </html>
