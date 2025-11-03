@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1c:wght@400;500;600;700&display=swap');
+
+/*navbar container*/
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    height: 110px;
+    padding: 0 80px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    position: relative;
+    font-family: "M PLUS 1c", sans-serif;
+}
+
+/*logo*/
+.navbar-left {
+    display: flex;
+    align-items: center;
+    margin-left: -40px;
+}
+
+.logo {
+    height: 120px;
+    object-fit: contain;
+    display: block;
+}
+
+/*Center navigation options*/
+.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navbar-center nav {
+    display: flex;
+    align-items: center;
+    gap: 150px;
+}
+
+.navbar-center a {
+    cursor: pointer;
+    text-decoration: none;
+    color: #000000;
+    font-size: 30px;
+    font-weight: 100;
+    transition: color 0.25s ease;
+}
+
+/*hover for text*/
+.navbar-center a:hover {
+    color: #999;
+}
+
+.navbar-center a.active {
+    color: #000;
+    font-weight: 100;
+}
+
+/*hamburger*/
+.menu-button {
+    background-color: #FCFDE9;
+    border: none;
+    border-radius: 2px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.menu-button span {
+    width: 26px;
+    height: 3px;
+    background-color: #333;
+    display: block;
+    border-radius: 3px;
+}
+
+.menu-button:hover {
+    background-color: #f0f0d0;
+}
+
