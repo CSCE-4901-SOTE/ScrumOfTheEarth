@@ -1,18 +1,20 @@
 CREATE TABLE user_role (
-  id bigint not null,
-  role_name VARCHAR(255) NOT NULL,
-
-  primary key (id)
+  role_id SERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  description TEXT
 );
 
-CREATE TABLE farmra_user (
-  id bigint not null,
-  user_name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  user_password VARCHAR(255) NOT NULL,
-  role_id bigint,
+INSERT INTO user_role (name, description) VALUES
+('technician','field technician who uses the app to monitor and maintain field devices'),
+('farmer','main user who uses the app to observe crop and harvest growth');
 
-  primary key (id)
+CREATE TABLE farmra_user (
+  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  role_id INTEGER REFERENCES user_role(role_id) ON DELETE SET NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE gateway (
@@ -49,7 +51,7 @@ CREATE TABLE sensor_reading (
 alter table if exists farmra_user
     add constraint FK_user_user_role_role_id
     foreign key (role_id)
-    references user_role(id);
+    references user_role(role_id);
 
 alter table if exists sensor_node
     add constraint FK_sensor_node_gateway_gateway_id
