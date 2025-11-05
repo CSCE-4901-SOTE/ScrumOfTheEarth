@@ -1,5 +1,5 @@
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,6 +7,19 @@ import { Component } from '@angular/core';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
+  role: string | null = null;
 
+  ngOnInit(): void {
+    this.role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
+    console.log('User role:', this.role);
+  }
+
+  isFarmer(): boolean {
+    return this.role === 'farmer';
+  }
+
+  isTechnician(): boolean {
+    return this.role === 'technician';
+  }
 }

@@ -1,16 +1,37 @@
-
-<div class="box-container">
-    <div class="data-box">
-      <h2>Temperature</h2>
-    </div>
-    <div class="data-box">
-      <h2>Soil Moisture</h2>
-    </div>
-    <div class="data-box middle-box">
-      <h2>Weather</h2>
-    </div>
-    <div class="data-box">
-      <h2>Battery Level</h2>
-    </div>
+<!--Farmer Dashboard-->
+<div *ngIf="isFarmer()" class="box-container">
+  <div class="data-box">
+    <h2>Temperature</h2>
   </div>
+  <div class="data-box">
+    <h2>Soil Moisture</h2>
+  </div>
+  <div class="data-box middle-box">
+    <h2>Weather</h2>
+  </div>
+  <div class="data-box">
+    <h2>Battery Level</h2>
+  </div>
+</div>
 
+<!--Technician Dashboard-->
+<div *ngIf="isTechnician()" class="tech-dashboard">
+  <div class="data-box">
+    <h2>tehcnician</h2>
+  </div>
+  <div class="data-box">
+    <h2>Soil Moisture</h2>
+  </div>
+  <div class="data-box middle-box">
+    <h2>Weather</h2>
+  </div>
+  <div class="data-box">
+    <h2>Battery Level</h2>
+  </div>
+</div>
+</div>
+
+<!--missing role-->
+<div *ngIf="!isFarmer() && !isTechnician()" class="no-role">
+  <h2>Access Restricted</h2>
+</div>

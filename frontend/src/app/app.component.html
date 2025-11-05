@@ -1,21 +1,21 @@
-<header class="navbar">
-    <div class="navbar-left">
-      <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo">
-    </div>
-  
-    <div class="navbar-center">
-      <nav>
-        <a routerLink="/dashboard">Dashboard</a>
-        <a routerLink="/historical-trends">Historical Trends</a>
-        <a routerLink="/alerts">Alerts</a>
-      </nav>
-    </div>
-  
-    <button class="menu-button">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
+<header class="navbar" *ngIf="showNavbar">
+  <div class="navbar-left">
+    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo" />
+  </div>
+
+  <div class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/historical-trends">Historical Trends</a>
+      <a routerLink="/alerts">Alerts</a>
+    </nav>
+  </div>
+
+  <button class="menu-button">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
 
 <router-outlet></router-outlet>
