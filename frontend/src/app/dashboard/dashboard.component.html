@@ -1,36 +1,60 @@
-<!--Farmer Dashboard-->
-<div *ngIf="isFarmer()" class="box-container">
-  <div class="data-box">
-    <h2>Temperature</h2>
+<!-- Farmer Dashboard -->
+<!-- <div *ngIf="isFarmer()"> -->
+  <div class="box-container">
+    <div class="data-box">
+      <h2>Temperature</h2>
+    </div>
+    <div class="data-box">
+      <h2>Soil Moisture</h2>
+    </div>
+    <div class="data-box weather-box">
+      <div *ngIf="weatherData; else loading" class="weather-content">
+        <div class="weather-header">
+          <p class="weather-location">{{ weatherData.name }}</p>
+          <p class="weather-temp">{{ weatherData.main.temp | number:'1.0-0' }}°F</p>
+          <p class="weather-desc">{{ weatherData.weather[0].description | titlecase }}</p>
+        </div>
+    
+        <div class="weather-footer">
+          <div class="humidity-section">
+            <span>{{ weatherData.main.humidity }}%</span>
+            <div class="humidity-circle">
+              <div class="humidity-fill" [style.height.%]="weatherData.main.humidity"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #loading>
+        <p class="loading-text">Loading weather...</p>
+      </ng-template>
+    </div>
+    
+    
+    <div class="data-box">
+      <h2>Battery Level</h2>
+    </div>
   </div>
-  <div class="data-box">
-    <h2>Soil Moisture</h2>
+  
+  <div class="lower-section">
+    <div class="map-box">
+      <div id="sensor-map"></div>
+    </div>
+    
+    <div class="info-box">
+      <h2>Selected Node Information</h2>
+      <table class="info-table">
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Threshold</th>
+          <th>Status</th>
+        </tr>
+      </table>
+    </div>
   </div>
-  <div class="data-box middle-box">
-    <h2>Weather</h2>
-  </div>
-  <div class="data-box">
-    <h2>Battery Level</h2>
-  </div>
-</div>
+    <!--
+    <div class="additional-box">
+      <h2>Additional Information</h2>
+    </div>
 
-<!--Technician Dashboard-->
-<div *ngIf="isTechnician()" class="tech-dashboard">
-  <div class="data-box">
-    <h2>tehcnician</h2>
-  </div>
-  <div class="data-box">
-    <h2>Soil Moisture</h2>
-  </div>
-  <div class="data-box middle-box">
-    <h2>Weather</h2>
-  </div>
-  <div class="data-box">
-    <h2>Battery Level</h2>
-  </div>
-</div>
-
-<!--missing role-->
-<div *ngIf="!isFarmer() && !isTechnician()" class="no-role">
-  <h2>Access Restricted</h2>
-</div>
+-->
