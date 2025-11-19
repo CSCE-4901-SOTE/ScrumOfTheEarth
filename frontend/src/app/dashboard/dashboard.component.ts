@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import * as maplibregl from 'maplibre-gl';
@@ -7,15 +7,26 @@ import * as maplibregl from 'maplibre-gl';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, CommonModule, HttpClientModule],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    HttpClientModule
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+
   role: string | null = null;
   weatherData: any;
   city: string = 'Denton';
-  private weatherApiKey: string = '0b8120fcdfd87c4be96bb4a644287b3d';//openWeather API key
+  private weatherApiKey: string = '0b8120fcdfd87c4be96bb4a644287b3d';
+
+  menuOpen: boolean = false;
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -28,8 +39,8 @@ export class DashboardComponent implements OnInit {
       console.warn('Not running in browser — skipping role storage access');
     }
 
-    this.getWeather(); //fetch weather data
-    this.initMap(); //aws location map
+    this.getWeather();//fetch weather data
+    this.initMap();//aws location map
   }
 
   //user roles
@@ -67,7 +78,7 @@ export class DashboardComponent implements OnInit {
     const map = new maplibregl.Map({
       container: 'sensor-map',
       style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${style}/descriptor?key=${apiKey}&color-scheme=${colorScheme}`,
-      center: [-97.1331, 33.2148], // 📍 Denton, TX
+      center: [-97.1331, 33.2148], // Denton, TX
       zoom: 11
     });
 
