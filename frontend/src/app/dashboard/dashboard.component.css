@@ -129,10 +129,10 @@
     gap: 30px;
     margin-top: 40px;
     font-family: "M PLUS 1c", sans-serif;
-}
-
-/*data boxes*/
-.data-box {
+  }
+  
+  /*data boxes*/
+  .data-box {
     background-color: #FCFDE9;
     border-radius: 15px;
     width: 350px;
@@ -145,19 +145,213 @@
     padding-top: 20px; /* adds space from the top */
     transition: transform 0.2s ease;
   }
-.data-box:hover {
+  .data-box:hover {
     transform: translateY(-3px);
-}
-
-/*weather box*/
-.middle-box {
+  }
+  
+  /*weather box*/
+  .middle-box {
     background-color: #f8f8f8;
-}
-
-.data-box h2 {
+  }
+  
+  .data-box h2 {
     font-weight: 400;
     font-size: 20px;
     color: #000;
     margin: 0;
-    padding-top: 0px;
-}
+  }
+  
+  /*lower section layout*/
+  .lower-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 60px;
+    font-family: "M PLUS 1c", sans-serif;
+  }
+  
+  /*bottom boxes*/
+  .map-box,
+  .info-box {
+    background-color: #fffffe;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  #sensor-map {
+    width: 100%;
+    height: 800px;
+    border-radius: 15px;
+    margin-top: 10px;
+  }
+  
+  .map-box {
+    width: 690px;
+    height: 500px;
+  }
+  
+  .info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* space between Selected Node Info and Additional Info */
+    align-items: center;
+  }
+  
+  .info-box {
+    justify-content: flex-start;
+    width: 690px;
+    height: 200px;
+  }
+  
+  /*additional info box*/
+  .additional-box {
+    background-color: #fffffe;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 690px;
+    height: 200px; /* same as info-box */
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .additional-box h2 {
+    margin-top: 0; /* prevent double spacing */
+  }
+  .recent-trends-box {
+    background-color: #fffffe;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 1420px; /* spans width of both columns */
+    height: 280px;
+    margin: 60px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    font-family: "M PLUS 1c", sans-serif;
+  }
+  
+  .recent-trends-box h2 {
+    margin-top: 0;
+    font-weight: 500;
+    font-size: 22px;
+  }
+  
+  /*info table*/
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .info-table th,
+  .info-table td {
+    border: 1px solid #ddd;
+    padding: 6px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .info-table th {
+    background-color: #f6f6f6;
+    font-family: "M PLUS 1c", sans-serif;
+    font-weight: 100;
+  }
+  
+  /*weather box design*/
+  .weather-box {
+    background-color: #2e7d32;
+    color: white;
+    border-radius: 15px;
+    width: 320px;
+    height: 200px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    transition: transform 0.2s ease;
+  }
+  .weather-box:hover {
+    transform: translateY(-3px);
+  }
+  
+  .weather-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .weather-header {
+    text-align: left;
+  }
+  
+  .weather-location {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .weather-temp {
+    font-size: 28px;
+    font-weight: 100;
+    margin: 4px 0;
+  }
+  
+  .weather-desc {
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .weather-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .humidity-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .humidity-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .humidity-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    transition: height 0.4s ease;
+  }
+  
+  .loading-text {
+    color: white;
+    text-align: center;
+    font-weight: 500;
+  }
+  
