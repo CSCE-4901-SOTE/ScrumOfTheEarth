@@ -1,41 +1,49 @@
 <header class="navbar" *ngIf="showNavbar">
 
   <div class="navbar-left">
-    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo" />
+    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo">
   </div>
 
-  <!-- Farmer top bar -->
-  <div *ngIf="isFarmer()">
-    <div class="navbar-center">
-      <nav>
-        <a routerLink="/dashboard">Dashboard</a>
-        <a routerLink="/historical-trends">Historical Trends</a>
-        <a routerLink="/alerts">Alerts</a>
-      </nav>
-    </div>
-
-    <button class="menu-button">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+  <!--Farmer top bar -->
+  <div *ngIf="isFarmer()" class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
+      <a routerLink="/alerts" routerLinkActive="active">Alert</a>
+    </nav>
   </div>
 
-  <!-- Technician top bar -->
-  <div *ngIf="isTechnician()">
-    <div class="navbar-center">
-      <nav>
-        <a routerLink="/dashboard">Dashboard</a>
-        <a routerLink="/historical-trends">Sensors</a>
-        <a routerLink="/alerts">Alerts</a>
-      </nav>
-    </div>
+  <!-- CENTER: Technician navbar -->
+  <div *ngIf="isTechnician()" class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/historical-trends" routerLinkActive="active">Sensors</a>
+      <a routerLink="/alerts" routerLinkActive="active">Alerts</a>
+    </nav>
+  </div>
 
-    <button class="menu-button">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+  <!--hamburger -->
+  <button class="menu-button" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- dropdown -->
+  <div class="dropdown-menu" *ngIf="menuOpen">
+    <div class="dropdown-header">
+      <div class="user-icon">👤</div>
+      <div class="user-info">
+        <strong>Name</strong><br />
+        <small>RBAC</small>
+      </div>
+    </div>
+    <hr />
+    <a href="#">Edit Profile</a>
+    <a href="#">Contact</a>
+    <a href="#">Add Sensor</a>
+    <a href="#">Report</a>
+    <a href="#">Sign Out</a>
   </div>
 
 </header>
