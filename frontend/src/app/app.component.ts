@@ -12,6 +12,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent {
   showNavbar = true;
+  role = '';
 
   constructor(private router: Router) {
     this.router.events
@@ -22,6 +23,18 @@ export class AppComponent {
           currentUrl.includes('/login-page') ||
           currentUrl.includes('/signup-page')
         );
+
+        if (typeof window !== 'undefined') {
+          this.role = sessionStorage.getItem('userRole') || '';
+        }
       });
+  }
+
+  isFarmer() {
+    return this.role === 'farmer';
+  }
+
+  isTechnician() {
+    return this.role === 'technician';
   }
 }

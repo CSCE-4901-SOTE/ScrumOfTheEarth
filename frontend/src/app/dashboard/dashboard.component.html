@@ -1,12 +1,9 @@
-<!-- Farmer Dashboard -->
-<!-- <div *ngIf="isFarmer()"> -->
+<div *ngIf="isFarmer()"> 
+
   <div class="box-container">
-    <div class="data-box">
-      <h2>Temperature</h2>
-    </div>
-    <div class="data-box">
-      <h2>Soil Moisture</h2>
-    </div>
+    <div class="data-box"><h2>Temperature</h2></div>
+    <div class="data-box"><h2>Soil Moisture</h2></div>
+
     <div class="data-box weather-box">
       <div *ngIf="weatherData; else loading" class="weather-content">
         <div class="weather-header">
@@ -14,7 +11,7 @@
           <p class="weather-temp">{{ weatherData.main.temp | number:'1.0-0' }}°F</p>
           <p class="weather-desc">{{ weatherData.weather[0].description | titlecase }}</p>
         </div>
-    
+
         <div class="weather-footer">
           <div class="humidity-section">
             <span>{{ weatherData.main.humidity }}%</span>
@@ -28,18 +25,15 @@
         <p class="loading-text">Loading weather...</p>
       </ng-template>
     </div>
-    
-    
-    <div class="data-box">
-      <h2>Battery Level</h2>
-    </div>
+
+    <div class="data-box"><h2>Battery Level</h2></div>
   </div>
-  
+
   <div class="lower-section">
     <div class="map-box">
       <div id="sensor-map"></div>
     </div>
-    
+
     <div class="info-section">
       <div class="info-box">
         <h2>Selected Node Information</h2>
@@ -52,6 +46,7 @@
           </tr>
         </table>
       </div>
+
       <div class="additional-box">
         <h2>Additional Information</h2>
       </div>
@@ -61,3 +56,44 @@
   <div class="recent-trends-box">
     <h2>Recent Trends</h2>
   </div>
+
+</div>
+
+<div *ngIf="isTechnician()" class="tech-dashboard">
+
+  <div class="box-container">
+    <div class="data-box"><h2>Active Nodes</h2></div>
+    <div class="data-box"><h2>Active Alerts</h2></div>
+    <div class="data-box"><h2>Signal Strength</h2></div>
+    <div class="data-box"><h2>Battery Level</h2></div>
+  </div>
+
+  <div class="lower-section">
+    <div class="map-box">
+      <div id="sensor-map"></div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-box">
+        <h2>Selected Node Information</h2>
+        <table class="info-table">
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Threshold</th>
+            <th>Status</th>
+          </tr>
+        </table>
+      </div>
+
+      <div class="additional-box">
+        <h2>Additional Information</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="recent-trends-box">
+    <h2>Node Status</h2>
+  </div>
+
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -16,9 +16,9 @@ import * as maplibregl from 'maplibre-gl';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
-  role: string | null = null;
+  role = '';
   weatherData: any;
   city: string = 'Denton';
   private weatherApiKey: string = '0b8120fcdfd87c4be96bb4a644287b3d';
@@ -31,15 +31,15 @@ export class DashboardComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
+
     if (typeof window !== 'undefined') {
-      this.role =
-        sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
-      console.log('User role:', this.role);
-    } else {
-      console.warn('Not running in browser — skipping role storage access');
+      this.role = sessionStorage.getItem('userRole') || '';
     }
 
     this.getWeather();//fetch weather data
+  }
+
+  ngAfterViewInit(): void {
     this.initMap();//aws location map
   }
 
