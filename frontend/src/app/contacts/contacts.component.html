@@ -1,1 +1,53 @@
-<p>contacts works!</p>
+<div class="contacts-container">
+
+    <div class="header-row">
+      <h2>Contacts</h2>
+      <button class="add-contact-btn" (click)="openAddModal()">Add Contact</button>
+    </div>
+  
+    <input
+      class="search-box"
+      type="text"
+      placeholder="Search"
+      [(ngModel)]="searchTerm"
+    />
+  
+    <table class="contacts-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>Email</th>
+          <th>Number of Nodes</th>
+        </tr>
+      </thead>
+  
+      <tbody>
+        <tr *ngFor="let c of filteredContacts()">
+          <td>{{ c.name }}</td>
+          <td>{{ c.phone }}</td>
+          <td>{{ c.email }}</td>
+          <td>{{ c.nodes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  
+<!-- add contact -->
+    <div class="modal-backdrop" *ngIf="showModal">
+      <div class="modal">
+        <h3>Add Contact</h3>
+  
+        <input type="text" placeholder="Name" [(ngModel)]="newContact.name" />
+        <input type="text" placeholder="Phone Number" [(ngModel)]="newContact.phone" />
+        <input type="text" placeholder="Email" [(ngModel)]="newContact.email" />
+        <input type="number" placeholder="Number of Nodes" [(ngModel)]="newContact.nodes" />
+  
+        <div class="modal-btns">
+          <button class="save" (click)="saveContact()">Save</button>
+          <button class="cancel" (click)="closeAddModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  
