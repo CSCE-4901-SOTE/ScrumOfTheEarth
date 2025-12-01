@@ -6,8 +6,10 @@ import { HistoricalTrendsComponent } from './historical-trends/historical-trends
 import { AlertsComponent } from './alerts/alerts.component';
 import { MapSensorComponent } from './map-sensor/map-sensor.component';
 import { ContactsComponent } from './contacts/contacts.component';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 export const routes: Routes = [
+  { path: 'edit-profile', component: EditProfileComponent},
   { path: 'contacts', component: ContactsComponent },
   { path: 'signup-page', component: SignupPageComponent },
   { path: 'login-page', component: LoginPageComponent },
