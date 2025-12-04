@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
   showNavbar = true;
   role = '';
+  userName: string = '';
 
   menuOpen = false;     
   toggleMenu() {        
@@ -31,7 +32,10 @@ export class AppComponent {
         );
 
         if (typeof window !== 'undefined') {
-          this.role = sessionStorage.getItem('userRole') || '';
+          const r = sessionStorage.getItem('userRole') || '';
+          this.role = r ? r.toLowerCase() : '';
+          const userEmail = sessionStorage.getItem('userEmail') || '';
+          this.userName = userEmail ? userEmail.split('@')[0] : '';
         }
       });
   }

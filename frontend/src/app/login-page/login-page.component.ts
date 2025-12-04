@@ -48,6 +48,14 @@ export class LoginPageComponent {
       .subscribe({
         next: (res) => {
           alert('✅ Login successful!');
+          // Store user info for navbar display
+          try {
+            sessionStorage.setItem('userEmail', this.email);
+            // Default to farmer role locally; backend can return role later
+            sessionStorage.setItem('userRole', 'farmer');
+          } catch (e) {
+            // ignore storage errors
+          }
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },
         error: (err) => {
