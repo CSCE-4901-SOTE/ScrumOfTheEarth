@@ -48,6 +48,13 @@ export class LoginPageComponent {
       .subscribe({
         next: (res) => {
           alert('✅ Login successful!');
+          // persist minimal user info for UI display
+          try {
+            sessionStorage.setItem('userEmail', this.email);
+            sessionStorage.setItem('userRole', 'farmer');
+          } catch (e) {
+            // ignore storage errors
+          }
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },
         error: (err) => {

@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
   showNavbar = true;
   role = '';
+  userName: string = '';
 
   menuOpen = false;     
   toggleMenu() {        
@@ -31,7 +32,15 @@ export class AppComponent {
         );
 
         if (typeof window !== 'undefined') {
-          this.role = sessionStorage.getItem('userRole') || '';
+          this.role = (sessionStorage.getItem('userRole') || '').toLowerCase();
+          const userEmail = sessionStorage.getItem('userEmail') || '';
+          // display local part of email, capitalized
+          if (userEmail) {
+            const local = userEmail.split('@')[0];
+            this.userName = local.charAt(0).toUpperCase() + local.slice(1);
+          } else {
+            this.userName = '';
+          }
         }
       });
   }
