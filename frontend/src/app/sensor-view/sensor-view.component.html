@@ -1,0 +1,9 @@
+@if (this.sensorService.sensorSearchStatus() === 'loading') {
+    loading...
+}
+@else if (this.sensorService.sensorSearchStatus() === 'error') {
+    Oh no, we had an error!
+}
+@else {
+    <app-sensor-view-table [sensorsData]="this.cleanedSensors()"></app-sensor-view-table>
+}
