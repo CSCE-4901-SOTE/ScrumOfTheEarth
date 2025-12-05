@@ -1,4 +1,4 @@
-/* ========== NAVBAR ========== */
+/* Navbar */
 .navbar {
   display: flex;
   align-items: center;
@@ -22,6 +22,7 @@
   display: block;
 }
 
+/* Navbar Center */
 .navbar-center {
   position: absolute;
   right: 310px;
@@ -50,7 +51,7 @@
   font-size: 22px;
 }
 
-/* Hamburger */
+/* Hamburger Button */
 .menu-button {
   background: #fff;
   border: 1px solid #C4BEBE;
@@ -79,6 +80,7 @@
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); 
 }
 
+/* Dropdown Menu */
 .dropdown-menu {
   position: absolute;
   top: 80px;
@@ -99,6 +101,7 @@
   background-color 0.2s ease; 
 }
 
+/* Fade Animation */
 @keyframes fadeIn { 
   from { 
     opacity: 0; 
@@ -110,8 +113,7 @@
   } 
 }
 
-/* Map Sensor Layout */
-
+/* Map Layout */
 .map-layout {
   display: flex;
   gap: 35px;
@@ -120,7 +122,7 @@
   box-sizing: border-box;
 }
 
-/* Left Column */
+/* Left Panel */
 .left-panel {
   width: 300px;
   
@@ -185,6 +187,7 @@
   transform: translateY(-2px);
 }
 
+/* Sensor Header */
 .sensor-header {
   display: flex; 
   align-items: center; 
@@ -206,7 +209,6 @@
 .status-icon.offline { background: #e00e0e; }
 .status-icon.weak { background: #e6b800; }
 .status-icon.deactivate { display: none; }
-
 .cloud-off-icon { font-size: 16px; color: #777; }
 
 .sensor-id {
@@ -237,7 +239,7 @@
   font-family: Roboto;
 }
 
-/* Right Column */
+/* Map Container */
 .map-container {
   flex: 1;
   background: #f5f5f5;
@@ -262,7 +264,7 @@
   z-index: 10;
 }
 
-/* ⭐ Floating Card ⭐ */
+/* Detail Card */
 .sensor-detail-card {
   position: absolute;
   top: 18%; 
@@ -278,6 +280,7 @@
   pointer-events: auto;
 }
 
+/* Detail Header */
 .header {
   display: flex;
   align-items: center;
@@ -326,6 +329,7 @@ hr {
   border-top: 1px solid #7e7e7e; 
 }
 
+/* Signal Section */
 .signal-section {
   margin-top: 10px;
   font-family: Roboto;
@@ -333,7 +337,7 @@ hr {
   color: #515050;
 }
 
-/* ⭐ Signal Bar ⭐ */
+/* Signal Strength */
 .signal-row {
   display: flex;
   align-items: flex-end;
@@ -361,18 +365,19 @@ hr {
   transition: 0.2s;
 }
 
+/* Bar height */
 .signal-bars span:nth-child(1) { height: 5px; }
 .signal-bars span:nth-child(2) { height: 10px; }
 .signal-bars span:nth-child(3) { height: 15px; }
 .signal-bars span:nth-child(4) { height: 20px; }
 .signal-bars span:nth-child(5) { height: 25px; }
 
-/* Color */
+/* Signal bar color */
 .signal-bars span.active {
   background: #3c8e3f;
 }
 
-/* White tooltip */
+/* Signal tooltip */
 .signal-tooltip-white {
   position: absolute;
   left: 200px;                  
@@ -392,11 +397,11 @@ hr {
   transition: opacity 0.18s ease;
 }
 
+/* Tooltip hover */
 .signal-bars:hover .signal-tooltip-white {
   opacity: 1;
 }
 
-/* Status arrow */
 .signal-tooltip-white::before {
   content: "";
   position: absolute;
@@ -415,7 +420,7 @@ hr {
   display: flex;
   align-items: flex-end;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .packet-loss-text {
@@ -424,7 +429,7 @@ hr {
   display: inline-block;
 }
 
-/* Bar Container */
+/* Packet loss container */
 .packet-loss-bars {
   display: flex;
   align-items: flex-end;
@@ -441,8 +446,9 @@ hr {
   transition: 0.25s ease;
 }
 
+/* Packet loss color */
 .packet-loss-bars span.active {
-  background: #4caf50;
+  background: #4caf50; /* default if not match */
 }
 
 .packet-loss-bars span.active[lvl="1"] {
@@ -468,8 +474,9 @@ background: #e53935;
 /* Tooltip */
 .packet-loss-tooltip {
   position: absolute;
-  left: 200px;                  
+  left: 100%;                  
   top: 45%;
+  margin-left: 10px;
   transform: translateY(-50%);
   background: #ffffff;
   border: 1px solid #ddd;
@@ -485,7 +492,7 @@ background: #e53935;
   transition: opacity 0.18s ease;
 }
 
-/* Tooltip Hover */
+/* Tooltip hover */
 .packet-loss-bars:hover .packet-loss-tooltip {
   opacity: 1;
 }
@@ -504,11 +511,20 @@ background: #e53935;
   border-right: 6px solid #fff;
 }
 
+/* Battery Section */
 .battery-wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 10px;
   margin-bottom: 20px;
+  
+}
+
+.battery-wrapper label {
+  display: inline-block;
+  line-height: 12px; 
+  font-weight: 600;
+  font-family: Roboto;
 }
 
 .battery-bar {
@@ -518,19 +534,40 @@ background: #e53935;
   border-radius: 6px;
   overflow: hidden;
   margin-left: 54px;
+  position: relative;
+  top: -3px;
 }
 
 .battery-fill {
   height: 100%;
-  background: #3c8e3f;
+  width: 0%;
+  border-radius: 6px;
+  transition: width 0.35s ease, background-color 0.25s ease;
+}
+
+/* Battery color */
+.battery-fill.green {
+  background-color: #3c8e3f; /* >60% */
+}
+
+.battery-fill.yellow {
+  background-color: #ffcc00; /* 30–60% */
+}
+
+.battery-fill.orange {
+  background-color: #ff9900; /* 15–30% */
+}
+
+.battery-fill.red {
+  background-color: #e53935; /* <15% */
 }
 
 .battery-text {
   line-height: 12px; 
   padding-bottom: 0px; 
   display: inline-block;
-  font-weight: 550;
-  font-family: Roboto;
+  font-weight: 600;
+  font-family: Roboto; 
 }
 
 .sensor-mini-boxes {
@@ -539,6 +576,7 @@ background: #e53935;
   margin-top: 12px;
 }
 
+/* Mini Sensor Boxes */
 .box {
   width: 100px;
   height: 75px;
@@ -551,9 +589,9 @@ background: #e53935;
   text-align: center;
 }
 
-.box.temp { border-color: #ffd58a; }
-.box.moisture { border-color: #ffeeba; }
-.box.light { border-color: #ffb7b7; }
+.box.green  { border-color: #3c8e3f; background: #f1f8f2; }
+.box.yellow { border-color: #ffcc00; background: #fcfaec; }
+.box.red    { border-color: #e53935; background: #fcf1f1; }
 
 .value {
   font-size: 20px;
