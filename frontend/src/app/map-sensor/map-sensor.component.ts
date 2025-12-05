@@ -17,8 +17,24 @@ export class MapSensorComponent implements OnInit {
   selectedSensor: any = null; 
   popupPosition = { x: 0, y: 0 };
   signalLevel = 2;
+  batteryLevel = 100;  
+  batteryColorClass = 'green';  
 
-  // Signal Strength
+  THRESHOLDS = {
+    temperature: { low: 60, idealMin: 70, idealMax: 85, high: 95 },
+    moisture: { low: 20, idealMin: 30, idealMax: 60, high: 80 },
+    light: { low: 5000, idealMin: 20000, idealMax: 70000, high: 90000 }
+  };
+
+  tempValue = 0;
+  moistValue = 0;
+  lightValue = 0;
+
+  tempColor = 'green';
+  moistColor = 'green';
+  lightColor = 'green';
+
+  /* Converts RSSI (dBm) into a 1–5 signal strength level */
   convertDbmToLevel(dBm: number): number {
     if (dBm >= -55) return 5;
     if (dBm >= -65) return 4;
@@ -27,6 +43,7 @@ export class MapSensorComponent implements OnInit {
     return 1;
   }
 
+  /* Returns human-readable text for the signal strength level */
   get signalLabel() {
     switch (this.signalLevel) {
       case 5: return 'Excellent';
@@ -37,7 +54,7 @@ export class MapSensorComponent implements OnInit {
     }
   }
 
-  // Packet Loss Level
+  /* Converts raw packet loss % into severity level 0–5 */
   get packetLossLevel() {
     const loss = this.selectedSensor?.packetLoss || 0;
 
@@ -49,6 +66,7 @@ export class MapSensorComponent implements OnInit {
     return 0;
   }
 
+  /* Returns descriptive text for packet loss severity */
   get packetLossLabel() {
     const lvl = this.packetLossLevel;
     if (lvl === 0) return 'No Loss';
@@ -59,11 +77,31 @@ export class MapSensorComponent implements OnInit {
     return 'Severe';
   }
 
+  /* Updates battery color class depending on battery percentage */
+  updateBatteryColor() {
+    if (this.batteryLevel > 60) this.batteryColorClass = 'green';
+    else if (this.batteryLevel > 30) this.batteryColorClass = 'yellow';
+    else if (this.batteryLevel > 15) this.batteryColorClass = 'orange';
+    else this.batteryColorClass = 'red';
+  }
+
+  /* Evaluates sensor reading (temp/moist/light) and returns box color */
+  getBoxColor(type: string, value: number): string {
+  const t = this.THRESHOLDS[type as keyof typeof this.THRESHOLDS];
+
+    if (value < t.low) return 'red';
+    if (value < t.idealMin) return 'yellow';
+    if (value <= t.idealMax) return 'green';
+    if (value < t.high) return 'yellow';
+    return 'red';
+  } 
+
   menuOpen = false; 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;   // ✅ toggle true/false when clicked
   }
 
+  //Sensor fake data
   sensors = [
     {
       id: 'S001',
@@ -72,7 +110,11 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0918,
       status: 'online',
       rssi: -82,
-      packetLoss: 4 
+      packetLoss: 4,
+      battery: 78,
+      temperature: 75,  
+      moisture: 25,     
+      light: 3000
     },
     {
       id: 'S002',
@@ -81,7 +123,11 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0899,
       status: 'offline',
       rssi: -92,
-      packetLoss: 27
+      packetLoss: 27,
+      battery: 22,
+      temperature: 95,   
+      moisture: 85,      
+      light: 25000       
     },
     {
       id: 'S003',
@@ -90,7 +136,11 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0912,
       status: 'weak',
       rssi: -78,
-      packetLoss: 12
+      packetLoss: 12,
+      battery: 45,
+      temperature: 55,   
+      moisture: 50,      
+      light: 75000       
     },
     {
       id: 'S004',
@@ -99,7 +149,11 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0930,
       status: 'deactivate',
       rssi: -120,
-      packetLoss: 0
+      packetLoss: 0,
+      battery: 0,
+      temperature: 88,    
+      moisture: 10,       
+      light: 45000        
     },
     {
       id: 'S005',
@@ -108,7 +162,11 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0905,
       status: 'online',
       rssi: -60,
-      packetLoss: 5
+      packetLoss: 5,
+      battery: 91,
+      temperature: 72,    
+      moisture: 15,       
+      light: 85000        
     },
     {
       id: 'S006',
@@ -117,11 +175,71 @@ export class MapSensorComponent implements OnInit {
       longitude: -97.0937,
       status: 'online',
       rssi: -70,
-      packetLoss: 18
+      packetLoss: 18,
+      battery: 63,
+      temperature: 100,   
+      moisture: 35,       
+      light: 15000        
+    },
+    {
+    id: 'S007',
+    name: 'Sensor 7',
+    latitude: 33.2578,
+    longitude: -97.0922,
+    status: 'online',
+    rssi: -68,
+    packetLoss: 7,
+    battery: 72,
+
+    temperature: 82,   
+    moisture: 65,      
+    light: 95000       
+    },
+    {
+    id: 'S008',
+    name: 'Sensor 8',
+    latitude: 33.2583,
+    longitude: -97.0901,
+    status: 'weak',
+    rssi: -84,
+    packetLoss: 18,
+    battery: 40,
+
+    temperature: 68,    
+    moisture: 40,        
+    light: 12000         
+    },
+    {
+    id: 'S009',
+    name: 'Sensor 9',
+    latitude: 33.2549,
+    longitude: -97.0914,
+    status: 'offline',
+    rssi: -110,
+    packetLoss: 42,
+    battery: 8,
+
+    temperature: 52,     
+    moisture: 85,         
+    light: 60000          
+    },
+    {
+    id: 'S010',
+    name: 'Sensor 10',
+    latitude: 33.2557,
+    longitude: -97.0941,
+    status: 'online',
+    rssi: -72,
+    packetLoss: 10,
+    battery: 57,
+
+    temperature: 88,       
+    moisture: 28,          
+    light: 30000           
     }
   ];
 
-  /* Filter Function */
+  /* Filters sensor list by search keyword (name or ID) */
   get filteredSensors() {
     const keyword = this.searchSensor.trim().toLowerCase();
 
@@ -134,18 +252,18 @@ export class MapSensorComponent implements OnInit {
       return name.includes(keyword) || id.includes(keyword);
     });
   }
-  /* End Filter */
 
-  // Search but no result
+  /* Returns true if user typed something but no sensors match */
   get noResultFound() {
-  return this.filteredSensors.length === 0 && this.searchSensor.trim() !== '';
+    return this.filteredSensors.length === 0 && this.searchSensor.trim() !== '';
   }
 
-  // Map
+  /* Initializes map after component loads */
   ngOnInit(): void {
     this.initMap();
   }
 
+  /* Initializes the AWS MapLibre map instance */
   initMap(): void {
     // Prevent SSR issues
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -167,50 +285,54 @@ export class MapSensorComponent implements OnInit {
 
       this.map.addControl(new maplibregl.NavigationControl(), 'top-left');
       this.addMarkers(this.map);
-
-
     } catch (err) {
       console.error('❌ Map initialization failed:', err);
     }
   }
 
-//Add Marker to the map
-addMarkers(map: any) {
-  this.sensors.forEach(sensor => {
-    const marker = new maplibregl.Marker({
-      color:
-        sensor.status === 'online' ? '#3c8e3f' : 
-        sensor.status === 'offline' ? '#e00e0e' :
-        sensor.status === 'weak' ? '#e6b800' :
-        '#777'   // deactivate
-    })
-      .setLngLat([sensor.longitude, sensor.latitude])
-  
-      .addTo(map);
+  /* Adds all sensor markers to the map and attaches click event handlers */
+  addMarkers(map: any) {
+    this.sensors.forEach(sensor => {
+      const marker = new maplibregl.Marker({
+        color:
+          sensor.status === 'online' ? '#3c8e3f' : 
+          sensor.status === 'offline' ? '#e00e0e' :
+          sensor.status === 'weak' ? '#e6b800' :
+          '#777'   // deactivate
+      })
+    .setLngLat([sensor.longitude, sensor.latitude])
+    
+    .addTo(map);
       const el = marker.getElement();
-      el.style.cursor = 'pointer'; // ⭐ Cursor pointer icon
-      // ⭐ Click marker → big card
+      el.style.cursor = 'pointer'; // Cursor pointer icon
+      //Click marker to view big card
       marker.getElement().addEventListener('click', () => {
-      this.selectedSensor = sensor;
-      /* ⭐ UPDATE signalLevel dựa trên RSSI */
-      this.signalLevel = this.convertDbmToLevel(sensor.rssi);
-  });
+        this.selectedSensor = sensor;
+        //Update signal level 
+        this.signalLevel = this.convertDbmToLevel(sensor.rssi);
+        //Update battery level
+        this.batteryLevel = sensor.battery;
+        this.updateBatteryColor();
 
-  });
-}
-/*  End Marker  */
+        this.tempValue = sensor.temperature;
+        this.moistValue = sensor.moisture;
+        this.lightValue = sensor.light;
 
-//Navigate to the clicked sensor list
- focusSensor(sensor: any) {
-  if (!this.map) return;
+        this.tempColor  = this.getBoxColor('temperature', sensor.temperature);
+        this.moistColor = this.getBoxColor('moisture', sensor.moisture);
+        this.lightColor = this.getBoxColor('light', sensor.light);  
+      });
+    });
+  }
 
-  this.map.flyTo({
-    center: [sensor.longitude, sensor.latitude],
-    zoom: 20,
-    speed: 0.75
-  });
-}
+  /* Moves the map camera to focus on a selected sensor marker */
+  focusSensor(sensor: any) {
+    if (!this.map) return;
 
-
-
+    this.map.flyTo({
+      center: [sensor.longitude, sensor.latitude],
+      zoom: 20,
+      speed: 0.75
+    });
+  }
 }
