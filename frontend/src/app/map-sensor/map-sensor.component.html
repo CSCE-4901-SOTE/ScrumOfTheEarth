@@ -1,8 +1,11 @@
+<!-- Navbar -->
 <header class="navbar">
+    <!-- Navbar Left -->
     <div class="navbar-left">
       <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo">
     </div>
   
+    <!-- Navbar Center -->
     <div class="navbar-center">
       <nav>
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
@@ -11,12 +14,14 @@
       </nav>
     </div>
 
+    <!-- Menu Button -->
     <button class="menu-button" (click)="toggleMenu()">
       <span></span>
       <span></span>
       <span></span>
     </button>
 
+    <!-- Dropdown Menu -->
     <div class="dropdown-menu" *ngIf="menuOpen">
       <div class="dropdown-header">
         <div class="user-icon">👤</div>
@@ -34,12 +39,10 @@
 </header>
 
 
-<!-- Map Sensor Layout -->
+<!-- Map Layout -->
 <div class="map-layout">
-
-  <!-- Left Side -->
+  <!-- Left Panel -->
   <div class="left-panel">
-
     <!-- Search bar -->
     <div class="sidebar">
       <div class="search-wrapper">
@@ -53,6 +56,7 @@
       </div>
     </div>
 
+    <!-- No Result Text -->
     <p *ngIf="noResultFound" class="no-result-text">
       No results found
     </p>
@@ -66,22 +70,21 @@
         <div class="sensor-header">
           <h4 class="sensor-name">{{ s.name }}</h4>
           <span class="status-icon" [ngClass]="s.status"></span>
-
           <span *ngIf="s.status === 'deactivate'" class="material-icons cloud-off-icon">cloud_off</span>
         </div>
 
+        <!-- Sensor ID -->
         <p class="sensor-id">ID: {{ s.id }}</p>
-
+        <!-- Sensor Coordinates -->
         <div class="sensor-coords">
           <span class="material-icons coord-icon">location_on</span>
           <span>{{ s.latitude }}, {{ s.longitude }}</span>
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- Map Right Side -->
+  <!-- Map Container -->
   <div class="map-container">
     <div id="sensor-map"></div>
     <div 
@@ -90,8 +93,9 @@
       (click)="selectedSensor = null">
     </div>
 
-  <!-- Floating Sensor Detail Card -->
+    <!-- Sensor Detail Card -->
     <div class="sensor-detail-card" *ngIf="selectedSensor">
+      <!-- Detail Header -->
       <div class="header">
         <h2>{{ selectedSensor.name }}</h2>
         <span 
@@ -101,6 +105,7 @@
         <button class="close-btn" (click)="selectedSensor = null">✕</button>
       </div>
 
+      <!-- Detail Basic Info -->
       <p class="id-line">Sensor ID: {{ selectedSensor.id }}</p>
       <p class="tech-line">Technician: James Haden</p>
 
@@ -110,10 +115,11 @@
 
       <hr>
 
+      <!-- Signal Section -->
       <div class="signal-section">
+        <!-- Signal Strength -->
         <div class="signal-row">
           <strong class="signal-text">Signal Strength:</strong>
-          <!-- ⭐ Signal Bar -->
           <div class="signal-bars">
             <span [class.active]="signalLevel >= 1"></span>
             <span [class.active]="signalLevel >= 2"></span>
@@ -121,13 +127,13 @@
             <span [class.active]="signalLevel >= 4"></span>
             <span [class.active]="signalLevel >= 5"></span>
 
-            <!-- Tooltip -->
             <div class="signal-tooltip-white">
               {{ signalLabel }}
             </div>
           </div>
         </div>
 
+        <!-- Packet Loss -->
         <div class="packet-loss-row">
           <strong class="packet-loss-text">Packet Loss:</strong>
 
@@ -144,33 +150,41 @@
           </div>
         </div>
 
+        <!-- Battery -->
         <div class="battery-wrapper">
-          <label><strong>Battery:</strong></label>
+          <strong>Battery:</strong>
           <div class="battery-bar">
-            <div class="battery-fill" style="width: 75%;"></div>
+            <div 
+              class="battery-fill"
+              [style.width.%]="batteryLevel"
+              [ngClass]="batteryColorClass">
+            </div>
           </div>
-          <span class="battery-text">75%</span>
+          <span class="battery-text">{{ batteryLevel }}%</span>
         </div>
       </div>
 
+      <!-- Mini Box Section -->
       <div class="sensor-mini-boxes">
-
-        <div class="box temp">
+        <!-- Temperature Box -->
+        <div class="box temp" [ngClass]="tempColor">
           <p class="label">Temperature</p>
-          <p class="value">75°F</p>
+          <p class="value">{{ tempValue }}°F</p>
         </div>
 
-        <div class="box moisture">
+        <!-- Moisture Box -->
+        <div class="box moisture" [ngClass]="moistColor">
           <p class="label">Soil Moisture</p>
-          <p class="value">30%</p>
+          <p class="value">{{ moistValue }}%</p>
         </div>
 
-        <div class="box light">
+        <!-- Light Box -->
+        <div class="box light" [ngClass]="lightColor">
           <p class="label">Light</p>
-          <p class="value">199 lx</p>
+          <p class="value">{{ lightValue }} lx</p>
         </div>
       </div>
     </div>
-  <!-- ⭐⭐⭐ End Floating Card ⭐⭐⭐ -->
   </div>
 </div>
+
