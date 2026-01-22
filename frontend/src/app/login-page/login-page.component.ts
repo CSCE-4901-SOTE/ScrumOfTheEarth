@@ -44,17 +44,12 @@ export class LoginPageComponent {
     };
 
     // Send request POST to backend
-    this.http.post('http://localhost:8080/api/login', loginData, { responseType: 'text' })
+    this.http.post<{ role: 'farmer' | 'technician' }>('http://localhost:8080/api/login', loginData)
       .subscribe({
         next: (res) => {
+          localStorage.setItem('role', res.role);
+          
           alert('✅ Login successful!');
-          // persist minimal user info for UI display
-          try {
-            sessionStorage.setItem('userEmail', this.email);
-            sessionStorage.setItem('userRole', 'farmer');
-          } catch (e) {
-            // ignore storage errors
-          }
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },
         error: (err) => {
