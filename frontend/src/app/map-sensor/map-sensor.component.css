@@ -377,6 +377,26 @@ hr {
   background: #3c8e3f;
 }
 
+.signal-bars span.active[lvl="5"] {
+  background: #3c8e3f; 
+}
+
+.signal-bars span.active[lvl="4"] {
+  background: #3c8e3f;
+}
+
+.signal-bars span.active[lvl="3"] {
+  background: #3c8e3f;
+}
+
+.signal-bars span.active[lvl="2"] {
+  background: #ff5722;
+}
+
+.signal-bars span.active[lvl="1"] {
+background: #e53935;
+}
+
 /* Signal tooltip */
 .signal-tooltip-white {
   position: absolute;
@@ -606,6 +626,54 @@ background: #e53935;
   font-family: Roboto;
 }
 
+/* Technician Action Buttons */
+.action-buttons{
+  display:flex;
+  gap:14px;
+  margin-top:18px;
+}
+
+.btn{
+  flex:1;
+  height:38px;
+  border-radius:8px;
+  font-family:Roboto;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  background:#fff;
+  transition:0.2s ease;
+}
+
+.btn-activate{
+  border: 1px solid #3c8e3f;
+  background-color: #3c8e3f;
+  color: #ffffff;
+}
+
+.btn-activate:hover{
+  border: 1px solid #2f7032;
+  background-color: #2f7032;
+}
+
+.btn-activate:active {
+  transform: scale(0.97);
+}
+
+.btn-deactivate{
+  border: 1px solid #7f4c30;
+  background-color: #7f4b30;
+  color: #ffffff;
+}
+
+.btn-deactivate:hover{
+  background-color: #6e4129;
+  border: 1px solid #6e4129; 
+}
+
+.btn-deactivate:active {
+  transform: scale(0.97);
+}
 
 
 
