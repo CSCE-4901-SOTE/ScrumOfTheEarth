@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as maplibregl from 'maplibre-gl';
 
 @Component({
@@ -12,13 +12,21 @@ import * as maplibregl from 'maplibre-gl';
   styleUrl: './map-sensor.component.css'
 })
 export class MapSensorComponent implements OnInit {
+  role: 'farmer' | 'technician' = 'farmer';
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
   searchSensor= '';
   map: any;
+
   selectedSensor: any = null; 
   popupPosition = { x: 0, y: 0 };
+
   signalLevel = 2;
   batteryLevel = 100;  
   batteryColorClass = 'green';  
+
+  // Keep marker refs to update color when status changes
+  private markerMap = new Map<string, maplibregl.Marker>();
 
   THRESHOLDS = {
     temperature: { low: 60, idealMin: 70, idealMax: 85, high: 95 },
@@ -87,14 +95,43 @@ export class MapSensorComponent implements OnInit {
 
   /* Evaluates sensor reading (temp/moist/light) and returns box color */
   getBoxColor(type: string, value: number): string {
-  const t = this.THRESHOLDS[type as keyof typeof this.THRESHOLDS];
+    const t = this.THRESHOLDS[type as keyof typeof this.THRESHOLDS];
 
     if (value < t.low) return 'red';
     if (value < t.idealMin) return 'yellow';
     if (value <= t.idealMax) return 'green';
     if (value < t.high) return 'yellow';
     return 'red';
-  } 
+  }
+
+  // Compute online/weak/offline from stored readings
+  computeStatusFromData(sensor: any): 'online' | 'offline' | 'weak' {
+  const lvl = this.convertDbmToLevel(sensor.rssi);
+  if (lvl <= 1) return 'offline'; // very weak/no link
+  if (lvl <= 2) return 'weak';    // weak link
+  return 'online';               // good link
+}
+
+  // Sync UI values from selectedSensor
+  refreshSelectedSensorUI() {
+    const s = this.selectedSensor;
+    if (!s) return;
+
+    //Update signal level
+    this.signalLevel = this.convertDbmToLevel(s.rssi);
+
+    //Update battery level
+    this.batteryLevel = s.battery;
+    this.updateBatteryColor();
+
+    this.tempValue = s.temperature;
+    this.moistValue = s.moisture;
+    this.lightValue = s.light;
+
+    this.tempColor  = this.getBoxColor('temperature', s.temperature);
+    this.moistColor = this.getBoxColor('moisture', s.moisture);
+    this.lightColor = this.getBoxColor('light', s.light);
+  }
 
   menuOpen = false; 
   toggleMenu() {
@@ -108,13 +145,14 @@ export class MapSensorComponent implements OnInit {
       name: 'Sensor 1',
       latitude: 33.2571,
       longitude: -97.0918,
-      status: 'online',
+      status: 'weak',
       rssi: -82,
       packetLoss: 4,
       battery: 78,
       temperature: 75,  
       moisture: 25,     
-      light: 3000
+      light: 3000,
+      savedState: null
     },
     {
       id: 'S002',
@@ -127,7 +165,8 @@ export class MapSensorComponent implements OnInit {
       battery: 22,
       temperature: 95,   
       moisture: 85,      
-      light: 25000       
+      light: 25000,
+      savedState: null
     },
     {
       id: 'S003',
@@ -140,7 +179,8 @@ export class MapSensorComponent implements OnInit {
       battery: 45,
       temperature: 55,   
       moisture: 50,      
-      light: 75000       
+      light: 75000,
+      savedState: null
     },
     {
       id: 'S004',
@@ -153,7 +193,16 @@ export class MapSensorComponent implements OnInit {
       battery: 0,
       temperature: 88,    
       moisture: 10,       
-      light: 45000        
+      light: 45000,
+      savedState: {
+        status: 'weak',
+        rssi: -84,
+        packetLoss: 18,
+        battery: 40,
+        temperature: 88,
+        moisture: 10,
+        light: 45000
+      }
     },
     {
       id: 'S005',
@@ -166,7 +215,8 @@ export class MapSensorComponent implements OnInit {
       battery: 91,
       temperature: 72,    
       moisture: 15,       
-      light: 85000        
+      light: 85000,
+      savedState: null
     },
     {
       id: 'S006',
@@ -179,63 +229,64 @@ export class MapSensorComponent implements OnInit {
       battery: 63,
       temperature: 100,   
       moisture: 35,       
-      light: 15000        
+      light: 15000,
+      savedState: null
     },
     {
-    id: 'S007',
-    name: 'Sensor 7',
-    latitude: 33.2578,
-    longitude: -97.0922,
-    status: 'online',
-    rssi: -68,
-    packetLoss: 7,
-    battery: 72,
-
-    temperature: 82,   
-    moisture: 65,      
-    light: 95000       
+      id: 'S007',
+      name: 'Sensor 7',
+      latitude: 33.2578,
+      longitude: -97.0922,
+      status: 'online',
+      rssi: -68,
+      packetLoss: 7,
+      battery: 72,
+      temperature: 82,   
+      moisture: 65,      
+      light: 95000,
+      savedState: null
     },
     {
-    id: 'S008',
-    name: 'Sensor 8',
-    latitude: 33.2583,
-    longitude: -97.0901,
-    status: 'weak',
-    rssi: -84,
-    packetLoss: 18,
-    battery: 40,
-
-    temperature: 68,    
-    moisture: 40,        
-    light: 12000         
+      id: 'S008',
+      name: 'Sensor 8',
+      latitude: 33.2583,
+      longitude: -97.0901,
+      status: 'weak',
+      rssi: -84,
+      packetLoss: 18,
+      battery: 40,
+      temperature: 68,    
+      moisture: 40,        
+      light: 12000,
+      savedState: null
     },
     {
-    id: 'S009',
-    name: 'Sensor 9',
-    latitude: 33.2549,
-    longitude: -97.0914,
-    status: 'offline',
-    rssi: -110,
-    packetLoss: 42,
-    battery: 8,
-
-    temperature: 52,     
-    moisture: 85,         
-    light: 60000          
+      id: 'S009',
+      name: 'Sensor 9',
+      latitude: 33.2549,
+      longitude: -97.0914,
+      status: 'offline',
+      rssi: -110,
+      packetLoss: 42,
+      battery: 8,
+      temperature: 52,     
+      moisture: 85,         
+      light: 60000,
+      savedState: null
     },
     {
-    id: 'S010',
-    name: 'Sensor 10',
-    latitude: 33.2557,
-    longitude: -97.0941,
-    status: 'online',
-    rssi: -72,
-    packetLoss: 10,
-    battery: 57,
-
-    temperature: 88,       
-    moisture: 28,          
-    light: 30000           
+      id: 'S010',
+      name: 'Sensor 10',
+      latitude: 33.2557,
+      longitude: -97.0941,
+      status: 'online',
+      rssi: -72,
+      packetLoss: 10,
+      battery: 57,
+      temperature: 88,       
+      moisture: 28,          
+      light: 30000,
+      savedState: null
     }
   ];
 
@@ -260,6 +311,12 @@ export class MapSensorComponent implements OnInit {
 
   /* Initializes map after component loads */
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedRole = localStorage.getItem('role');
+      this.role = savedRole === 'technician' ? 'technician' : 'farmer';
+    } else {
+      this.role = 'farmer';
+    }
     this.initMap();
   }
 
@@ -290,39 +347,50 @@ export class MapSensorComponent implements OnInit {
     }
   }
 
+  // Map status -> marker color
+  private getMarkerColor(status: string) {
+    return status === 'online' ? '#3c8e3f' :
+           status === 'offline' ? '#e00e0e' :
+           status === 'weak' ? '#e6b800' :
+           '#777'; // deactivate
+  }
+
+  // Create marker and bind click -> open card
+  private createMarker(sensor: any) {
+    const marker = new maplibregl.Marker({
+      color: this.getMarkerColor(sensor.status)
+    })
+    .setLngLat([sensor.longitude, sensor.latitude]);
+
+    const el = marker.getElement();
+    el.style.cursor = 'pointer'; // Cursor pointer icon
+
+    //Click marker to view big card
+    el.addEventListener('click', () => {
+      this.selectedSensor = sensor;
+      this.refreshSelectedSensorUI();
+    });
+
+    return marker;
+  }
+
   /* Adds all sensor markers to the map and attaches click event handlers */
   addMarkers(map: any) {
     this.sensors.forEach(sensor => {
-      const marker = new maplibregl.Marker({
-        color:
-          sensor.status === 'online' ? '#3c8e3f' : 
-          sensor.status === 'offline' ? '#e00e0e' :
-          sensor.status === 'weak' ? '#e6b800' :
-          '#777'   // deactivate
-      })
-    .setLngLat([sensor.longitude, sensor.latitude])
-    
-    .addTo(map);
-      const el = marker.getElement();
-      el.style.cursor = 'pointer'; // Cursor pointer icon
-      //Click marker to view big card
-      marker.getElement().addEventListener('click', () => {
-        this.selectedSensor = sensor;
-        //Update signal level 
-        this.signalLevel = this.convertDbmToLevel(sensor.rssi);
-        //Update battery level
-        this.batteryLevel = sensor.battery;
-        this.updateBatteryColor();
-
-        this.tempValue = sensor.temperature;
-        this.moistValue = sensor.moisture;
-        this.lightValue = sensor.light;
-
-        this.tempColor  = this.getBoxColor('temperature', sensor.temperature);
-        this.moistColor = this.getBoxColor('moisture', sensor.moisture);
-        this.lightColor = this.getBoxColor('light', sensor.light);  
-      });
+      const marker = this.createMarker(sensor).addTo(map);
+      this.markerMap.set(sensor.id, marker);
     });
+  }
+
+  // Update marker color after status change
+  private updateMarker(sensor: any) {
+    if (!this.map) return;
+
+    const oldMarker = this.markerMap.get(sensor.id);
+    if (oldMarker) oldMarker.remove();
+
+    const newMarker = this.createMarker(sensor).addTo(this.map);
+    this.markerMap.set(sensor.id, newMarker);
   }
 
   /* Moves the map camera to focus on a selected sensor marker */
@@ -334,5 +402,55 @@ export class MapSensorComponent implements OnInit {
       zoom: 20,
       speed: 0.75
     });
+  }
+
+  /* Activates the selected sensor */
+  activateSelected() {
+    if (!this.selectedSensor) return;
+    if (this.selectedSensor.status !== 'deactivate') return;
+
+    const saved = this.selectedSensor.savedState;
+
+    // Restore last-known values
+    if (saved) {
+      this.selectedSensor.rssi = saved.rssi;
+      this.selectedSensor.packetLoss = saved.packetLoss;
+      this.selectedSensor.battery = saved.battery;
+      this.selectedSensor.temperature = saved.temperature;
+      this.selectedSensor.moisture = saved.moisture;
+      this.selectedSensor.light = saved.light;
+    }
+
+    // Restore status color from data
+    this.selectedSensor.status = this.computeStatusFromData(this.selectedSensor);
+
+    this.refreshSelectedSensorUI();
+    this.updateMarker(this.selectedSensor);
+  }
+
+  deactivateSelected() {
+    if (!this.selectedSensor) return;
+    if (this.selectedSensor.status === 'deactivate') return;
+
+    // Save current values for restore on Activate
+    this.selectedSensor.savedState = {
+      status: this.selectedSensor.status,
+      rssi: this.selectedSensor.rssi,
+      packetLoss: this.selectedSensor.packetLoss,
+      battery: this.selectedSensor.battery,
+      temperature: this.selectedSensor.temperature,
+      moisture: this.selectedSensor.moisture,
+      light: this.selectedSensor.light
+    };
+
+    this.selectedSensor.status = 'deactivate';
+
+    // Fake "power off" values
+    this.selectedSensor.rssi = -120;
+    this.selectedSensor.packetLoss = 0;
+    this.selectedSensor.battery = 0;
+
+    this.refreshSelectedSensorUI();
+    this.updateMarker(this.selectedSensor);
   }
 }
