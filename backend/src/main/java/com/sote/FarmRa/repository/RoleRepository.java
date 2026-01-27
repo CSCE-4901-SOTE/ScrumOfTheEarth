@@ -1,7 +1,7 @@
-package com.example.backend.repository;
+package com.sote.FarmRa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.backend.entity.Role;
+import com.sote.FarmRa.entity.Role;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

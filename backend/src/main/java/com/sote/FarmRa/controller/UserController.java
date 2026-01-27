@@ -1,7 +1,7 @@
-package com.example.backend.controller;
+package com.sote.FarmRa.controller;
 
-import com.example.backend.entity.User;
-import com.example.backend.service.UserService;
+import com.sote.FarmRa.entity.User;
+import com.sote.FarmRa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
