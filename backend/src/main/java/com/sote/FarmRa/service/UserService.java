@@ -1,11 +1,11 @@
-package com.example.backend.service;
+package com.sote.FarmRa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.backend.entity.User;
-import com.example.backend.entity.Role;
-import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.RoleRepository;
+import com.sote.FarmRa.entity.User;
+import com.sote.FarmRa.entity.Role;
+import com.sote.FarmRa.repository.UserRepository;
+import com.sote.FarmRa.repository.RoleRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.regex.Pattern;

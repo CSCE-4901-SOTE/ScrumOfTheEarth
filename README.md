@@ -34,5 +34,5 @@ If you need to modify the database, make a new migration. You can do this by run
 When making the migration, make sure it is completely reversible. Test this out by running the migration with
 `sqlx migrate run`
 and then run
-`sqlx migrate reverse`
+`sqlx migrate revert`
 and make sure everything is the same as it was before you ran the migration.
