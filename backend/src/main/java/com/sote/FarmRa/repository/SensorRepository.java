@@ -1,4 +1,4 @@
-package com.example.backend.repository;
+package com.sote.FarmRa.repository;
 
 import com.example.backend.entity.Sensor;
 import org.springframework.data.jpa.repository.JpaRepository;
