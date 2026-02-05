@@ -9,7 +9,24 @@ INSERT INTO user_role (name, description) VALUES
 ('farmer','main user who uses the app to observe crop and harvest growth');
 
 CREATE TABLE farmra_user (
-  id VARCHAR(32) PRIMARY KEY,
+  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  role_id INTEGER REFERENCES user_role(role_id) ON DELETE SET NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE gateway (
+  id bigint not null,
+  gateway_name VARCHAR(255),
+  gateway_status VARCHAR(255) check (gateway_status in ('ONLINE','OFFLINE','UNKNOWN')),
+
+  primary key (id)
+);
+
+CREATE TABLE sensor_node (
+   id VARCHAR(32) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   latitude DOUBLE PRECISION NOT NULL,
   longitude DOUBLE PRECISION NOT NULL,
@@ -32,26 +49,6 @@ CREATE TABLE farmra_user (
   saved_temperature INTEGER,
   saved_moisture INTEGER,
   saved_light INTEGER
-);
-
-CREATE TABLE gateway (
-  id bigint not null,
-  gateway_name VARCHAR(255),
-  gateway_status VARCHAR(255) check (gateway_status in ('ONLINE','OFFLINE','UNKNOWN')),
-
-  primary key (id)
-);
-
-CREATE TABLE sensor_node (
-  id bigint not null,
-  gateway_id bigint,
-  serial_number VARCHAR(100) UNIQUE,
-  longitude numeric(10, 6),
-  latitude numeric(10, 6),
-  battery_level numeric(5, 2),
-  sensor_status VARCHAR(255) check (sensor_status in ('ONLINE','OFFLINE','UNKNOWN')),
-
-  primary key (id)
 );
 
 CREATE TABLE sensor_reading (
