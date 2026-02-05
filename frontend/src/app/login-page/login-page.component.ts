@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-login-page',
@@ -18,9 +20,11 @@ export class LoginPageComponent {
   emailError = '';
   passwordError = '';
 
-  constructor(private http: HttpClient, private router: Router) {
-    '✅ LoginPageComponent loaded'
-  }
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   login() {
     this.emailError = '';
@@ -44,12 +48,14 @@ export class LoginPageComponent {
     };
 
     // Send request POST to backend
-    this.http.post<{ role: 'farmer' | 'technician' }>('http://localhost:8080/api/login', loginData)
+    this.http.post<{ userId: string; role: 'farmer' | 'technician' }>('http://localhost:8080/api/login', loginData)
       .subscribe({
         next: (res) => {
-          localStorage.setItem('role', res.role);
-          
-          alert('✅ Login successful!');
+          if (isPlatformBrowser(this.platformId)) {
+            window.localStorage.setItem('userId', res.userId);
+            window.localStorage.setItem('role', res.role);
+          }
+          console.log('✅ Login successful!');
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },
         error: (err) => {
