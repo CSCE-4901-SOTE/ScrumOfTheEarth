@@ -1,4 +1,4 @@
-package com.example.backend.controller;
+package com.sote.FarmRa.controller;
 
 import com.example.backend.entity.Sensor;
 import com.example.backend.entity.User;
