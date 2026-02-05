@@ -1,54 +1,165 @@
-package com.sote.FarmRa.controller;
+package com.example.backend.controller;
+
+import com.example.backend.entity.Sensor;
+import com.example.backend.entity.User;
+import com.example.backend.repository.SensorRepository;
+import com.example.backend.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.sote.FarmRa.model.SensorNode;
-import com.sote.FarmRa.model.dto.UploadSensorDto;
-import com.sote.FarmRa.model.dto.UploadSensorReadingDto;
-import com.sote.FarmRa.service.SensorService;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@Controller
-@RequestMapping(value = "/api/sensor")
-@AllArgsConstructor
-@Slf4j
+@CrossOrigin(origins = "http://localhost:4200")  
+@RestController
+@RequestMapping("/api/sensors")
 public class SensorController {
-    private final SensorService sensorService;
 
+    private final SensorRepository sensorRepository;
+    private final UserRepository userRepository;
+
+    public SensorController(SensorRepository sensorRepository,
+                            UserRepository userRepository) {
+        this.sensorRepository = sensorRepository;
+        this.userRepository = userRepository;
+    }
+
+    // Get
+
+    // Get all sensors
     @GetMapping
-    public Page<SensorNode> getSensors() {
-        List<SensorNode> sensors = sensorService.getSensors();
-        return new PageImpl<>(sensors);
+    public List<Sensor> getAll() {
+        return sensorRepository.findAll();
     }
 
+    // Get sensor by id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable String id) {
+        return sensorRepository.findById(id)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() ->
+                        ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(Map.of("error", "Sensor not found", "id", id))
+                );
+    }
+
+    // Get sensors by status
+    @GetMapping("/status/{status}")
+    public List<Sensor> getByStatus(@PathVariable String status) {
+        return sensorRepository.findByStatus(status);
+    }
+
+    // Get sensors by customer (farmer)
+    @GetMapping("/customer/{customerId}")
+    public List<Sensor> getByCustomer(@PathVariable UUID customerId) {
+        return sensorRepository.findByCustomer_UserId(customerId);
+    }
+
+    // Get sensors by technician
+    @GetMapping("/technician/{technicianId}")
+    public List<Sensor> getByTechnician(@PathVariable UUID technicianId) {
+        return sensorRepository.findByTechnician_UserId(technicianId);
+    }
+
+    // Post
+
+    // Create a new sensor
     @PostMapping
-    public String uploadSensor(@RequestBody UploadSensorDto sensorDto) {
-        try {
-            sensorService.saveSenorNode(sensorDto);
-        } catch (NotFoundException e) {
-            log.error(e.getMessage(), e);
+    public ResponseEntity<?> create(@RequestBody Sensor sensor) {
+        if (sensor.getId() == null || sensor.getId().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Sensor id is required"));
         }
-        return "ok";
+
+        if (sensorRepository.existsById(sensor.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Sensor id already exists"));
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(sensorRepository.save(sensor));
     }
 
-    @PostMapping("/data")
-    public String postSensorData(@RequestBody UploadSensorReadingDto readingDto) {
-        try {
-            sensorService.saveSensorData(readingDto);
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
+    // Put
+
+    // Update basic sensor data
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable String id,
+                                    @RequestBody Sensor req) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        if (sensor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Sensor not found", "id", id));
         }
-        return "ok";
+
+        if (req.getName() != null) sensor.setName(req.getName());
+        if (req.getStatus() != null) sensor.setStatus(req.getStatus());
+        if (req.getLatitude() != 0) sensor.setLatitude(req.getLatitude());
+        if (req.getLongitude() != 0) sensor.setLongitude(req.getLongitude());
+
+        sensor.setRssi(req.getRssi());
+        sensor.setPacketLoss(req.getPacketLoss());
+        sensor.setBattery(req.getBattery());
+        sensor.setTemperature(req.getTemperature());
+        sensor.setMoisture(req.getMoisture());
+        sensor.setLight(req.getLight());
+
+        return ResponseEntity.ok(sensorRepository.save(sensor));
+    }
+
+    // Assign customer / technician to sensor
+    @PutMapping("/{id}/assign")
+    public ResponseEntity<?> assign(@PathVariable String id,
+                                    @RequestBody AssignRequest req) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        if (sensor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Sensor not found", "id", id));
+        }
+
+        // Assign customer
+        if (req.customerId != null) {
+            User customer = userRepository.findById(req.customerId).orElse(null);
+            if (customer == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Customer not found"));
+            }
+            sensor.setCustomer(customer);
+        }
+
+        // Assign technician
+        if (req.technicianId != null) {
+            User technician = userRepository.findById(req.technicianId).orElse(null);
+            if (technician == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Technician not found"));
+            }
+            sensor.setTechnician(technician);
+        }
+
+        return ResponseEntity.ok(sensorRepository.save(sensor));
+    }
+
+    // Delete
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        if (!sensorRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Sensor not found"));
+        }
+        sensorRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Request Body
+
+    // Simple request body for assign API
+    public static class AssignRequest {
+        public UUID customerId;
+        public UUID technicianId;
     }
 }
