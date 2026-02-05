@@ -9,12 +9,29 @@ INSERT INTO user_role (name, description) VALUES
 ('farmer','main user who uses the app to observe crop and harvest growth');
 
 CREATE TABLE farmra_user (
-  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(100) UNIQUE NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  role_id INTEGER REFERENCES user_role(role_id) ON DELETE SET NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  id VARCHAR(32) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
+
+  status VARCHAR(20) NOT NULL,
+  rssi INTEGER,
+  packet_loss INTEGER,
+  battery INTEGER,
+  temperature INTEGER,
+  moisture INTEGER,
+  light INTEGER,
+
+  customer_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
+  technician_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
+
+  saved_status VARCHAR(20),
+  saved_rssi INTEGER,
+  saved_packet_loss INTEGER,
+  saved_battery INTEGER,
+  saved_temperature INTEGER,
+  saved_moisture INTEGER,
+  saved_light INTEGER
 );
 
 CREATE TABLE gateway (
