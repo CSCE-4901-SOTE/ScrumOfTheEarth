@@ -108,9 +108,9 @@
       <!-- Detail Basic Info -->
       <p class="id-line">Sensor ID: {{ selectedSensor.id }}</p>
       <!-- Technician line of farmer -->
-        <p class="tech-line" *ngIf="role === 'farmer'">Technician: James Haden</p>
+        <p class="tech-line" *ngIf="role === 'farmer'">Technician: {{ selectedSensor.technicianName }}</p>
       <!-- Farmer line of technician -->
-        <p class="tech-line" *ngIf="role === 'technician'">Customer: Apple Butter Farmhouse</p>
+        <p class="tech-line" *ngIf="role === 'technician'">Customer: {{ selectedSensor.customerName }}</p>
 
       <p class="coords">
         📍 {{ selectedSensor.latitude }}, {{ selectedSensor.longitude }}
