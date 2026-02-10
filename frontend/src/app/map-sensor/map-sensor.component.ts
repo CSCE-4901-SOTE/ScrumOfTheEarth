@@ -138,7 +138,7 @@ export class MapSensorComponent implements OnInit {
 
   menuOpen = false; 
   toggleMenu() {
-    this.menuOpen = !this.menuOpen;   // ✅ toggle true/false when clicked
+    this.menuOpen = !this.menuOpen;   // toggle true/false when clicked
   }
 
   /* Filters sensor list by search keyword (name or ID) */
@@ -321,18 +321,39 @@ export class MapSensorComponent implements OnInit {
 
   /* Activates the selected sensor */
   activateSelected() {
-    if (!this.selectedSensor) return;
-    this.sensorService.activate(this.selectedSensor);
+    const s = this.selectedSensor;
+    if (!s) return;
 
-    this.refreshSelectedSensorUI();
-    this.updateMarker(this.selectedSensor);
+    this.sensorService.activateSensor(s.id).subscribe({
+      next: (updated) => {
+        // update selected + list
+        this.selectedSensor = updated;
+        const idx = this.sensors.findIndex(x => x.id === updated.id);
+        if (idx !== -1) this.sensors[idx] = updated;
+
+        this.refreshSelectedSensorUI();
+        this.updateMarker(updated);
+      },
+      error: (err) => console.error('activate failed', err)
+    });
   }
 
+  /* Deactivates the selected sensor */
   deactivateSelected() {
-    if (!this.selectedSensor) return;
-    this.sensorService.deactivate(this.selectedSensor);
+    const s = this.selectedSensor;
+    if (!s) return;
 
-    this.refreshSelectedSensorUI();
-    this.updateMarker(this.selectedSensor);
+    this.sensorService.deactivateSensor(s.id).subscribe({
+      next: (updated) => {
+        this.selectedSensor = updated;
+        const idx = this.sensors.findIndex(x => x.id === updated.id);
+        if (idx !== -1) this.sensors[idx] = updated;
+
+        this.refreshSelectedSensorUI();
+        this.updateMarker(updated);
+      },
+      error: (err) => console.error('deactivate failed', err)
+    });
   }
+
 }
