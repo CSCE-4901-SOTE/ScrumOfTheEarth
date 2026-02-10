@@ -67,7 +67,7 @@ type ApiSensor = {
 
 @Injectable({ providedIn: 'root' })
 export class SensorService {
-  private readonly baseUrl = 'http://localhost:8080/api/sensors';
+  private readonly baseUrl = '/api/sensors';
 
   constructor(private http: HttpClient) {}
 
@@ -123,7 +123,7 @@ export class SensorService {
     };
   };
 
-  // ✅ GET sensors from backend
+  // GET sensors from backend
   getSensors(): Observable<Sensor[]> {
     return this.http.get<ApiSensor[]>(this.baseUrl).pipe(
       map(list => list.map(this.mapApiToSensor))
@@ -172,4 +172,15 @@ export class SensorService {
   getSensorsByTechnician(technicianId: string) {
     return this.http.get<Sensor[]>(`http://localhost:8080/api/sensors/technician/${technicianId}`);
   }
+
+  deactivateSensor(id: string) {
+    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/deactivate`, {}).pipe(
+      map(this.mapApiToSensor));
+  }
+
+  activateSensor(id: string) {
+    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/activate`, {}).pipe(
+      map(this.mapApiToSensor));
+  }
+
 }
