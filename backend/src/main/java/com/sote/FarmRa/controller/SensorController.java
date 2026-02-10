@@ -1,4 +1,4 @@
-package com.sote.FarmRa.controller;
+package com.example.backend.controller;
 
 import com.example.backend.entity.Sensor;
 import com.example.backend.entity.User;
@@ -7,7 +7,6 @@ import com.example.backend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class SensorController {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }
 
-    // Post
+    // Post 
 
     // Create a new sensor
     @PostMapping
@@ -83,7 +82,7 @@ public class SensorController {
                 .body(sensorRepository.save(sensor));
     }
 
-    // Put
+    // Put 
 
     // Update basic sensor data
     @PutMapping("/{id}")
@@ -143,7 +142,7 @@ public class SensorController {
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
 
-    // Delete
+    // Delete sensor by id
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
@@ -162,4 +161,74 @@ public class SensorController {
         public UUID customerId;
         public UUID technicianId;
     }
+
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable String id) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        if (sensor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Sensor not found", "id", id));
+        }
+
+        // If already deactivate, do nothing 
+        if ("deactivate".equalsIgnoreCase(sensor.getStatus())) {
+            return ResponseEntity.ok(sensor);
+        }
+
+        // Save current state -> saved_*
+        sensor.setSavedStatus(sensor.getStatus());
+        sensor.setSavedRssi(sensor.getRssi());
+        sensor.setSavedPacketLoss(sensor.getPacketLoss());
+        sensor.setSavedBattery(sensor.getBattery());
+        sensor.setSavedTemperature(sensor.getTemperature());
+        sensor.setSavedMoisture(sensor.getMoisture());
+        sensor.setSavedLight(sensor.getLight());
+
+        // Set to deactivate 
+        sensor.setStatus("deactivate");
+        sensor.setRssi(null);
+        sensor.setPacketLoss(null);
+        sensor.setBattery(null);
+        sensor.setTemperature(null);
+        sensor.setMoisture(null);
+        sensor.setLight(null);
+
+        return ResponseEntity.ok(sensorRepository.save(sensor));
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable String id) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        if (sensor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Sensor not found", "id", id));
+        }
+
+        if (sensor.getSavedStatus() == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "No saved state to restore. Deactivate first."));
+        }
+
+        // Restore from saved_*
+        sensor.setStatus(sensor.getSavedStatus());
+        sensor.setRssi(sensor.getSavedRssi());
+        sensor.setPacketLoss(sensor.getSavedPacketLoss());
+        sensor.setBattery(sensor.getSavedBattery());
+        sensor.setTemperature(sensor.getSavedTemperature());
+        sensor.setMoisture(sensor.getSavedMoisture());
+        sensor.setLight(sensor.getSavedLight());
+
+        // Clear saved state
+        sensor.setSavedStatus(null);
+        sensor.setSavedRssi(null);
+        sensor.setSavedPacketLoss(null);
+        sensor.setSavedBattery(null);
+        sensor.setSavedTemperature(null);
+        sensor.setSavedMoisture(null);
+        sensor.setSavedLight(null);
+
+        return ResponseEntity.ok(sensorRepository.save(sensor));
+    }
+
+
 }
