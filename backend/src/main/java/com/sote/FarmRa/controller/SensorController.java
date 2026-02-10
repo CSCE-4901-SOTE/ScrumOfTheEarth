@@ -1,9 +1,9 @@
-package com.example.backend.controller;
+package com.sote.FarmRa.controller;
 
-import com.example.backend.entity.Sensor;
-import com.example.backend.entity.User;
-import com.example.backend.repository.SensorRepository;
-import com.example.backend.repository.UserRepository;
+import com.sote.FarmRa.entity.Sensor;
+import com.sote.FarmRa.entity.User;
+import com.sote.FarmRa.repository.SensorRepository;
+import com.sote.FarmRa.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

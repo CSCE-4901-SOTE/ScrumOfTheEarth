@@ -12,7 +12,7 @@ import com.sote.FarmRa.model.Gateway;
 import com.sote.FarmRa.model.HardwareStatus;
 import com.sote.FarmRa.model.SensorNode;
 import com.sote.FarmRa.model.SensorReading;
-import com.sote.FarmRa.model.User;
+import com.sote.FarmRa.entity.User;
 import com.sote.FarmRa.model.dto.UploadSensorDto;
 import com.sote.FarmRa.model.dto.UploadSensorReadingDto;
 import com.sote.FarmRa.model.mapper.SensorMapper;
