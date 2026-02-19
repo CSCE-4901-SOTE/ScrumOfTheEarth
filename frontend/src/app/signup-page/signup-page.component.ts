@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {  HttpClient, HttpClientModule } from '@angular/common/http';
+import { SupabaseService } from '../services/supabase.service';
 
 @Component({
   selector: 'app-signup-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './signup-page.component.html',
   styleUrls: ['./signup-page.component.css']
 })
@@ -15,6 +15,8 @@ export class SignupPageComponent {
   email = '';
   phone = '';
   role = '';
+  firstName = '';
+  lastName = '';
   password = '';
   confirmPassword = '';
   showSuccessMessage = false;
@@ -23,15 +25,19 @@ export class SignupPageComponent {
   emailError = '';
   phoneError = '';
   roleError = '';
+  firstNameError = '';
+  lastNameError = '';
   passwordError = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private supabase: SupabaseService, private router: Router) {}
 
-  signup() {
+  async signup() {
     // Reset old errors
     this.emailError = '';
     this.phoneError = '';
     this.roleError = '';
+    this.firstNameError = '';
+    this.lastNameError = '';
     this.passwordError = '';
 
     // Email validation
@@ -50,6 +56,16 @@ export class SignupPageComponent {
       this.roleError = 'Please select your role.';
     }
 
+    // First name validation
+    if (!this.firstName.trim()) {
+      this.firstNameError = 'First name is required.';
+    }
+
+    // Last name validation
+    if (!this.lastName.trim()) {
+      this.lastNameError = 'Last name is required.';
+    }
+
     // Password validation
     const strongPasswordPattern =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -60,28 +76,51 @@ export class SignupPageComponent {
     }
 
     // Stop submission if any error exists
-    if (this.emailError || this.phoneError || this.roleError || this.passwordError) {
+    if (this.emailError || this.phoneError || this.roleError || this.firstNameError || this.lastNameError || this.passwordError) {
       return;
     }
 
-    // NEW: send data to backend
-    const userData = {
-      email: this.email,
-      phone: this.phone,
-      passwordHash: this.password,
-      role: { name: this.role }  // backend reads "role.name"
-    };
+    // NEW: Use Supabase Auth for signup
+    try {
+      const { data, error } = await this.supabase.signUp(this.email, this.password);
+      
+      if (error) {
+        this.emailError = error.message || 'Signup failed.';
+        return;
+      }
 
-    this.http.post('http://localhost:8080/api/signup', userData)
-      .subscribe({
-        next: (res) => {
-          this.showSuccessMessage = true;
-          alert('✅ Account created successfully!');
-          setTimeout(() =>this.router.navigate(['/login-page']),500);
-        },
-        error: (err) => {
-          alert('❌ Signup failed: ' + err.error);
+      // If signup successful, also create user profile in farmra_user table
+      if (data.user) {
+        // Small delay to ensure auth context is established
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Get role ID from role name
+        const roleId = this.role === 'farmer' ? 2 : 1; // 1=technician, 2=farmer based on our seed data
+        
+        const { error: profileError } = await this.supabase.client
+          .from('farmra_user')
+          .insert({
+            user_id: data.user.id,
+            email: this.email,
+            first_name: this.firstName.trim(),
+            last_name: this.lastName.trim(),
+            phone: this.phone,
+            role_id: roleId
+          });
+
+        if (profileError) {
+          console.error('Profile creation failed:', profileError);
+          this.emailError = 'Account created but profile setup failed. Please contact support.';
+          return;
         }
-      });
+      }
+
+      this.showSuccessMessage = true;
+      console.log('✅ Account created successfully! Please check your email to confirm your account.');
+      setTimeout(() => this.router.navigate(['/login-page']), 500);
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      this.emailError = err.message || 'Signup failed. Please try again.';
+    }
     }
 }

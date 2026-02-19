@@ -28,6 +28,34 @@
       />
       <p *ngIf="emailError" class="errorText">{{ emailError }}</p>
 
+      <!-- label and input for first name -->
+      <label for="firstName"><b>First Name</b></label>
+      <input
+        type="text"
+        id="firstName"
+        name="firstName"
+        [(ngModel)]="firstName"
+        placeholder="Enter your first name"
+        required
+        [ngClass]="{'input-error': firstNameError}"
+        (focus)="firstNameError = ''"
+      />
+      <p *ngIf="firstNameError" class="errorText">{{ firstNameError }}</p>
+
+      <!-- label and input for last name -->
+      <label for="lastName"><b>Last Name</b></label>
+      <input
+        type="text"
+        id="lastName"
+        name="lastName"
+        [(ngModel)]="lastName"
+        placeholder="Enter your last name"
+        required
+        [ngClass]="{'input-error': lastNameError}"
+        (focus)="lastNameError = ''"
+      />
+      <p *ngIf="lastNameError" class="errorText">{{ lastNameError }}</p>
+
       <!-- label and input for phone number -->
       <label for="phone"><b>Phone Number</b></label>
       <input

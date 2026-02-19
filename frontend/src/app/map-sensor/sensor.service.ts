@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { SupabaseService } from '../services/supabase.service';
 
 export type SensorStatus = 'online' | 'weak' | 'offline' | 'deactivate';
 
@@ -67,9 +66,7 @@ type ApiSensor = {
 
 @Injectable({ providedIn: 'root' })
 export class SensorService {
-  private readonly baseUrl = 'http://localhost:8080/api/sensors';
-
-  constructor(private http: HttpClient) {}
+  constructor(private supabase: SupabaseService) {}
 
   /* Converts RSSI (dBm) into a 1–5 signal strength level */
   convertDbmToLevel(dBm: number): number {
@@ -123,11 +120,17 @@ export class SensorService {
     };
   };
 
-  // GET sensors from backend
-  getSensors(): Observable<Sensor[]> {
-    return this.http.get<ApiSensor[]>(this.baseUrl).pipe(
-      map(list => list.map(this.mapApiToSensor))
-    );
+  // GET sensors from Supabase
+  async getSensors(): Promise<Sensor[]> {
+    try {
+      const { data, error } = await this.supabase.getSensors();
+      if (error) throw error;
+      const list = (data ?? []) as any[];
+      return list.map(this.mapApiToSensor);
+    } catch (err) {
+      console.error('Supabase not available during SSR:', err);
+      return []; // Return empty array during SSR
+    }
   }
 
   activate(sensor: Sensor): void {
@@ -165,26 +168,48 @@ export class SensorService {
     sensor.battery = 0;
   }
 
-  getSensorsByCustomer(customerId: string) {
-    return this.http
-    .get<ApiSensor[]>(`${this.baseUrl}/customer/${customerId}`)
-    .pipe(map(list => (list ?? []).map(this.mapApiToSensor)));
+  async getSensorsByCustomer(customerId: string) {
+    try {
+      const { data, error } = await this.supabase.client.from('sensor_node').select('*').eq('customer_id', customerId);
+      if (error) throw error;
+      return (data ?? []).map(this.mapApiToSensor);
+    } catch (err) {
+      console.error('Supabase not available during SSR:', err);
+      return [];
+    }
   }
 
-  getSensorsByTechnician(technicianId: string) {
-    return this.http
-    .get<ApiSensor[]>(`${this.baseUrl}/technician/${technicianId}`)
-    .pipe(map(list => (list ?? []).map(this.mapApiToSensor)));
+  async getSensorsByTechnician(technicianId: string) {
+    try {
+      const { data, error } = await this.supabase.client.from('sensor_node').select('*').eq('technician_id', technicianId);
+      if (error) throw error;
+      return (data ?? []).map(this.mapApiToSensor);
+    } catch (err) {
+      console.error('Supabase not available during SSR:', err);
+      return [];
+    }
   }
 
-  deactivateSensor(id: string) {
-    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/deactivate`, {}).pipe(
-      map(this.mapApiToSensor));
+  async deactivateSensor(id: string) {
+    try {
+      const { data, error } = await this.supabase.client.from('sensor_node').update({ status: 'deactivate' }).eq('id', id).select().single();
+      if (error) throw error;
+      return this.mapApiToSensor(data as ApiSensor);
+    } catch (err) {
+      console.error('Supabase not available during SSR:', err);
+      throw err;
+    }
   }
 
-  activateSensor(id: string) {
-    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/activate`, {}).pipe(
-      map(this.mapApiToSensor));
+  async activateSensor(id: string) {
+    try {
+      const { data, error } = await this.supabase.client.from('sensor_node').update({ status: 'online' }).eq('id', id).select().single();
+      if (error) throw error;
+      return this.mapApiToSensor(data as ApiSensor);
+    } catch (err) {
+      console.error('Supabase not available during SSR:', err);
+      throw err;
+    }
   }
 
 }

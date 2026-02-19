@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { SupabaseService } from './services/supabase.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +22,11 @@ export class AppComponent {
     this.menuOpen = !this.menuOpen;
   }
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private supabase: SupabaseService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
@@ -31,9 +37,9 @@ export class AppComponent {
           currentUrl.includes('/signup-page')
         );
 
-        if (typeof window !== 'undefined') {
-          this.role = (sessionStorage.getItem('userRole') || '').toLowerCase();
-          const userEmail = sessionStorage.getItem('userEmail') || '';
+        if (isPlatformBrowser(this.platformId)) {
+          this.role = (localStorage.getItem('role') || '').toLowerCase();
+          const userEmail = localStorage.getItem('userEmail') || '';
           // display local part of email, capitalized
           if (userEmail) {
             const local = userEmail.split('@')[0];
@@ -51,5 +57,21 @@ export class AppComponent {
 
   isTechnician() {
     return this.role === 'technician';
+  }
+
+  async logout() {
+    try {
+      await this.supabase.signOut();
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userEmail');
+      }
+      this.router.navigate(['/login-page']);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still navigate to login even if logout fails
+      this.router.navigate(['/login-page']);
+    }
   }
 }

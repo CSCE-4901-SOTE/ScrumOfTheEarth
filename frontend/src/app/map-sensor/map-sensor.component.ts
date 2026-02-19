@@ -161,7 +161,7 @@ export class MapSensorComponent implements OnInit {
   }
 
   /* Initializes map after component loads */
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const role = this.safeGet('role') as 'farmer' | 'technician' | null;
@@ -174,22 +174,19 @@ export class MapSensorComponent implements OnInit {
 
     this.role = role;
 
-    const req$ =
-      role === 'farmer'
-        ? this.sensorService.getSensorsByCustomer(userId)
-        : this.sensorService.getSensorsByTechnician(userId);
+    try {
+      const sensors =
+        role === 'farmer'
+          ? await this.sensorService.getSensorsByCustomer(userId)
+          : await this.sensorService.getSensorsByTechnician(userId);
 
-    req$.subscribe({
-      next: (sensors) => {
-        this.sensors = sensors ?? [];
-        this.initMap();
-      },
-      error: (err) => {
-        console.error(err);
-        this.sensors = [];
-        this.initMap();
-      }
-    });
+      this.sensors = sensors ?? [];
+      this.initMap();
+    } catch (err) {
+      console.error('Failed to load sensors:', err);
+      this.sensors = [];
+      this.initMap();
+    }
   }
 
 
@@ -320,40 +317,40 @@ export class MapSensorComponent implements OnInit {
   }
 
   /* Activates the selected sensor */
-  activateSelected() {
+  async activateSelected() {
     const s = this.selectedSensor;
     if (!s) return;
 
-    this.sensorService.activateSensor(s.id).subscribe({
-      next: (updated) => {
-        // update selected + list
-        this.selectedSensor = updated;
-        const idx = this.sensors.findIndex(x => x.id === updated.id);
-        if (idx !== -1) this.sensors[idx] = updated;
+    try {
+      const updated = await this.sensorService.activateSensor(s.id);
+      // update selected + list
+      this.selectedSensor = updated;
+      const idx = this.sensors.findIndex(x => x.id === updated.id);
+      if (idx !== -1) this.sensors[idx] = updated;
 
-        this.refreshSelectedSensorUI();
-        this.updateMarker(updated);
-      },
-      error: (err) => console.error('activate failed', err)
-    });
+      this.refreshSelectedSensorUI();
+      this.updateMarker(updated);
+    } catch (err) {
+      console.error('activate failed', err);
+    }
   }
 
   /* Deactivates the selected sensor */
-  deactivateSelected() {
+  async deactivateSelected() {
     const s = this.selectedSensor;
     if (!s) return;
 
-    this.sensorService.deactivateSensor(s.id).subscribe({
-      next: (updated) => {
-        this.selectedSensor = updated;
-        const idx = this.sensors.findIndex(x => x.id === updated.id);
-        if (idx !== -1) this.sensors[idx] = updated;
+    try {
+      const updated = await this.sensorService.deactivateSensor(s.id);
+      this.selectedSensor = updated;
+      const idx = this.sensors.findIndex(x => x.id === updated.id);
+      if (idx !== -1) this.sensors[idx] = updated;
 
-        this.refreshSelectedSensorUI();
-        this.updateMarker(updated);
-      },
-      error: (err) => console.error('deactivate failed', err)
-    });
+      this.refreshSelectedSensorUI();
+      this.updateMarker(updated);
+    } catch (err) {
+      console.error('deactivate failed', err);
+    }
   }
 
 }

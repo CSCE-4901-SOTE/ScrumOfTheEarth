@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "maplibre-gl": "^5.11.0"
+  },
+  "devDependencies": {
+    "supabase": "^2.76.9"
   }
 }
