@@ -1,54 +1,270 @@
-<div *ngIf="isFarmer()"> 
+<!-- navbar -->
+<header class="navbar">
+  <!-- logo -->
+  <div class="navbar-left">
+    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo" />
+  </div>
 
+  <!-- navigation -->
+  <div class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
+      <a routerLink="/alert" routerLinkActive="active">Alert</a>
+    </nav>
+  </div>
+
+  <!-- menu button -->
+  <button class="menu-button" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- dropdown menu -->
+  <div class="dropdown-menu" *ngIf="menuOpen">
+    <div class="dropdown-header">
+      <div class="user-icon">👤</div>
+      <div class="user-info">
+        <strong>Name</strong><br />
+        <small>RBAC</small>
+      </div>
+    </div>
+
+    <hr />
+
+    <a href="#">Edit Profile</a>
+    <a href="#">Contact</a>
+    <a href="#">Report</a>
+    <a href="#">Sign Out</a>
+  </div>
+</header>
+
+<div class="dashboard-updated">
+  Last updated: {{ lastUpdated | date:'shortTime' }}
+</div>
+
+<!-- farmer view -->
+<ng-container *ngIf="isFarmer(); else technicianView">
+  <!-- summary boxes -->
   <div class="box-container">
-    <div class="data-box"><h2>Temperature</h2></div>
-    <div class="data-box"><h2>Soil Moisture</h2></div>
+    <!-- active -->
+    <div class="data-box">
+      <h2>🟢 Active Nodes</h2>
+      <p class="metric-value">{{ summary.activeNodes }}</p>
 
+      <div
+        class="metric-change"
+        [ngClass]="
+          summary.activeDeltaToday > 0 ? 'up' :
+          summary.activeDeltaToday < 0 ? 'down' : 'neutral'
+        "
+      >
+        <ng-container *ngIf="summary.activeDeltaToday !== 0; else activeNoChange">
+          {{ summary.activeDeltaToday > 0 ? '▲' : '▼' }}
+          {{ summary.activeDeltaToday > 0 ? '+' : '' }}{{ summary.activeDeltaToday }} today
+        </ng-container>
+
+        <ng-template #activeNoChange>
+          — no change
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- deactivated -->
+    <div class="data-box">
+      <h2>🔴 Deactivated Nodes</h2>
+      <p class="metric-value">{{ summary.deactivatedNodes }}</p>
+
+      <div
+        class="metric-change"
+        [ngClass]="
+          summary.deactivatedDeltaToday > 0 ? 'up' :
+          summary.deactivatedDeltaToday < 0 ? 'down' : 'neutral'
+        "
+      >
+        <ng-container *ngIf="summary.deactivatedDeltaToday !== 0; else deactNoChange">
+          {{ summary.deactivatedDeltaToday > 0 ? '▲' : '▼' }}
+          {{ summary.deactivatedDeltaToday > 0 ? '+' : '' }}{{ summary.deactivatedDeltaToday }} today
+        </ng-container>
+
+        <ng-template #deactNoChange>
+          — no change
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- WEATHER -->
     <div class="data-box weather-box">
+      <h2>🌤 Weather</h2>
+
       <div *ngIf="weatherData; else loading" class="weather-content">
         <div class="weather-header">
-          <p class="weather-location">{{ weatherData.name }}</p>
-          <p class="weather-temp">{{ weatherData.main.temp | number:'1.0-0' }}°F</p>
-          <p class="weather-desc">{{ weatherData.weather[0].description | titlecase }}</p>
-        </div>
+          <!-- LEFT SIDE -->
+          <div class="weather-left">
+            <p class="weather-location">{{ weatherData.name }}</p>
 
-        <div class="weather-footer">
-          <div class="humidity-section">
-            <span>{{ weatherData.main.humidity }}%</span>
-            <div class="humidity-circle">
-              <div class="humidity-fill" [style.height.%]="weatherData.main.humidity"></div>
+            <p class="weather-temp">
+              {{ weatherData.main.temp | number : "1.0-0" }}°F
+            </p>
+
+            <!-- rain bottom-left -->
+            <div class="rain-row" *ngIf="rainChance !== null">
+              <div class="rain-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.7"
+                >
+                  <path d="M12 3a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9z" />
+                  <path d="M12 12v6a2 2 0 0 0 4 0" />
+                </svg>
+              </div>
+
+              <div class="rain-text">
+                <span class="rain-value">{{ rainChance }}%</span>
+                <span class="rain-label">Chance of rain</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE -->
+          <div class="weather-right">
+            <div class="weather-emoji">{{ getWeatherEmoji() }}</div>
+
+            <p class="weather-desc">
+              {{ weatherData.weather[0].description | titlecase }}
+            </p>
+
+            <!-- humidity bottom-right -->
+            <div class="weather-footer">
+              <div class="humidity-section">
+                <div class="humidity-text">
+                  <span class="humidity-value">
+                    {{ weatherData.main.humidity }}%
+                  </span>
+                  <span class="humidity-label">Humidity</span>
+                </div>
+
+                <div class="humidity-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 3C12 3 6 10 6 14a6 6 0 0012 0c0-4-6-11-6-11z"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <ng-template #loading>
         <p class="loading-text">Loading weather...</p>
       </ng-template>
     </div>
 
-    <div class="data-box"><h2>Battery Level</h2></div>
+    <!-- alerts -->
+    <div class="data-box">
+      <h2>⚠️ Unread Alerts</h2>
+      <p class="metric-value">{{ summary.unreadAlerts }}</p>
+      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+    </div>
   </div>
 
+  <!-- lower section -->
   <div class="lower-section">
-    <div class="map-box">
-      <div id="sensor-map"></div>
+    <div class="map-column">
+      <div class="map-box">
+        <div #mapContainer id="sensor-map"></div>
+      </div>
+      <!-- Total nodes line -->
+      <div class="total-nodes">
+        Total number of nodes: {{ sensorInventory.length }}
+      </div>
     </div>
 
     <div class="info-section">
       <div class="info-box">
-        <h2>Selected Node Information</h2>
+        <h2>Standard Threshold Values</h2>
+
         <table class="info-table">
           <tr>
             <th>Metric</th>
-            <th>Value</th>
-            <th>Threshold</th>
-            <th>Status</th>
+            <th>Unit</th>
+            <th>Minimum Threshold</th>
+            <th>Maximum Threshold</th>
+          </tr>
+          <tr>
+            <td>Temperature</td>
+            <td>°F</td>
+            <td>50</td>
+            <td>95</td>
+          </tr>
+          <tr>
+            <td>Soil moisture</td>
+            <td>%</td>
+            <td>20</td>
+            <td>60</td>
+          </tr>
+          <tr>
+            <td>Light</td>
+            <td>lux</td>
+            <td>200</td>
+            <td>10,000</td>
+          </tr>
+          <tr>
+            <td>Battery</td>
+            <td>%</td>
+            <td>20</td>
+            <td>100</td>
           </tr>
         </table>
       </div>
 
       <div class="additional-box">
-        <h2>Additional Information</h2>
+        <h2>Sensor Inventory</h2>
+
+        <div class="sensor-table-wrapper">
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Sensor</th>
+                <th>Status</th>
+                <th>Last Seen</th>
+                <th>Battery</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let s of sensorInventory">
+                <td>{{ s.id }}</td>
+
+                <td>
+                  <span class="status-cell">
+                    <span class="status-dot" [ngClass]="getSensorStatus(s)"></span>
+                    <span class="status-text">{{ getSensorStatusLabel(s) }}</span>
+                  </span>
+                </td>
+
+                <td>{{ s.lastSeen ? (s.lastSeen | date:'shortTime') : '—' }}</td>
+                <td>{{ s.battery !== null ? (s.battery + '%') : '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -56,44 +272,63 @@
   <div class="recent-trends-box">
     <h2>Recent Trends</h2>
   </div>
+</ng-container>
 
-</div>
-
-<div *ngIf="isTechnician()" class="tech-dashboard">
-
+<!-- technician view -->
+<ng-template #technicianView>
   <div class="box-container">
-    <div class="data-box"><h2>Nodes Online</h2></div>
-    <div class="data-box"><h2>Nodes Offline</h2></div>
-    <div class="data-box"><h2>Low Battery</h2></div>
+    <div class="data-box"><h2>Online Nodes</h2></div>
+    <div class="data-box"><h2>Offline Nodes</h2></div>
+    <div class="data-box"><h2>Low-battery Nodes</h2></div>
     <div class="data-box"><h2>Unread Alerts</h2></div>
   </div>
 
   <div class="lower-section">
     <div class="map-box">
-      <div id="sensor-map"></div>
+      <div #mapContainer id="sensor-map"></div>
     </div>
 
     <div class="info-section">
       <div class="info-box">
-        <h2>Selected Node Information</h2>
+        <h2>Standard Threshold Values</h2>
+
         <table class="info-table">
           <tr>
             <th>Metric</th>
-            <th>Value</th>
-            <th>Threshold</th>
-            <th>Status</th>
+            <th>Unit</th>
+            <th>Minimum Threshold</th>
+            <th>Maximum Threshold</th>
+          </tr>
+          <tr>
+            <td>Signal strength</td>
+            <td>dBm</td>
+            <td>-110</td>
+            <td>-80</td>
+          </tr>
+          <tr>
+            <td>Packet loss</td>
+            <td>%</td>
+            <td>0</td>
+            <td>40</td>
+          </tr>
+          <tr>
+            <td>Battery</td>
+            <td>%</td>
+            <td>20</td>
+            <td>100</td>
           </tr>
         </table>
       </div>
 
       <div class="additional-box">
-        <h2>Additional Information</h2>
+        <h2>Sensor Inventory</h2>
+        <table class="info-table">
+          <tr>
+            <th>Customer</th>
+            <th>Number of Nodes</th>
+          </tr>
+        </table>
       </div>
     </div>
   </div>
-
-  <div class="recent-trends-box">
-    <h2>Node Status</h2>
-  </div>
-
-</div>
+</ng-template>
