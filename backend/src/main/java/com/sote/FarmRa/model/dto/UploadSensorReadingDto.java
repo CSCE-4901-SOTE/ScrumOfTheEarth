@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UploadSensorReadingDto {
-    private long nodeId;
+    private String nodeId;
     private Instant readingTimestamp;
     private float soilMoisture;
     private float soilTemperature;
-    private float lightLevel;
+    private boolean light;
 }

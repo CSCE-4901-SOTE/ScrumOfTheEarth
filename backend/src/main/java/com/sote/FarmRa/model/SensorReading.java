@@ -20,17 +20,17 @@ import lombok.Setter;
 public class SensorReading {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private String id;
     
     @ManyToOne
     @JoinColumn(name="node_id")
     @Setter
     private SensorNode node;
     
-    private Instant readingTimestamp;
+    private Instant createdAt;
 
-    private float soilMoisture;
-    private float soilTemperature;
-    private float lightLevel;
-    private float batteryLevel;
+    private float moisture;
+    private float temperature;
+    private boolean light;
+    //private float batteryLevel;
 }

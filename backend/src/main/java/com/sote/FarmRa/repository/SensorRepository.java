@@ -1,19 +1,21 @@
 package com.sote.FarmRa.repository;
 
-import com.example.backend.entity.Sensor;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.sote.FarmRa.model.HardwareStatus;
+import com.sote.FarmRa.model.SensorNode;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface SensorRepository extends JpaRepository<Sensor, String> {
+public interface SensorRepository extends JpaRepository<SensorNode, String> {
 
     // Get sensors owned by a specific customer (farmer)
-    List<Sensor> findByCustomer_UserId(UUID userId);
+    List<SensorNode> findByCustomer_UserId(UUID userId);
 
     // Get sensors assigned to a specific technician
-    List<Sensor> findByTechnician_UserId(UUID userId);
+    List<SensorNode> findByTechnician_UserId(UUID userId);
 
     // Filter sensors by status (online/weak/offline/deactivate)
-    List<Sensor> findByStatus(String status);
+    List<SensorNode> findByStatus(HardwareStatus status);
 }

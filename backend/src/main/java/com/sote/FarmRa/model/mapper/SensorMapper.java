@@ -16,10 +16,10 @@ public class SensorMapper {
 
     public static SensorReading mapSensorReading(UploadSensorReadingDto uploadSensorReading) {
         return SensorReading.builder()
-            .readingTimestamp(uploadSensorReading.getReadingTimestamp())
-            .soilMoisture(uploadSensorReading.getSoilMoisture())
-            .soilTemperature(uploadSensorReading.getSoilTemperature())
-            .lightLevel(uploadSensorReading.getLightLevel())
+            .createdAt(uploadSensorReading.getReadingTimestamp())
+            .moisture(uploadSensorReading.getSoilMoisture())
+            .temperature(uploadSensorReading.getSoilTemperature())
+            .light(uploadSensorReading.isLight())
             .build();
     }
 }

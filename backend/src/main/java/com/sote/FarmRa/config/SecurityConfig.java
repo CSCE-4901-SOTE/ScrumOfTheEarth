@@ -1,4 +1,4 @@
-package com.sote.FarmRa.entity;
+package com.sote.FarmRa.config;
 
 import java.util.List;
 

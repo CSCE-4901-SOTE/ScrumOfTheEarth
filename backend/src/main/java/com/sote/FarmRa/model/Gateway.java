@@ -3,6 +3,8 @@ package com.sote.FarmRa.model;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,6 +23,7 @@ public class Gateway {
     @OneToMany(mappedBy = "gateway")
     private List<SensorNode> sensorNodes;
 
+    @Enumerated(EnumType.STRING)
     private HardwareStatus gatewayStatus;
 
     private String gatewayName;

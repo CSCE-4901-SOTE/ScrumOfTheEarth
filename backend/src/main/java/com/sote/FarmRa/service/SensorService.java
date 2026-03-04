@@ -1,6 +1,7 @@
 package com.sote.FarmRa.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -41,7 +42,7 @@ public class SensorService {
         Gateway gateway = gatewayRepository.findById(sensorNodeDto.getGatewayId()).orElseThrow(NotFoundException::new);
         SensorNode sensorNode = SensorMapper.mapSensorNode(sensorNodeDto);
         sensorNode.setGateway(gateway);
-        sensorNode.setSensorStatus(HardwareStatus.ONLINE);
+        sensorNode.setStatus(HardwareStatus.ONLINE);
         sensorRepository.save(sensorNode);
     }
 
@@ -58,7 +59,7 @@ public class SensorService {
     }
 
     public SensorNode create(SensorNode sensor) {
-        if (sensor.getId() == null || sensor.getId().isBlank()) {
+        if (sensor.getId() == null || Objects.isNull(sensor.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sensor id is required");
         }
         if (sensorRepository.existsById(sensor.getId())) {
@@ -70,15 +71,12 @@ public class SensorService {
     public SensorNode update(String id, SensorNode patch) {
         SensorNode s = getById(id);
         if (patch.getName() != null) s.setName(patch.getName());
-        if (patch.getSensorStatus() != null) s.setSensorStatus(patch.getSensorStatus());
+        if (patch.getStatus() != null) s.setStatus(patch.getStatus());
         s.setLatitude(patch.getLatitude());
         s.setLongitude(patch.getLongitude());
         if (patch.getRssi() != null) s.setRssi(patch.getRssi());
         if (patch.getPacketLoss() != null) s.setPacketLoss(patch.getPacketLoss());
         if (patch.getBattery() != null) s.setBattery(patch.getBattery());
-        if (patch.getTemperature() != null) s.setTemperature(patch.getTemperature());
-        if (patch.getMoisture() != null) s.setMoisture(patch.getMoisture());
-        if (patch.getLight() != null) s.setLight(patch.getLight());
         return sensorRepository.save(s);
     }
 

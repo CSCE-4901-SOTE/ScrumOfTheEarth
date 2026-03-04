@@ -1,9 +1,10 @@
-package com.example.backend.controller;
+package com.sote.FarmRa.controller;
 
-import com.example.backend.entity.Sensor;
-import com.example.backend.entity.User;
-import com.example.backend.repository.SensorRepository;
-import com.example.backend.repository.UserRepository;
+import com.sote.FarmRa.model.HardwareStatus;
+import com.sote.FarmRa.model.SensorNode;
+import com.sote.FarmRa.model.User;
+import com.sote.FarmRa.repository.SensorRepository;
+import com.sote.FarmRa.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +27,9 @@ public class SensorController {
         this.userRepository = userRepository;
     }
 
-    // Get
-
     // Get all sensors
     @GetMapping
-    public List<Sensor> getAll() {
+    public List<SensorNode> getAll() {
         return sensorRepository.findAll();
     }
 
@@ -47,19 +46,19 @@ public class SensorController {
 
     // Get sensors by status
     @GetMapping("/status/{status}")
-    public List<Sensor> getByStatus(@PathVariable String status) {
+    public List<SensorNode> getByStatus(@PathVariable HardwareStatus status) {
         return sensorRepository.findByStatus(status);
     }
 
     // Get sensors by customer (farmer)
     @GetMapping("/customer/{customerId}")
-    public List<Sensor> getByCustomer(@PathVariable UUID customerId) {
+    public List<SensorNode> getByCustomer(@PathVariable UUID customerId) {
         return sensorRepository.findByCustomer_UserId(customerId);
     }
 
     // Get sensors by technician
     @GetMapping("/technician/{technicianId}")
-    public List<Sensor> getByTechnician(@PathVariable UUID technicianId) {
+    public List<SensorNode> getByTechnician(@PathVariable UUID technicianId) {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }
 
@@ -67,8 +66,8 @@ public class SensorController {
 
     // Create a new sensor
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Sensor sensor) {
-        if (sensor.getId() == null || sensor.getId().isBlank()) {
+    public ResponseEntity<?> create(@RequestBody SensorNode sensor) {
+        if (sensor.getId() == null || sensor.getId() == null) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Sensor id is required"));
         }
@@ -87,8 +86,8 @@ public class SensorController {
     // Update basic sensor data
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-                                    @RequestBody Sensor req) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
+                                    @RequestBody SensorNode req) {
+        SensorNode sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
@@ -102,9 +101,6 @@ public class SensorController {
         sensor.setRssi(req.getRssi());
         sensor.setPacketLoss(req.getPacketLoss());
         sensor.setBattery(req.getBattery());
-        sensor.setTemperature(req.getTemperature());
-        sensor.setMoisture(req.getMoisture());
-        sensor.setLight(req.getLight());
 
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
@@ -113,7 +109,7 @@ public class SensorController {
     @PutMapping("/{id}/assign")
     public ResponseEntity<?> assign(@PathVariable String id,
                                     @RequestBody AssignRequest req) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        SensorNode sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
@@ -164,41 +160,35 @@ public class SensorController {
 
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivate(@PathVariable String id) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        SensorNode sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
         }
 
         // If already deactivate, do nothing 
-        if ("deactivate".equalsIgnoreCase(sensor.getStatus())) {
+        if (sensor.getStatus() == HardwareStatus.DEACTIVATED) {
             return ResponseEntity.ok(sensor);
         }
 
         // Save current state -> saved_*
-        sensor.setSavedStatus(sensor.getStatus());
+        sensor.setStatus(sensor.getStatus());
         sensor.setSavedRssi(sensor.getRssi());
         sensor.setSavedPacketLoss(sensor.getPacketLoss());
         sensor.setSavedBattery(sensor.getBattery());
-        sensor.setSavedTemperature(sensor.getTemperature());
-        sensor.setSavedMoisture(sensor.getMoisture());
-        sensor.setSavedLight(sensor.getLight());
 
         // Set to deactivate 
-        sensor.setStatus("deactivate");
+        sensor.setStatus(HardwareStatus.DEACTIVATED);
         sensor.setRssi(null);
         sensor.setPacketLoss(null);
         sensor.setBattery(null);
-        sensor.setTemperature(null);
-        sensor.setMoisture(null);
-        sensor.setLight(null);
 
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
 
     @PutMapping("/{id}/activate")
     public ResponseEntity<?> activate(@PathVariable String id) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
+        SensorNode sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
@@ -214,18 +204,11 @@ public class SensorController {
         sensor.setRssi(sensor.getSavedRssi());
         sensor.setPacketLoss(sensor.getSavedPacketLoss());
         sensor.setBattery(sensor.getSavedBattery());
-        sensor.setTemperature(sensor.getSavedTemperature());
-        sensor.setMoisture(sensor.getSavedMoisture());
-        sensor.setLight(sensor.getSavedLight());
-
         // Clear saved state
         sensor.setSavedStatus(null);
         sensor.setSavedRssi(null);
         sensor.setSavedPacketLoss(null);
         sensor.setSavedBattery(null);
-        sensor.setSavedTemperature(null);
-        sensor.setSavedMoisture(null);
-        sensor.setSavedLight(null);
 
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
