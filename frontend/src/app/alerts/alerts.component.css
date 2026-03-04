@@ -1,0 +1,146 @@
+.alerts-page {
+  min-height: 100vh;
+  padding: 28px 16px 60px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.alerts-header {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 18px;
+}
+
+.alerts-icon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+}
+
+.alerts-icon svg {
+  width: 72px;
+  height: 72px;
+}
+
+.tri-fill {
+  fill: #f5c542; /* warning yellow */
+}
+
+.tri-stroke {
+  fill: none;
+  stroke: #111;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.tri-mark {
+  fill: #111;
+}
+
+/* pill */
+.unread-pill {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 18px 26px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+}
+
+.unread-count {
+  font-weight: 700;
+}
+
+/* list container*/
+.alerts-list {
+  width: min(980px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 8px;
+}
+
+/*card*/
+.alert-card {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 22px 26px 18px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* title and divider */
+.alert-title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.alert-divider {
+  height: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  margin: 10px 0 14px;
+}
+
+/* body text */
+.alert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alert-line {
+  font-size: 16px;
+  color: #222;
+}
+
+.alert-sensor {
+  font-weight: 500;
+}
+
+.alert-message {
+  font-weight: 400;
+}
+
+.alert-meta {
+  margin-top: 14px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.read-tag {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.alert-card.read {
+  opacity: 0.28;
+  filter: grayscale(30%);
+}
+
+@media (max-width: 520px) {
+  .alerts-header {
+    grid-template-columns: 62px 1fr;
+    gap: 12px;
+  }
+
+  .alerts-icon,
+  .alerts-icon svg {
+    width: 56px;
+    height: 56px;
+  }
+
+  .alert-title {
+    font-size: 28px;
+  }
+}

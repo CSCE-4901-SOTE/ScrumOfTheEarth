@@ -1,1 +1,51 @@
-<p>alerts works!</p>
+<div class="alerts-page">
+  <!-- header row -->
+  <div class="alerts-header">
+    <div class="alerts-icon" aria-hidden="true">
+      <!-- warning triangle -->
+      <svg viewBox="0 0 64 64">
+        <path d="M32 6 L60 56 H4 Z" class="tri-fill"></path>
+        <path d="M32 6 L60 56 H4 Z" class="tri-stroke"></path>
+        <rect x="30" y="22" width="4" height="18" rx="2" class="tri-mark"></rect>
+        <circle cx="32" cy="46.5" r="2.8" class="tri-mark"></circle>
+      </svg>
+    </div>
+
+    <div class="unread-pill">
+      You have <span class="unread-count">{{ unreadCount }}</span> unread alerts
+    </div>
+  </div>
+
+  <!-- list -->
+  <div class="alerts-list">
+    <div
+      class="alert-card"
+      *ngFor="let a of alerts"
+      [class.read]="a.read"
+      (click)="dismissAlert(a.id)"
+      role="button"
+      tabindex="0"
+      title="Click to dismiss"
+    >
+      <h2 class="alert-title">{{ a.title }}</h2>
+      <div class="alert-divider"></div>
+
+      <div class="alert-body">
+        <div class="alert-line alert-sensor">
+          {{ a.sensorId }}: {{ a.subtitle }}
+        </div>
+        <div class="alert-line alert-message">{{ a.message }}</div>
+      </div>
+
+      <div class="alert-meta">
+        <span *ngIf="a.read" class="read-tag">Read - </span>
+        Sent: {{ a.sentLabel }}
+      </div>
+    </div>
+
+    <!-- empty state -->
+    <div class="empty-state" *ngIf="alerts.length === 0">
+      No alerts
+    </div>
+  </div>
+</div>
