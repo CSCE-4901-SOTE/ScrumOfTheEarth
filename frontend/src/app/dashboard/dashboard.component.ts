@@ -20,13 +20,13 @@ import { of } from 'rxjs';
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
-  // 🔹 Dropdown menu toggle
+  //Dropdown menu toggle
   menuOpen = false;
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
-  // 🔹 User + Weather data
+  //User + Weather data
   role: string | null = null;
   weatherData: any;
   city: string = 'Denton';
@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit {
     this.initMap(); // ✅ Now safe for SSR
   }
 
-  // 🔹 Role checks
+  //Role checks
   isFarmer(): boolean {
     return this.role === 'farmer';
   }
@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit {
     return this.role === 'technician';
   }
 
-  // 🔹 Weather API (with error handling)
+  //Weather API (with error handling)
   getWeather(): void {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${this.city}&appid=${this.weatherApiKey}&units=imperial`;
 
@@ -82,7 +82,7 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  // 🔹 AWS Map (with SSR safety)
+  //AWS Map (with SSR safety)
   initMap(): void {
     // ✅ Skip map initialization if not in browser
     if (typeof window === 'undefined' || typeof document === 'undefined') {

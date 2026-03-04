@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name ="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Farmra Login</title>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmra Login</title>
+  </head>
 
-    <body>
-        <div class="logo-box">
-            <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo"/>
-        </div>
-        <form (ngSubmit)="login()" #loginForm="ngForm" novalidate>
-            <h1>LOG IN</h1>
-            <!-- label and input for email -->
-            <label for="email"><b>Email</b></label>
-            <input
-                type = "text"
-                placeholder="Enter your email"
-                name = "email"
-                id = "email"
-                [(ngModel)]="email"
-                required
-                [ngClass]="{'input-error': emailError}"
-                (focus)="emailError = ''"
-            />
-            <p *ngIf="emailError" class="errorText">{{ emailError }}</p>
+  <body>
+    <div class="logo-box">
+      <img src="assets/large_logo.png" alt="Farmhouse Logo" class="logo" />
+    </div>
 
-            <!-- label and input for password -->
-            <label for="password"><b>Password</b></label>
-            <input
-                type = "password"
-                placeholder="Enter your password"
-                name = "password"
-                id = "password"
-                [(ngModel)]="password"
-                required 
-                [ngClass]="{'input-error': passwordError}"
-                (focus)="passwordError = ''"
-            />
-            <p *ngIf="passwordError" class="errorText">{{ passwordError }}</p>
+    <form (ngSubmit)="login()" #loginForm="ngForm" novalidate>
+      <h1>LOG IN</h1>
 
-            <!---Log-in button--->
-            <button type="submit">
-                Log In 
-            </button>
-            <p class = "signup-text">Don't have an account?<a href="/signup-page" class="signup">Signup.</a></p>
-        </form>
-    </body>
+      <label for="email"><b>Email</b></label>
+      <input
+        type="text"
+        placeholder="Enter your email"
+        name="email"
+        id="email"
+        [(ngModel)]="email"
+        required
+        [ngClass]="{ 'input-error': emailError }"
+        (focus)="emailError = ''"
+      />
+      <p *ngIf="emailError" class="errorText">{{ emailError }}</p>
+
+      <label for="password"><b>Password</b></label>
+      <input
+        type="password"
+        placeholder="Enter your password"
+        name="password"
+        id="password"
+        [(ngModel)]="password"
+        required
+        [ngClass]="{ 'input-error': passwordError }"
+        (focus)="passwordError = ''"
+      />
+      <p *ngIf="passwordError" class="errorText">{{ passwordError }}</p>
+
+      <button type="submit">Log In</button>
+
+      <p class="signup-text">
+        Don't have an account?
+        <a routerLink="/signup-page" class="signup">Signup.</a>
+      </p>
+    </form>
+  </body>
 </html>
-

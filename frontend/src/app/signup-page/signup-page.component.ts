@@ -2,53 +2,49 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {  HttpClient, HttpClientModule } from '@angular/common/http';
+import { createClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment'; // adjust path if needed
+
+const supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
 
 @Component({
   selector: 'app-signup-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './signup-page.component.html',
-  styleUrls: ['./signup-page.component.css']
+  styleUrls: ['./signup-page.component.css'],
 })
 export class SignupPageComponent {
   email = '';
   phone = '';
-  role = '';
+  role: 'farmer' | 'technician' | '' = '';
   password = '';
   confirmPassword = '';
   showSuccessMessage = false;
 
-  // Separate error variables for each field
   emailError = '';
   phoneError = '';
   roleError = '';
   passwordError = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private router: Router) {}
 
-  signup() {
+  async signup() {
     // Reset old errors
     this.emailError = '';
     this.phoneError = '';
     this.roleError = '';
     this.passwordError = '';
 
-    // Email validation
+    //Email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(this.email)) {
-      this.emailError = 'Invalid email address.';
-    }
+    if (!emailPattern.test(this.email)) this.emailError = 'Invalid email address.';
 
-    // Phone validation
-    if (!/^\d+$/.test(this.phone)) {
-      this.phoneError = 'Phone must contain digits only.';
-    }
+    //Phone validation
+    if (!/^\d+$/.test(this.phone)) this.phoneError = 'Phone must contain digits only.';
 
-    // Role validation
-    if (!this.role) {
-      this.roleError = 'Please select your role.';
-    }
+    //Role validation
+    if (!this.role) this.roleError = 'Please select your role.';
 
     // Password validation
     const strongPasswordPattern =
@@ -59,29 +55,56 @@ export class SignupPageComponent {
       this.passwordError = 'Passwords do not match.';
     }
 
-    // Stop submission if any error exists
-    if (this.emailError || this.phoneError || this.roleError || this.passwordError) {
+    if (this.emailError || this.phoneError || this.roleError || this.passwordError) return;
+
+    //Create Auth user in Supabase
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: this.email,
+      password: this.password,
+      options: {
+        data: { phone: this.phone, role: this.role },
+      },
+    });
+
+    if (signUpError) {
+      alert('Signup failed: ' + signUpError.message);
       return;
     }
 
-    // NEW: send data to backend
-    const userData = {
+    const userId = signUpData.user?.id;
+    if (!userId) {
+      alert('Account created, but no user id returned.');
+      return;
+    }
+
+    //Get role_id from user_role
+    const { data: roleRow, error: roleErr } = await supabase
+      .from('user_role')
+      .select('role_id')
+      .eq('name', this.role)
+      .single();
+
+    if (roleErr || !roleRow?.role_id) {
+      alert('Account created, but role lookup failed: ' + (roleErr?.message ?? 'No role found'));
+      return;
+    }
+
+    // 3) Insert into farmra_user (NO password_hash)
+    const { error: insertErr } = await supabase.from('farmra_user').insert({
+      user_id: userId,
       email: this.email,
       phone: this.phone,
-      passwordHash: this.password,
-      role: { name: this.role }  // backend reads "role.name"
-    };
+      role_id: roleRow.role_id,
+      // password_hash omitted on purpose
+      // created_at auto-fills if default is set
+    });
 
-    this.http.post('http://localhost:8080/api/signup', userData)
-      .subscribe({
-        next: (res) => {
-          this.showSuccessMessage = true;
-          alert('✅ Account created successfully!');
-          setTimeout(() =>this.router.navigate(['/login-page']),500);
-        },
-        error: (err) => {
-          alert('❌ Signup failed: ' + err.error);
-        }
-      });
+    if (insertErr) {
+      alert('Auth user created, but farmra_user insert failed: ' + insertErr.message);
+      return;
     }
+
+    alert('Account created!');
+    setTimeout(() => this.router.navigate(['/login-page']), 500);
+  }
 }
