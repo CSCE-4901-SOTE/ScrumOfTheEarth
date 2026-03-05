@@ -1,1 +1,68 @@
-<p>edit-profile works!</p>
+<div class="page">
+  <div class="card">
+    <!--profile image -->
+    <div class="left">
+      <div class="avatar-wrap">
+        <div class="avatar" [class.has-image]="!!profileImageUrl">
+          <ng-container *ngIf="profileImageUrl; else placeholder">
+            <img [src]="profileImageUrl" alt="Profile" />
+          </ng-container>
+
+          <ng-template #placeholder>
+            <!-- user icon-->
+            <svg viewBox="0 0 128 128" aria-hidden="true">
+              <circle cx="64" cy="64" r="60" fill="none" stroke="black" stroke-width="6"></circle>
+              <circle cx="64" cy="48" r="18" fill="none" stroke="black" stroke-width="6"></circle>
+              <path
+                d="M34 102c6-18 20-26 30-26s24 8 30 26"
+                fill="none"
+                stroke="black"
+                stroke-width="6"
+                stroke-linecap="round"
+              ></path>
+            </svg>
+          </ng-template>
+        </div>
+
+        <label class="edit-pic">
+          Edit Profile Picture
+          <input type="file" accept="image/*" (change)="onPickImage(fileInput)" #fileInput />
+        </label>
+      </div>
+    </div>
+
+    <!--form -->
+    <div class="right">
+      <form class="form">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="fullName" name="fullName" />
+        </div>
+
+        <div class="field">
+          <label>Date of Birth (MM/DD/YYYY)</label>
+          <input type="text" [(ngModel)]="dob" name="dob" placeholder="MM/DD/YYYY" />
+        </div>
+
+        <div class="field">
+          <label>Your Farm</label>
+          <input type="text" [(ngModel)]="farm" name="farm" />
+        </div>
+
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" [(ngModel)]="phone" name="phone" />
+        </div>
+
+        <div class="field">
+          <label>User ID</label>
+          <input type="text" [(ngModel)]="userId" name="userId" />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
