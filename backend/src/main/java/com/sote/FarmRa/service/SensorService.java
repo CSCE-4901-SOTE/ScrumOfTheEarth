@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.sote.FarmRa.model.Gateway;
 import com.sote.FarmRa.model.HardwareStatus;
 import com.sote.FarmRa.model.SensorNode;
-import com.sote.FarmRa.model.SensorReading;
+import com.sote.FarmRa.model.SensorReadings;
 import com.sote.FarmRa.model.User;
 import com.sote.FarmRa.model.dto.UploadSensorDto;
 import com.sote.FarmRa.model.dto.UploadSensorReadingDto;
@@ -48,7 +48,7 @@ public class SensorService {
 
     public void saveSensorData(UploadSensorReadingDto reading) throws NotFoundException {
         SensorNode sensorNode = sensorRepository.findById(reading.getNodeId()).orElseThrow(NotFoundException::new);
-        SensorReading sensorReading = SensorMapper.mapSensorReading(reading);
+        SensorReadings sensorReading = SensorMapper.mapSensorReading(reading);
         sensorReading.setNode(sensorNode);
         sensorReadingRepository.save(sensorReading);
     }

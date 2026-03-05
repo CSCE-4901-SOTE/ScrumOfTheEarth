@@ -1,9 +1,11 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, viewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as maplibregl from 'maplibre-gl';
-import { SensorService, Sensor } from './sensor.service';
+import { SensorService } from '../services/sensor.service';
+import { Sensor } from '../models/sensor.model';
+import { HardwareStatus } from '../models/hardware-status.model';
 
 @Component({
   selector: 'app-map-sensor',
@@ -13,6 +15,7 @@ import { SensorService, Sensor } from './sensor.service';
   styleUrl: './map-sensor.component.css'
 })
 export class MapSensorComponent implements OnInit {
+  sensorModal = viewChild<ElementRef<HTMLDialogElement>>('sensorModal');
   role: 'farmer' | 'technician' = 'farmer';
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -49,7 +52,7 @@ export class MapSensorComponent implements OnInit {
 
   tempValue = 0;
   moistValue = 0;
-  lightValue = 0;
+  lightValue = false;
 
   tempColor = 'green';
   moistColor = 'green';
@@ -121,19 +124,24 @@ export class MapSensorComponent implements OnInit {
     if (!s) return;
 
     //Update signal level
-    this.signalLevel = this.convertDbmToLevel(s.rssi);
+    const rssi = s.rssi;
+    this.signalLevel = rssi !== null ? this.convertDbmToLevel(rssi) : 1;
 
     //Update battery level
-    this.batteryLevel = s.battery;
+    this.batteryLevel = s.battery!;
     this.updateBatteryColor();
 
-    this.tempValue = s.temperature;
-    this.moistValue = s.moisture;
-    this.lightValue = s.light;
+    const latestReading = s.sensorReadings.length > 0 ? s.sensorReadings.at(0) : null
 
-    this.tempColor  = this.getBoxColor('temperature', s.temperature);
-    this.moistColor = this.getBoxColor('moisture', s.moisture);
-    this.lightColor = this.getBoxColor('light', s.light);
+    this.tempValue = latestReading?.temperature!;
+    this.moistValue = latestReading?.moisture!;
+    this.lightValue = latestReading?.light!;
+    
+    const lightValue = this.lightValue ? 70000 : 20000;
+
+    this.tempColor  = this.getBoxColor('temperature', this.tempValue);
+    this.moistColor = this.getBoxColor('moisture', this.moistValue);
+    this.lightColor = this.getBoxColor('light', lightValue);
   }
 
   menuOpen = false; 
@@ -174,10 +182,12 @@ export class MapSensorComponent implements OnInit {
 
     this.role = role;
 
-    const req$ =
+    const req$ = this.sensorService.getSensors();
+    /*
       role === 'farmer'
         ? this.sensorService.getSensorsByCustomer(userId)
         : this.sensorService.getSensorsByTechnician(userId);
+    */
 
     req$.subscribe({
       next: (sensors) => {
@@ -258,10 +268,10 @@ export class MapSensorComponent implements OnInit {
   }
 
   // Map status -> marker color
-  private getMarkerColor(status: string) {
-    if (status === 'online') return '#3c8e3f';
-    if (status === 'offline') return '#e00e0e';
-    if (status === 'weak') return '#e6b800';
+  private getMarkerColor(status: HardwareStatus) {
+    if (status === HardwareStatus.ONLINE) return '#3c8e3f';
+    if (status === HardwareStatus.OFFLINE) return '#e00e0e';
+    if (status === HardwareStatus.WEAK) return '#e6b800';
     return '#777'; // deactivate
   }
 
@@ -317,6 +327,14 @@ export class MapSensorComponent implements OnInit {
       zoom: 20,
       speed: 0.75
     });
+  }
+
+  openSensorHistory() {
+    this.sensorModal()?.nativeElement.showModal();
+  }
+
+  closeSensorHistory() {
+    this.sensorModal()?.nativeElement.close();
   }
 
   /* Activates the selected sensor */

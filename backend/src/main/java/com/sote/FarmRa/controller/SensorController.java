@@ -5,8 +5,10 @@ import com.sote.FarmRa.model.SensorNode;
 import com.sote.FarmRa.model.User;
 import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +31,9 @@ public class SensorController {
 
     // Get all sensors
     @GetMapping
+    @Transactional(readOnly = true)
     public List<SensorNode> getAll() {
-        return sensorRepository.findAll();
+        return sensorRepository.getSensorsWithReadings();
     }
 
     // Get sensor by id
@@ -58,6 +61,7 @@ public class SensorController {
 
     // Get sensors by technician
     @GetMapping("/technician/{technicianId}")
+    @Transactional(readOnly = true)
     public List<SensorNode> getByTechnician(@PathVariable UUID technicianId) {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }

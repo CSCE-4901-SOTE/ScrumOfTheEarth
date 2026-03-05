@@ -1,7 +1,7 @@
 package com.sote.FarmRa.model.mapper;
 
 import com.sote.FarmRa.model.SensorNode;
-import com.sote.FarmRa.model.SensorReading;
+import com.sote.FarmRa.model.SensorReadings;
 import com.sote.FarmRa.model.dto.UploadSensorDto;
 import com.sote.FarmRa.model.dto.UploadSensorReadingDto;
 
@@ -14,8 +14,8 @@ public class SensorMapper {
             .build();
     }
 
-    public static SensorReading mapSensorReading(UploadSensorReadingDto uploadSensorReading) {
-        return SensorReading.builder()
+    public static SensorReadings mapSensorReading(UploadSensorReadingDto uploadSensorReading) {
+        return SensorReadings.builder()
             .createdAt(uploadSensorReading.getReadingTimestamp())
             .moisture(uploadSensorReading.getSoilMoisture())
             .temperature(uploadSensorReading.getSoilTemperature())

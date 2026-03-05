@@ -12,6 +12,9 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import * as maplibregl from 'maplibre-gl';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MapSensorComponent } from '../map-sensor/map-sensor.component';
+import { SensorService } from '../services/sensor.service';
+import { Sensor } from '../models/sensor.model';
 
 /* Sensor Inventory types (MUST be outside class) */
 type SensorStatus = 'online' | 'offline' | 'weak' | 'deactivate';
@@ -44,6 +47,7 @@ interface Summary {
     CommonModule,
     HttpClientModule,
     RouterLinkActive,
+    MapSensorComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],

@@ -1,8 +1,8 @@
 package com.sote.FarmRa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.sote.FarmRa.model.SensorReading;
+import com.sote.FarmRa.model.SensorReadings;
 
-public interface SensorReadingRepository extends JpaRepository<SensorReading, Long> {
+public interface SensorReadingRepository extends JpaRepository<SensorReadings, Long> {
     
 }

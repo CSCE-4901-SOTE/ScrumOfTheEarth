@@ -4,5 +4,6 @@ public enum HardwareStatus {
     ONLINE,
     OFFLINE,
     UNKNOWN,
+    WEAK,
     DEACTIVATED,
 }

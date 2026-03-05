@@ -28,11 +28,11 @@ import lombok.Setter;
 @Setter
 public class SensorNode {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    //@GeneratedValue(strategy=GenerationType.AUTO)
     private String id;
 
     @OneToMany(mappedBy = "node")
-    private List<SensorReading> sensorReadings;
+    private List<SensorReadings> sensorReadings;
 
     @ManyToOne
     @JoinColumn(name="gateway_id")
