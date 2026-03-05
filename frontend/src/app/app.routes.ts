@@ -14,7 +14,7 @@ export const routes: Routes = [
   { path: 'signup-page', component: SignupPageComponent },
   { path: 'login-page', component: LoginPageComponent },
   { path: 'historical-trends', component: HistoricalTrendsComponent },
-  { path: 'alerts', component: AlertsComponent },
+  { path: 'alert', component: AlertsComponent },
   { path: 'map-sensor', component: MapSensorComponent },
   { path: '', redirectTo: 'signup-page', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent }

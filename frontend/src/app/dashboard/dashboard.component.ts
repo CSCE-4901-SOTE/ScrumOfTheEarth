@@ -5,6 +5,10 @@ import {
   OnDestroy,
   Inject,
   PLATFORM_ID,
+  inject,
+  Signal,
+  signal,
+  computed,
 } from '@angular/core';
 import { RouterLink, RouterModule, RouterLinkActive } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -15,19 +19,10 @@ import { of } from 'rxjs';
 import { MapSensorComponent } from '../map-sensor/map-sensor.component';
 import { SensorService } from '../services/sensor.service';
 import { Sensor } from '../models/sensor.model';
-
-/* Sensor Inventory types (MUST be outside class) */
-type SensorStatus = 'online' | 'offline' | 'weak' | 'deactivate';
-
-interface SensorRow {
-  id: string;
-  name: string;
-  lastSeen: Date | null;
-  battery: number | null;
-  statusOverride?: SensorStatus;
-  latitude: number;
-  longitude: number;
-}
+import { SensorInventory } from '../models/sensor-inventory.model';
+import { lstatSync } from 'fs';
+import { HardwareStatus } from '../models/hardware-status.model';
+import { mapHardwareStatusToClass } from '../mappers/hardware-status-class.mapper';
 
 interface Summary {
   activeNodes: number;
@@ -47,12 +42,16 @@ interface Summary {
     CommonModule,
     HttpClientModule,
     RouterLinkActive,
-    MapSensorComponent,
+    MapSensorComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+  sensorService = inject(SensorService);
+  sensors: Sensor[] = []
+  sensorInventory: SensorInventory[] = []
+  statusLabel = mapHardwareStatusToClass;
   // 🔹 Dropdown menu toggle
   menuOpen = false;
   toggleMenu(): void {
@@ -81,63 +80,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     alertDeltaLabel: 'no change',
   };
 
-  sensorInventory: SensorRow[] = [
-    {
-      id: 'S001',
-      name: 'Sensor 1',
-      lastSeen: new Date(),
-      battery: 78,
-      statusOverride: 'online',
-      latitude: 33.2148,
-      longitude: -97.1331,
-    },
-    {
-      id: 'S002',
-      name: 'Sensor 2',
-      lastSeen: new Date(),
-      battery: 19,
-      statusOverride: 'offline',
-      latitude: 33.23,
-      longitude: -97.12,
-    },
-    {
-      id: 'S003',
-      name: 'Sensor 3',
-      lastSeen: new Date(),
-      battery: 0,
-      statusOverride: 'deactivate',
-      latitude: 33.205,
-      longitude: -97.15,
-    },
-    {
-      id: 'S004',
-      name: 'Sensor 4',
-      lastSeen: new Date(),
-      battery: 100,
-      statusOverride: 'online',
-      latitude: 33.2,
-      longitude: -97.095,
-    },
-    {
-      id: 'S005',
-      name: 'Sensor 5',
-      lastSeen: new Date(),
-      battery: 20,
-      statusOverride: 'weak',
-      latitude: 33.235,
-      longitude: -97.16,
-    },
-    {
-      id: 'S006',
-      name: 'Sensor 6',
-      lastSeen: new Date(),
-      battery: 0,
-      statusOverride: 'deactivate',
-      latitude: 33.21,
-      longitude: -97.11,
-    },
-  ];
-
   // move to env later
   private weatherApiKey: string = '0b8120fcdfd87c4be96bb4a644287b3d';
 
@@ -159,12 +101,30 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('User role:', this.role);
     }
 
+    const req$ = this.sensorService.getSensors();
+    /*
+      role === 'farmer'
+        ? this.sensorService.getSensorsByCustomer(userId)
+        : this.sensorService.getSensorsByTechnician(userId);
+    */
+
+    req$.subscribe({
+      next: (sensors) => {
+        this.sensors = sensors ?? [];
+        this.mapSensorToSensorInventory();
+      },
+      error: (err) => {
+        console.error(err);
+        this.sensors = [];
+      }
+    });
+
     // set baselines once (so delta works)
-    this.baselineDeactivated = this.sensorInventory.filter(
-      (s) => this.getSensorStatus(s) === 'deactivate'
+    this.baselineDeactivated = this.sensors.filter(
+      (s) => s.status == HardwareStatus.DEACTIVATED
     ).length;
     this.baselineActive =
-      this.sensorInventory.length - this.baselineDeactivated;
+      this.sensors.length - this.baselineDeactivated;
 
     this.recomputeSummaryFromSensors();
 
@@ -175,7 +135,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    setTimeout(() => this.initMap(), 0);
   }
 
   ngOnDestroy(): void {
@@ -203,25 +162,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.role === 'technician';
   }
 
-
-  // Sensor Inventory helpers
-  getSensorStatus(s: SensorRow): SensorStatus {
-    return s.statusOverride ?? 'online';
-  }
-
-  getSensorStatusLabel(s: SensorRow): string {
-    switch (this.getSensorStatus(s)) {
-      case 'online':
-        return 'Online';
-      case 'offline':
-        return 'Offline';
-      case 'weak':
-        return 'Weak';
-      case 'deactivate':
-        return 'Deactivated';
-      default:
-        return 'Online';
-    }
+  mapSensorToSensorInventory() {
+    const sensors = this.sensors;
+    this.sensorInventory =  sensors.map((sensor) => {
+      return {
+        id: sensor.id,
+        name: sensor.name,
+        lastSeen: sensor.sensorReadings?.[0]?.createdAt ?? null,
+        battery: sensor.battery,
+        status: sensor.status,
+        latitude: sensor.latitude,
+        longitude: sensor.longitude
+      };
+    })
   }
 
   // =========================
@@ -231,7 +184,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   // =========================
   private recomputeSummaryFromSensors(): void {
     const deactivated = this.sensorInventory.filter(
-      (s) => this.getSensorStatus(s) === 'deactivate'
+      (s) => s.status === HardwareStatus.DEACTIVATED
     ).length;
 
     const active = this.sensorInventory.length - deactivated;
@@ -245,6 +198,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       deactivated - this.baselineDeactivated;
   }
 
+  /*
   private startFakeLiveSensors(): void {
     // avoid double interval if component re-inits
     if (this.liveTimer) clearInterval(this.liveTimer);
@@ -271,6 +225,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addMarkers(this.map!);
     }, 5000);
   }
+  */
 
   // Current Weather API
   getWeather(): void {
@@ -360,6 +315,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /*
   // =========================
   // MARKERS (COPY STYLE FROM MapSensorComponent)
   // =========================
@@ -395,6 +351,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /* Adds all sensor markers to the map */
+  /*
   addMarkers(map: maplibregl.Map) {
     if (!map) return;
 
@@ -477,4 +434,5 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('❌ Failed to initialize map:', err);
     }
   }
+  */
 }
