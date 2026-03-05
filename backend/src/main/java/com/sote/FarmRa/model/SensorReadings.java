@@ -2,6 +2,8 @@ package com.sote.FarmRa.model;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -17,20 +20,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SensorReading {
+@Getter
+public class SensorReadings {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    //@GeneratedValue(strategy=GenerationType.AUTO)
+    private String id;
     
     @ManyToOne
     @JoinColumn(name="node_id")
     @Setter
+    @JsonIgnore
     private SensorNode node;
     
-    private Instant readingTimestamp;
+    private Instant createdAt;
 
-    private float soilMoisture;
-    private float soilTemperature;
-    private float lightLevel;
-    private float batteryLevel;
+    private float moisture;
+    private float temperature;
+    private boolean light;
+    //private float batteryLevel;
 }

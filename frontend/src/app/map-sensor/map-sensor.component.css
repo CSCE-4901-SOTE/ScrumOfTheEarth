@@ -324,6 +324,14 @@
   font-family: Roboto;
 }
 
+.sensor-history {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #414141;
+  font-family: Roboto;
+  cursor: pointer;
+}
+
 hr {
   border: none;
   border-top: 1px solid #7e7e7e; 
@@ -675,7 +683,12 @@ background: #e53935;
   transform: scale(0.97);
 }
 
-
+.sensor-modal-header {
+  display: flex;
+  justify-content: end;
+  margin-top: 0;
+  padding-top: 0;
+}
 
 
 

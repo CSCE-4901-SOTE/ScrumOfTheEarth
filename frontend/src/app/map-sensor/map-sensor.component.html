@@ -5,7 +5,7 @@
     <!-- Search bar -->
     <div class="sidebar">
       <div class="search-wrapper">
-        <span class="material-icons search-icon">search</span>
+        <span class="material-icons search-icon"></span>
         <input 
           type="text"
           placeholder="Search sensor"
@@ -28,8 +28,10 @@
            (click)="focusSensor(s)">
         <div class="sensor-header">
           <h4 class="sensor-name">{{ s.name }}</h4>
-          <span class="status-icon" [ngClass]="s.status"></span>
-          <span *ngIf="s.status === 'deactivate'" class="material-icons cloud-off-icon">cloud_off</span>
+          <span class="status-icon" [ngClass]="s.status.toString().toLowerCase()"></span>
+          @if(s.status.toString() == "DEACTIVATED") {
+            <span class="material-icons cloud-off-icon">cloud_off</span>
+          }
         </div>
 
         <!-- Sensor ID -->
@@ -59,7 +61,7 @@
         <h2>{{ selectedSensor.name }}</h2>
         <span 
           class="status-dot" 
-          [ngClass]="selectedSensor.status">
+          [ngClass]="selectedSensor.status.toString().toLowerCase()">
         </span>
         <button class="close-btn" (click)="selectedSensor = null">✕</button>
       </div>
@@ -67,12 +69,15 @@
       <!-- Detail Basic Info -->
       <p class="id-line">Sensor ID: {{ selectedSensor.id }}</p>
       <!-- Technician line of farmer -->
-        <p class="tech-line" *ngIf="role === 'farmer'">Technician: {{ selectedSensor.technicianName }}</p>
+        <p class="tech-line" *ngIf="role === 'farmer'">Technician: {{ selectedSensor.customer?.name }}</p>
       <!-- Farmer line of technician -->
-        <p class="tech-line" *ngIf="role === 'technician'">Customer: {{ selectedSensor.customerName }}</p>
+        <p class="tech-line" *ngIf="role === 'technician'">Customer: {{ selectedSensor.technician?.name }}</p>
 
       <p class="coords">
         📍 {{ selectedSensor.latitude }}, {{ selectedSensor.longitude }}
+      </p>
+      <p class="sensor-history" (click)="openSensorHistory()">
+        Sensor History
       </p>
 
       <hr>
@@ -164,4 +169,22 @@
     </div>
   </div>
 </div>
+
+<!-- Put this into its own modal component later. For now we're using a scuffed solution -->
+<dialog #sensorModal>
+  <div class="sensor-modal-header">
+    <button class="close-btn" (click)="closeSensorHistory()">X</button>
+  </div>
+  <div>
+    <p>
+      Temperature - Moisture - Light - Timestamp
+    </p>
+  </div>
+  @for (reading of selectedSensor?.sensorReadings; track $index) {
+    <div>
+      {{reading.temperature}}°F - {{reading.moisture}} - {{reading.light}} - {{reading.createdAt | date:'medium'}}
+    </div>
+    
+  }
+</dialog>
 

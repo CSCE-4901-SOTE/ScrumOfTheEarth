@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { backendUrl } from '../../environment';
 
 @Component({
   selector: 'app-login-page',
@@ -48,7 +49,7 @@ export class LoginPageComponent {
     };
 
     // Send request POST to backend
-    this.http.post<{ userId: string; role: 'farmer' | 'technician' }>('http://localhost:8080/api/login', loginData)
+    this.http.post<{ userId: string; role: 'farmer' | 'technician' }>(backendUrl + '/login', loginData)
       .subscribe({
         next: (res) => {
           if (isPlatformBrowser(this.platformId)) {

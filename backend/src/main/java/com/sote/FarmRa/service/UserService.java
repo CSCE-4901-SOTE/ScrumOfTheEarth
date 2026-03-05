@@ -2,9 +2,10 @@ package com.sote.FarmRa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.sote.FarmRa.entity.User;
-import com.sote.FarmRa.entity.Role;
+
 import com.sote.FarmRa.repository.UserRepository;
+import com.sote.FarmRa.model.Role;
+import com.sote.FarmRa.model.User;
 import com.sote.FarmRa.repository.RoleRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

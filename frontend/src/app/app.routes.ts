@@ -7,7 +7,6 @@ import { AlertsComponent } from './alerts/alerts.component';
 import { MapSensorComponent } from './map-sensor/map-sensor.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
-import { SensorViewComponent } from './sensor-view/sensor-view.component';
 
 export const routes: Routes = [
   { path: 'edit-profile', component: EditProfileComponent},
@@ -15,9 +14,8 @@ export const routes: Routes = [
   { path: 'signup-page', component: SignupPageComponent },
   { path: 'login-page', component: LoginPageComponent },
   { path: 'historical-trends', component: HistoricalTrendsComponent },
-  { path: 'alerts', component: AlertsComponent },
+  { path: 'alert', component: AlertsComponent },
   { path: 'map-sensor', component: MapSensorComponent },
-  { path: 'sensors', component: SensorViewComponent },
   { path: '', redirectTo: 'signup-page', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent }
 ];
