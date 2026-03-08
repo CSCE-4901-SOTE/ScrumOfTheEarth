@@ -1,4 +1,4 @@
-package com.sote.FarmRa.dto;
+package com.sote.FarmRa.model.dto;
 
 public record DashboardDTO(
         int activeNodes,
