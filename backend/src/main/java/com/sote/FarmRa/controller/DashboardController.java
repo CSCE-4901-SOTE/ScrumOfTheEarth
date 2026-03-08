@@ -1,8 +1,8 @@
 package com.sote.FarmRa.controller;
 
-import com.example.backend.dto.DashboardDTO;
-import com.example.backend.dto.SensorDTO;
-import com.example.backend.service.DashboardService;
+package com.sote.FarmRa.model.dto.DashboardDTO;
+package com.sote.FarmRa.model.dto.SensorDTO;
+import com.sote.FarmRa.service.DashboardService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
