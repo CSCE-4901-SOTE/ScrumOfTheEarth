@@ -1,6 +1,7 @@
 package com.sote.FarmRa.model;
 
 import java.util.List;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -58,6 +59,7 @@ public class SensorNode {
     private Integer rssi;
     private Integer packetLoss;
     private Integer battery;
+    private Instant lastSeen;
 
     // Saved data
     @Enumerated(EnumType.STRING)
@@ -66,6 +68,9 @@ public class SensorNode {
     private Integer savedRssi;
     private Integer savedPacketLoss;
     private Integer savedBattery;
+    private Float savedTemperature;
+    private Float savedMoisture;
+    private Boolean savedLight;
 
     @Setter
     @Enumerated(EnumType.STRING)
