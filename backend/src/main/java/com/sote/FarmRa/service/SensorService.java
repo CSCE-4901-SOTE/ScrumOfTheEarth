@@ -38,6 +38,20 @@ public class SensorService {
         return sensorRepository.findAll();
     }
 
+    //Phuong's code
+    public List<SensorNode> getByStatus(HardwareStatus status) {
+        return sensorRepository.findByStatus(status);
+    }
+
+    public List<SensorNode> getByCustomer(UUID customerId) {
+        return sensorRepository.findByCustomer_UserId(customerId);
+    }
+
+    public List<SensorNode> getByTechnician(UUID technicianId) {
+        return sensorRepository.findByTechnician_UserId(technicianId);
+    }
+    // End
+
     public void saveSenorNode(UploadSensorDto sensorNodeDto) throws NotFoundException {
         Gateway gateway = gatewayRepository.findById(sensorNodeDto.getGatewayId()).orElseThrow(NotFoundException::new);
         SensorNode sensorNode = SensorMapper.mapSensorNode(sensorNodeDto);
