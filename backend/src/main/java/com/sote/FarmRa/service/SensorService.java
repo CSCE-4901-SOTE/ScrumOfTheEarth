@@ -1,7 +1,6 @@
 package com.sote.FarmRa.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SensorService {
     private final SensorRepository sensorRepository;
     private final UserRepository userRepository;
+    private final AlertService alertService;
 
     public List<Sensor> getSensors() {
         return sensorRepository.findAll();

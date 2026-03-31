@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-type AlertItem = {
-  id: string;
-  title: string;
-  sensorId: string;
-  subtitle: string;
-  message: string;
-  sentLabel: string;
-  read: boolean;
-};
+import { AlertService } from '../services/alert.service';
+import { AlertItem, AlertType } from '../models/alert.model';
 
 @Component({
   selector: 'app-alerts',
@@ -19,32 +11,40 @@ type AlertItem = {
   styleUrl: './alerts.component.css',
 })
 export class AlertsComponent implements OnInit {
-  //test alert
-  alerts: AlertItem[] = [
-    {
-      id: 'test-1',
-      title: 'TEST',
-      sensorId: 'TEST',
-      subtitle: 'Click to dismiss',
-      message: 'Click the and it will go away.',
-      sentLabel: 'just now',
-      read: false,
-    },
-  ];
-
+  alerts: AlertItem[] = [];
   unreadCount = 0;
 
+  constructor(private alertService: AlertService) {}
+
   ngOnInit(): void {
-    this.recomputeUnreadCount();
+    this.alertService.getAlerts().subscribe(alerts => {
+      this.alerts = alerts;
+      this.recomputeUnreadCount();
+    });
   }
 
   recomputeUnreadCount(): void {
-    this.unreadCount = this.alerts.filter((a) => !a.read).length;
+    this.unreadCount = this.alerts.filter(a => !a.acknowledged).length;
   }
 
-  //call when clicked
   dismissAlert(id: string): void {
-    this.alerts = this.alerts.filter((a) => a.id !== id);
-    this.recomputeUnreadCount();
+    this.alertService.acknowledge(id).subscribe(() => {
+      const alert = this.alerts.find(a => a.id === id);
+      if (alert) alert.acknowledged = true;
+      this.recomputeUnreadCount();
+    });
   }
-} 
+
+  alertTitle(type: AlertType): string {
+    switch (type) {
+      case 'LOW_MOISTURE': return 'Low Moisture';
+      case 'HIGH_TEMPERATURE': return 'High Temperature';
+      case 'LOW_BATTERY': return 'Low Battery';
+      case 'LOW_SIGNAL': return 'Low Signal';
+    }
+  }
+
+  formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleString();
+  }
+}

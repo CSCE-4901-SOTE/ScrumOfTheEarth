@@ -24,7 +24,6 @@ import { lstatSync } from 'fs';
 import { HardwareStatus } from '../models/hardware-status.model';
 import { mapHardwareStatusToClass } from '../mappers/hardware-status-class.mapper';
 import { BaseChartDirective } from 'ng2-charts';
-import { AlertService } from '../alerts/alert.service';
 import {
   Chart,
   ChartData,
@@ -32,6 +31,7 @@ import {
   registerables,
 } from 'chart.js';
 import { environment } from '../../environments/environment';
+import { AlertService } from '../services/alert.service';
 
 Chart.register(...registerables);
 
