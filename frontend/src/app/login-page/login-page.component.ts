@@ -55,7 +55,13 @@ export class LoginPageComponent {
           if (isPlatformBrowser(this.platformId)) {
             window.localStorage.setItem('userId', res.userId);
             window.localStorage.setItem('role', res.role);
+            window.localStorage.setItem('userEmail', loginData.email);
           }
+          this.http.get<any>(`${backendUrl}/users/${res.userId}`).subscribe({
+            next: (profile) => {
+              if (profile.name) window.localStorage.setItem('userName', profile.name);
+            }
+          });
           console.log('✅ Login successful!');
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },

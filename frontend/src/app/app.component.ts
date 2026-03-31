@@ -35,10 +35,12 @@ export class AppComponent implements OnInit {
         );
 
         if (typeof window !== 'undefined') {
-          this.role = (sessionStorage.getItem('userRole') || '').toLowerCase();
-          const userEmail = sessionStorage.getItem('userEmail') || '';
-          // display local part of email, capitalized
-          if (userEmail) {
+          this.role = (localStorage.getItem('role') || '').toLowerCase();
+          const storedName = localStorage.getItem('userName') || '';
+          const userEmail = localStorage.getItem('userEmail') || '';
+          if (storedName) {
+            this.userName = storedName;
+          } else if (userEmail) {
             const local = userEmail.split('@')[0];
             this.userName = local.charAt(0).toUpperCase() + local.slice(1);
           } else {
