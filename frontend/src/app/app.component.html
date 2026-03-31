@@ -31,7 +31,7 @@
   </button>
 
   <!-- dropdown menu -->
-  <div class="dropdown-menu" *ngIf="menuOpen">
+  <div class="dropdown-menu" *ngIf="menuOpen" (click)="menuOpen = false">
     <div class="dropdown-header">
       <div class="user-info">
         <strong>{{ fullName || 'User' }}</strong><br />
