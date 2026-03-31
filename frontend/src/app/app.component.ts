@@ -1,26 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { AlertService } from './services/alert.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive, HttpClientModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   showNavbar = true;
   role = '';
   userName: string = '';
+  unreadAlerts = 0;
 
-  menuOpen = false;     
-  toggleMenu() {        
+  menuOpen = false;
+  toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private alertService: AlertService) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
@@ -43,6 +46,11 @@ export class AppComponent {
           }
         }
       });
+  }
+
+  ngOnInit(): void {
+    this.alertService.getAlerts().subscribe();
+    this.alertService.unreadCount$.subscribe(count => this.unreadAlerts = count);
   }
 
   isFarmer() {

@@ -33,6 +33,7 @@ public class SensorService {
     private final SensorReadingRepository sensorReadingRepository;
     private final GatewayRepository gatewayRepository;
     private final UserRepository userRepository;
+    private final AlertService alertService;
 
     public List<SensorNode> getSensors() {
         return sensorRepository.findAll();
@@ -65,6 +66,7 @@ public class SensorService {
         SensorReadings sensorReading = SensorMapper.mapSensorReading(reading);
         sensorReading.setNode(sensorNode);
         sensorReadingRepository.save(sensorReading);
+        alertService.checkAndCreateAlerts(sensorNode, sensorReading);
     }
 
     public SensorNode getById(String id) {

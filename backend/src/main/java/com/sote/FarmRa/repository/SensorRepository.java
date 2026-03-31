@@ -42,8 +42,8 @@ public interface SensorRepository extends JpaRepository<SensorNode, String> {
     List<SensorNode> findByStatus(HardwareStatus status);
 
     // Dashboard: count sensors by status
-    long countByStatus(String status);
+    long countByStatus(HardwareStatus status);
 
     // Filter by multiple statuses
-    List<Sensor> findByStatusIn(List<String> statuses);
+    List<SensorNode> findByStatusIn(List<HardwareStatus> statuses);
 }

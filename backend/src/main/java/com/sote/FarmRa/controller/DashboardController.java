@@ -1,7 +1,7 @@
 package com.sote.FarmRa.controller;
 
-package com.sote.FarmRa.model.dto.DashboardDTO;
-package com.sote.FarmRa.model.dto.SensorDTO;
+import com.sote.FarmRa.model.dto.DashboardDTO;
+import com.sote.FarmRa.model.dto.SensorDTO;
 import com.sote.FarmRa.service.DashboardService;
 import org.springframework.web.bind.annotation.*;
 

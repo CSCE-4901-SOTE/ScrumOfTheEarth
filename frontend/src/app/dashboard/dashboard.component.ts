@@ -18,6 +18,7 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MapSensorComponent } from '../map-sensor/map-sensor.component';
 import { SensorService } from '../services/sensor.service';
+import { AlertService } from '../services/alert.service';
 import { Sensor } from '../models/sensor.model';
 import { SensorInventory } from '../models/sensor-inventory.model';
 import { lstatSync } from 'fs';
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
+    private alertService: AlertService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -112,6 +114,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (sensors) => {
         this.sensors = sensors ?? [];
         this.mapSensorToSensorInventory();
+
+        // set baselines and recompute after data loads
+        this.baselineDeactivated = this.sensorInventory.filter(
+          (s) => s.status === HardwareStatus.DEACTIVATED
+        ).length;
+        this.baselineActive = this.sensorInventory.length - this.baselineDeactivated;
+
+        this.recomputeSummaryFromSensors();
       },
       error: (err) => {
         console.error(err);
@@ -119,14 +129,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // set baselines once (so delta works)
-    this.baselineDeactivated = this.sensors.filter(
-      (s) => s.status == HardwareStatus.DEACTIVATED
-    ).length;
-    this.baselineActive =
-      this.sensors.length - this.baselineDeactivated;
-
-    this.recomputeSummaryFromSensors();
+    this.alertService.unreadCount$.subscribe(count => this.summary.unreadAlerts = count);
 
     this.getWeather();
 

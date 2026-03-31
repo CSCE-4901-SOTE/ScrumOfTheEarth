@@ -2,7 +2,8 @@ package com.sote.FarmRa.service;
 
 import com.sote.FarmRa.model.dto.DashboardDTO;
 import com.sote.FarmRa.model.dto.SensorDTO;
-import com.sote.FarmRa.entity.Sensor;
+import com.sote.FarmRa.model.HardwareStatus;
+import com.sote.FarmRa.model.SensorNode;
 import com.sote.FarmRa.repository.SensorRepository;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class DashboardService {
      */
     public DashboardDTO getSummary() {
         long total = sensorRepository.count();
-        long deactivated = sensorRepository.countByStatus("deactivate");
+        long deactivated = sensorRepository.countByStatus(HardwareStatus.DEACTIVATED);
         long active = total - deactivated;
 
         return new DashboardDTO(
@@ -60,13 +61,13 @@ public class DashboardService {
     }
 
     // Helpers
-    private SensorDTO toSensorDto(Sensor s) {
+    private SensorDTO toSensorDto(SensorNode s) {
         return new SensorDTO(
                 s.getId(),
                 s.getName(),
                 s.getLatitude(),
                 s.getLongitude(),
-                s.getStatus(),
+                s.getStatus() != null ? s.getStatus().name() : null,
                 s.getBattery(),
                 s.getLastSeen()
         );
