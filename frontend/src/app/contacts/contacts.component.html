@@ -10,7 +10,7 @@
     <nav>
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
-      <a routerLink="/alert" routerLinkActive="active">Alert</a>
+      <a routerLink="/alerts" routerLinkActive="active">Alert</a>
     </nav>
   </div>
 
@@ -32,8 +32,8 @@
 
     <hr />
 
-    <a routerLink="/profile-user" (click)="closeMenu()">Edit Profile</a>
-    <a routerLink="/contact-page" (click)="closeMenu()">Contact</a>
+    <a routerLink="/edit-profile" (click)="closeMenu()">Edit Profile</a>
+    <a routerLink="/contacts" (click)="closeMenu()">Contact</a>
     <a
       *ngIf="role?.toLowerCase() === 'farmer'"
       routerLink="/report-page"
