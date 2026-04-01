@@ -26,8 +26,17 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(name = "full_name")
+    private String fullName;
+
     @Column(nullable = false)
     private String passwordHash;
 
     private Instant createdAt = Instant.now();
+
+    public String getFullName() {
+        return fullName;
+    }
 }
+
+
