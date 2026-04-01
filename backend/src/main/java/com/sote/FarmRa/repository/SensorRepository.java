@@ -16,4 +16,10 @@ public interface SensorRepository extends JpaRepository<Sensor, String> {
 
     // Filter sensors by status (online/weak/offline/deactivate)
     List<Sensor> findByStatus(String status);
+
+    // Dashboard: count sensors by status
+    long countByStatus(String status);
+
+    // Optional: filter by multiple statuses
+    List<Sensor> findByStatusIn(List<String> statuses);
 }
