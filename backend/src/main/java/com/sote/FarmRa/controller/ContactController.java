@@ -1,8 +1,8 @@
 package com.sote.FarmRa.controller;
 
-import com.example.backend.dto.AddContactRequest;
-import com.example.backend.dto.ContactResponse;
-import com.example.backend.service.ContactService;
+import com.sote.FarmRa.model.dto.AddContactRequest;
+import com.sote.FarmRa.model.dto.ContactResponse;
+import com.sote.FarmRa.service.ContactService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
