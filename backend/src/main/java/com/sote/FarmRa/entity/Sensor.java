@@ -1,15 +1,16 @@
 package com.sote.FarmRa.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.time.Instant;
+
 @Entity
-@Table(name = "sensors")
+@Table(name = "sensor_node")
 public class Sensor {
 
     @Id
     @Column(name = "id", nullable = false, length = 32)
-    private String id; 
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -40,24 +41,23 @@ public class Sensor {
     private Integer moisture;
 
     @Column(name = "light")
-    private Integer light;
+    private Boolean light;
+
+    // for dashboard "Last Seen"
+    @Column(name = "last_seen")
+    private Instant lastSeen;
 
     // Relationships
-
-    // Customer (farmer)
+    // avoid serialize loop
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User customer;
 
-    // Technician
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "technician_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User technician;
 
     // Saved State
-
     @Column(name = "saved_status", length = 20)
     private String savedStatus;
 
@@ -77,14 +77,12 @@ public class Sensor {
     private Integer savedMoisture;
 
     @Column(name = "saved_light")
-    private Integer savedLight;
+    private Boolean savedLight;
 
     // Constructors
-
     public Sensor() {}
 
     // Getters and Setters
-
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -115,8 +113,11 @@ public class Sensor {
     public Integer getMoisture() { return moisture; }
     public void setMoisture(Integer moisture) { this.moisture = moisture; }
 
-    public Integer getLight() { return light; }
-    public void setLight(Integer light) { this.light = light; }
+    public Boolean getLight() { return light; }
+    public void setLight(Boolean light) { this.light = light; }
+
+    public Instant getLastSeen() { return lastSeen; }
+    public void setLastSeen(Instant lastSeen) { this.lastSeen = lastSeen; }
 
     public User getCustomer() { return customer; }
     public void setCustomer(User customer) { this.customer = customer; }
@@ -142,6 +143,6 @@ public class Sensor {
     public Integer getSavedMoisture() { return savedMoisture; }
     public void setSavedMoisture(Integer savedMoisture) { this.savedMoisture = savedMoisture; }
 
-    public Integer getSavedLight() { return savedLight; }
-    public void setSavedLight(Integer savedLight) { this.savedLight = savedLight; }
+    public Boolean getSavedLight() { return savedLight; }
+    public void setSavedLight(Boolean savedLight) { this.savedLight = savedLight; }
 }
