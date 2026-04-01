@@ -53,8 +53,9 @@ export class LoginPageComponent {
       .subscribe({
         next: (res) => {
           if (isPlatformBrowser(this.platformId)) {
-            window.localStorage.setItem('userId', res.userId);
-            window.localStorage.setItem('role', res.role);
+            window.sessionStorage.setItem('userId', res.userId);
+            window.sessionStorage.setItem('role', res.role);
+            window.sessionStorage.setItem('fullName', res.fullName);
           }
           console.log('✅ Login successful!');
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
