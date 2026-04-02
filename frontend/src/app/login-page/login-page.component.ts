@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { backendUrl } from '../../environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -20,6 +20,8 @@ export class LoginPageComponent {
 
   emailError = '';
   passwordError = '';
+
+  backendUrl = environment.backendUrl
 
   constructor(
     private http: HttpClient,
@@ -49,13 +51,13 @@ export class LoginPageComponent {
     };
 
     // Send request POST to backend
-    this.http.post<{ userId: string; role: 'farmer' | 'technician' }>(backendUrl + '/login', loginData)
+    this.http.post<{ userId: string; role: 'farmer' | 'technician'; }>(this.backendUrl + '/login', loginData)
       .subscribe({
         next: (res) => {
           if (isPlatformBrowser(this.platformId)) {
             window.sessionStorage.setItem('userId', res.userId);
             window.sessionStorage.setItem('role', res.role);
-            window.sessionStorage.setItem('fullName', res.fullName);
+            //window.sessionStorage.setItem('fullName', res.fullName);
           }
           console.log('✅ Login successful!');
           setTimeout(() => this.router.navigate(['/dashboard']), 300);

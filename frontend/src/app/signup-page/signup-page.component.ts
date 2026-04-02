@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {  HttpClient, HttpClientModule } from '@angular/common/http';
-import { backendUrl } from '../../environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-signup-page',
@@ -13,6 +13,8 @@ import { backendUrl } from '../../environment';
   styleUrls: ['./signup-page.component.css']
 })
 export class SignupPageComponent {
+  backendUrl = environment.backendUrl
+
   email = '';
   phone = '';
   role = '';
@@ -73,7 +75,7 @@ export class SignupPageComponent {
       role: { name: this.role }  // backend reads "role.name"
     };
 
-    this.http.post(backendUrl + '/signup', userData)
+    this.http.post(this.backendUrl + '/signup', userData)
       .subscribe({
         next: (res) => {
           this.showSuccessMessage = true;
