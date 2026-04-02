@@ -17,7 +17,14 @@ public class FarmRaApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("*");
+				registry.addMapping("/**")
+					.allowedOrigins(
+						"http://localhost:4200",
+						"http://localhost:4000",
+						"https://main.diapqju613uka.amplifyapp.com/"
+					)
+					.allowedMethods("*")
+					.allowedHeaders("*");
 			}
 		};
 	}

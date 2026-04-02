@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4000"})
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
