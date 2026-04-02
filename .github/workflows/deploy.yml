@@ -43,4 +43,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENV_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: "v-${{ github.sha }}"
-          deployment_package: ./backend/build/libs/*.jar
+          deployment_package: ./backend/build/libs/FarmRa-0.0.1-SNAPSHOT.jar
