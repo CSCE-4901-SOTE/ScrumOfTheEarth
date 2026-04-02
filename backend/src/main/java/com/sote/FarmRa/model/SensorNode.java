@@ -66,8 +66,8 @@ public class SensorNode {
     private Integer savedRssi;
     private Integer savedPacketLoss;
     private Integer savedBattery;
-    private Float savedTemperature;
-    private Float savedMoisture;
+    private Integer savedTemperature;
+    private Integer savedMoisture;
     private Boolean savedLight;
 
     @Setter
