@@ -17,7 +17,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> {}) 
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             // Disable CSRF so Angular can send POST requests
             .csrf(csrf -> csrf.disable())
             // Allow all requests to the API
@@ -34,7 +34,7 @@ public class SecurityConfig {
             List.of(
                 "http://localhost:4200",
                 "http://localhost:4000",
-                "https://main.diapqju613uka.amplifyapp.com/",
+                "https://main.diapqju613uka.amplifyapp.com",
                 "https://fmwcgyzmt8.execute-api.us-east-2.amazonaws.com"
             )
         );

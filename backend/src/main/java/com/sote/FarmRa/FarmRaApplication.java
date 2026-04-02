@@ -2,31 +2,10 @@ package com.sote.FarmRa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class FarmRaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FarmRaApplication.class, args);
-	}
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-					.allowedOrigins(
-						"http://localhost:4200",
-						"http://localhost:4000",
-						"https://main.diapqju613uka.amplifyapp.com/",
-						"https://fmwcgyzmt8.execute-api.us-east-2.amazonaws.com"
-					)
-					.allowedMethods("*")
-					.allowedHeaders("*");
-			}
-		};
 	}
 }
