@@ -32,6 +32,7 @@ import {
 } from 'chart.js';
 import { environment } from '../../environments/environment';
 import { AlertService } from '../services/alert.service';
+import { TechnicianSensorListComponent } from '../technician-sensor-list/technician-sensor-list.component';
 
 Chart.register(...registerables);
 
@@ -83,6 +84,7 @@ interface SensorLatestApiRow {
     MapSensorComponent,
     FormsModule,
     BaseChartDirective,
+    TechnicianSensorListComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],

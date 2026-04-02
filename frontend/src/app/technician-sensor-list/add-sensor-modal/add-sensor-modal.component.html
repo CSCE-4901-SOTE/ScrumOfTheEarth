@@ -1,0 +1,41 @@
+@if(show) {
+    <div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add New Sensor</h2>
+      <button class="close-btn" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="customer">Customer</label>
+            <select type="text" id="customerDropdown" [(ngModel)]="newSensor.customerName" name="customerName" required>
+                <option>Henry</option>
+                <option>Sarah</option>
+            </select>
+        </div>
+        <div class="form-group">
+          <label for="nodeId">Node ID:</label>
+          <input type="text" id="nodeId" [(ngModel)]="newSensor.id" name="id" required>
+        </div>
+        <div class="form-group">
+          <label for="customerName">Customer Name:</label>
+          <input type="text" id="customerName" [(ngModel)]="newSensor.customerName" name="customerName" required>
+        </div>
+        <div class="form-group">
+          <label for="latitude">Latitude:</label>
+          <input type="number" id="latitude" [(ngModel)]="newSensor.latitude" name="latitude" step="any">
+        </div>
+        <div class="form-group">
+          <label for="longitude">Longitude:</label>
+          <input type="number" id="longitude" [(ngModel)]="newSensor.longitude" name="longitude" step="any">
+        </div>
+        <div class="modal-footer">
+          <button type="button" (click)="close.emit()">Cancel</button>
+          <button type="submit">Add Sensor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}
