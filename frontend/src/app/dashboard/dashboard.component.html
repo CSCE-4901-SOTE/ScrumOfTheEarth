@@ -187,58 +187,62 @@
 <!-- technician view -->
 <ng-template #technicianView>
   <div class="box-container">
-    <div class="data-box"><h2>Online Nodes</h2></div>
-    <div class="data-box"><h2>Offline Nodes</h2></div>
-    <div class="data-box"><h2>Low-battery Nodes</h2></div>
-    <div class="data-box"><h2>Unread Alerts</h2></div>
-  </div>
+    <div class="data-box">
+      <h2>🟢 Active Nodes</h2>
+      <p class="metric-value">{{ summary.activeNodes }}</p>
 
-  <div class="lower-section">
-    <div class="map-box">
-      <div #mapContainer id="sensor-map"></div>
-    </div>
+      <div
+        class="metric-change"
+        [ngClass]="
+          summary.activeDeltaToday > 0 ? 'up' :
+          summary.activeDeltaToday < 0 ? 'down' : 'neutral'
+        "
+      >
+        <ng-container *ngIf="summary.activeDeltaToday !== 0; else activeNoChange">
+          {{ summary.activeDeltaToday > 0 ? '▲' : '▼' }}
+          {{ summary.activeDeltaToday > 0 ? '+' : '' }}{{ summary.activeDeltaToday }} today
+        </ng-container>
 
-    <div class="info-section">
-      <div class="info-box">
-        <h2>Standard Threshold Values</h2>
-
-        <table class="info-table">
-          <tr>
-            <th>Metric</th>
-            <th>Unit</th>
-            <th>Minimum Threshold</th>
-            <th>Maximum Threshold</th>
-          </tr>
-          <tr>
-            <td>Signal strength</td>
-            <td>dBm</td>
-            <td>-110</td>
-            <td>-80</td>
-          </tr>
-          <tr>
-            <td>Packet loss</td>
-            <td>%</td>
-            <td>0</td>
-            <td>40</td>
-          </tr>
-          <tr>
-            <td>Battery</td>
-            <td>%</td>
-            <td>20</td>
-            <td>100</td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="additional-box">
-        <h2>Sensor Inventory</h2>
-        <table class="info-table">
-          <tr>
-            <th>Customer</th>
-            <th>Number of Nodes</th>
-          </tr>
-        </table>
+        <ng-template #activeNoChange>
+          — no change
+        </ng-template>
       </div>
     </div>
+
+    <!-- deactivated -->
+    <div class="data-box">
+      <h2>🔴 Deactivated Nodes</h2>
+      <p class="metric-value">{{ summary.deactivatedNodes }}</p>
+
+      <div
+        class="metric-change"
+        [ngClass]="
+          summary.deactivatedDeltaToday > 0 ? 'up' :
+          summary.deactivatedDeltaToday < 0 ? 'down' : 'neutral'
+        "
+      >
+        <ng-container *ngIf="summary.deactivatedDeltaToday !== 0; else deactNoChange">
+          {{ summary.deactivatedDeltaToday > 0 ? '▲' : '▼' }}
+          {{ summary.deactivatedDeltaToday > 0 ? '+' : '' }}{{ summary.deactivatedDeltaToday }} today
+        </ng-container>
+
+        <ng-template #deactNoChange>
+          — no change
+        </ng-template>
+      </div>
+    </div>
+    <div class="data-box">
+      <h2>⚠️ Low Battery Nodes</h2>
+      <p class="metric-value">{{ summary.deactivatedNodes }}</p>
+      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+    </div>
+    <!-- alerts -->
+    <div class="data-box">
+      <h2>⚠️ Unread Alerts</h2>
+      <p class="metric-value">{{ summary.unreadAlerts }}</p>
+      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+    </div>
   </div>
+
+  <app-technician-sensor-list></app-technician-sensor-list>
 </ng-template>

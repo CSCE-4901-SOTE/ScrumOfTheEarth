@@ -23,6 +23,7 @@ import { SensorInventory } from '../models/sensor-inventory.model';
 import { lstatSync } from 'fs';
 import { HardwareStatus } from '../models/hardware-status.model';
 import { mapHardwareStatusToClass } from '../mappers/hardware-status-class.mapper';
+import { TechnicianSensorListComponent } from "../technician-sensor-list/technician-sensor-list.component";
 
 interface Summary {
   activeNodes: number;
@@ -42,8 +43,9 @@ interface Summary {
     CommonModule,
     HttpClientModule,
     RouterLinkActive,
-    MapSensorComponent
-  ],
+    MapSensorComponent,
+    TechnicianSensorListComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })

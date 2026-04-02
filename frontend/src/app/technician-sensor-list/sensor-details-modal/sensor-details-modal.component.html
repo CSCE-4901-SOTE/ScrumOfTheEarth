@@ -1,0 +1,18 @@
+<div class="modal-overlay" *ngIf="show" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Sensor Details</h2>
+      <button class="close-btn" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body" *ngIf="sensor">
+      <p><strong>Node ID:</strong> {{ sensor.id }}</p>
+      <p><strong>Customer:</strong> {{ sensor.customer?.name || 'N/A' }}</p>
+      <p><strong>Status:</strong> {{ sensor.status }}</p>
+      <p><strong>Battery:</strong> {{ sensor.battery }}%</p>
+      <p><strong>RSSI:</strong> {{ sensor.rssi }} dBm</p>
+      <p><strong>Packet Loss:</strong> {{ sensor.packetLoss }}%</p>
+      <p><strong>Latitude:</strong> {{ sensor.latitude }}</p>
+      <p><strong>Longitude:</strong> {{ sensor.longitude }}</p>
+    </div>
+  </div>
+</div>
