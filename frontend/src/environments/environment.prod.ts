@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    backendUrl: "http://farmra.us-east-2.elasticbeanstalk.com",
+    backendUrl: "https://fmwcgyzmt8.execute-api.us-east-2.amazonaws.com",
 }
