@@ -21,7 +21,8 @@ public class FarmRaApplication {
 					.allowedOrigins(
 						"http://localhost:4200",
 						"http://localhost:4000",
-						"https://main.diapqju613uka.amplifyapp.com/"
+						"https://main.diapqju613uka.amplifyapp.com/",
+						"https://fmwcgyzmt8.execute-api.us-east-2.amazonaws.com"
 					)
 					.allowedMethods("*")
 					.allowedHeaders("*");
