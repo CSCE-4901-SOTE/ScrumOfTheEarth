@@ -25,7 +25,7 @@ export class MapSensorComponent implements OnInit {
   private safeGet(key: string): string | null {
     if (!isPlatformBrowser(this.platformId)) return null;
     try {
-      return window.localStorage.getItem(key);
+      return window.sessionStorage.getItem(key);
     } catch {
       return null;
     }
