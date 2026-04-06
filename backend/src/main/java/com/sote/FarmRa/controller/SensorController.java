@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:4200")  
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4000"})
 @RestController
 @RequestMapping("/api/sensors")
 public class SensorController {
@@ -29,12 +29,14 @@ public class SensorController {
     // Get
 
     // Get all sensors
+    @Transactional(readOnly = true)
     @GetMapping
     public List<Sensor> getAll() {
         return sensorRepository.findAll();
     }
 
     // Get sensor by id
+    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
         return sensorRepository.findById(id)
@@ -46,18 +48,21 @@ public class SensorController {
     }
 
     // Get sensors by status
+    @Transactional(readOnly = true)
     @GetMapping("/status/{status}")
     public List<Sensor> getByStatus(@PathVariable String status) {
-        return sensorRepository.findByStatus(status);
+       return sensorRepository.findByStatus(status.toLowerCase());
     }
 
     // Get sensors by customer (farmer)
+    @Transactional(readOnly = true)
     @GetMapping("/customer/{customerId}")
     public List<Sensor> getByCustomer(@PathVariable UUID customerId) {
         return sensorRepository.findByCustomer_UserId(customerId);
     }
 
     // Get sensors by technician
+    @Transactional(readOnly = true)
     @GetMapping("/technician/{technicianId}")
     public List<Sensor> getByTechnician(@PathVariable UUID technicianId) {
         return sensorRepository.findByTechnician_UserId(technicianId);
@@ -67,16 +72,43 @@ public class SensorController {
 
     // Create a new sensor
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Sensor sensor) {
-        if (sensor.getId() == null || sensor.getId().isBlank()) {
+    public ResponseEntity<?> create(@RequestBody CreateSensorRequest req) {
+        if (req.id() == null || req.id().isBlank()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Sensor id is required"));
         }
 
-        if (sensorRepository.existsById(sensor.getId())) {
+        if (req.name() == null || req.name().isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Sensor name is required"));
+        }
+
+        if (sensorRepository.existsById(req.id())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error", "Sensor id already exists"));
         }
+
+        User customer = userRepository.findById(req.customerId()).orElse(null);
+        if (customer == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Customer not found"));
+        }
+
+        User technician = userRepository.findById(req.technicianId()).orElse(null);
+        if (technician == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Technician not found"));
+        }
+
+        Sensor sensor = new Sensor();
+        sensor.setId(req.id());
+        sensor.setName(req.name());
+        sensor.setLatitude(req.latitude());
+        sensor.setLongitude(req.longitude());
+
+        sensor.setStatus("offline");
+        sensor.setCustomer(customer);
+        sensor.setTechnician(technician);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(sensorRepository.save(sensor));
@@ -95,9 +127,9 @@ public class SensorController {
         }
 
         if (req.getName() != null) sensor.setName(req.getName());
-        if (req.getStatus() != null) sensor.setStatus(req.getStatus());
-        if (req.getLatitude() != 0) sensor.setLatitude(req.getLatitude());
-        if (req.getLongitude() != 0) sensor.setLongitude(req.getLongitude());
+        if (req.getStatus() != null) sensor.setStatus(req.getStatus().toLowerCase());
+        sensor.setLatitude(req.getLatitude());
+        sensor.setLongitude(req.getLongitude());
 
         sensor.setRssi(req.getRssi());
         sensor.setPacketLoss(req.getPacketLoss());
