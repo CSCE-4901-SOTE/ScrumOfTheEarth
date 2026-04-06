@@ -4,15 +4,17 @@ import java.util.UUID;
 
 public class ContactResponse {
     private UUID id;
+    private UUID userId;
     private String name;
     private String phone;
     private String email;
-    private int nodes;
+    private Long nodes;
 
     public ContactResponse() {}
 
-    public ContactResponse(UUID id, String name, String phone, String email, int nodes) {
+    public ContactResponse(UUID id, UUID userId, String name, String phone, String email, Long nodes){
         this.id = id;
+        this.userId = userId;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -21,6 +23,14 @@ public class ContactResponse {
 
     public UUID getId() {
         return id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public void setId(UUID id) {
@@ -51,11 +61,11 @@ public class ContactResponse {
         this.email = email;
     }
 
-    public int getNodes() {
+    public Long getNodes() {
         return nodes;
     }
 
-    public void setNodes(int nodes) {
+    public void setNodes(Long nodes) {
         this.nodes = nodes;
     }
 }
