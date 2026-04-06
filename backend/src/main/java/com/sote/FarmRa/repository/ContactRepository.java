@@ -18,31 +18,40 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
 
     Optional<Contact> findByIdAndOwnerId(UUID id, UUID ownerId);
 
-    @Query("""
+   @Query("""
         SELECT new com.example.backend.dto.ContactResponse(
             c.id,
+            u.userId,
             u.fullName,
             u.phone,
             u.email,
-            0
+            COUNT(s)
         )
         FROM Contact c
         JOIN User u ON c.userId = u.userId
+        LEFT JOIN Sensor s
+            ON s.customer.userId = u.userId
+        AND s.technician.userId = :ownerId
         WHERE c.ownerId = :ownerId
+        GROUP BY c.id, u.userId, u.fullName, u.phone, u.email
     """)
     List<ContactResponse> findTechnicianContactResponses(UUID ownerId);
-
     @Query("""
         SELECT new com.example.backend.dto.ContactResponse(
             c.id,
+            u.userId,
             u.fullName,
             u.phone,
             u.email,
-            0
+            COUNT(s)
         )
         FROM Contact c
         JOIN User u ON c.ownerId = u.userId
+        LEFT JOIN Sensor s
+            ON s.technician.userId = u.userId
+        AND s.customer.userId = :userId
         WHERE c.userId = :userId
+        GROUP BY c.id, u.userId, u.fullName, u.phone, u.email
     """)
     List<ContactResponse> findFarmerContactResponses(UUID userId);
 }
