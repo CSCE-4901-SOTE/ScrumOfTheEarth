@@ -46,11 +46,12 @@ public class ContactService {
         Contact saved = contactRepository.save(contact);
 
         return new ContactResponse(
-                saved.getUserId(),
-                farmer.getFullName(),
-                farmer.getPhone(),
-                farmer.getEmail(),
-                0
+            saved.getId(),
+            saved.getUserId(),
+            farmer.getFullName(),
+            farmer.getPhone(),
+            farmer.getEmail(),
+            0L
         );
     }
 
