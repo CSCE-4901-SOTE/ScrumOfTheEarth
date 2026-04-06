@@ -1,41 +1,48 @@
-<!-- Navbar -->
+<!-- navbar -->
 <header class="navbar">
-    <!-- Navbar Left -->
-    <div class="navbar-left">
-      <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo">
-    </div>
-  
-    <!-- Navbar Center -->
-    <div class="navbar-center">
-      <nav>
-        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-        <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
-        <a routerLink="/alert" routerLinkActive="active">Alert</a>
-      </nav>
-    </div>
+  <!-- logo -->
+  <div class="navbar-left">
+    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo" />
+  </div>
 
-    <!-- Menu Button -->
-    <button class="menu-button" (click)="toggleMenu()">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+  <!-- navigation -->
+  <div class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
+      <a routerLink="/alert" routerLinkActive="active">Alert</a>
+    </nav>
+  </div>
 
-    <!-- Dropdown Menu -->
-    <div class="dropdown-menu" *ngIf="menuOpen">
-      <div class="dropdown-header">
-        <div class="user-icon">👤</div>
-        <div class="user-info">
-          <strong>Name</strong><br />
-          <small>RBAC</small>
-        </div>
+  <!-- menu button -->
+  <button class="menu-button" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- dropdown menu -->
+  <div class="dropdown-menu" *ngIf="menuOpen">
+    <div class="dropdown-header">
+      <div class="user-info">
+        <strong>{{ fullName || 'User' }}</strong><br />
+        <small>{{ displayRole }}</small>
       </div>
-      <hr />
-      <a href="#">Edit Profile</a>
-      <a href="#">Contact</a>
-      <a href="#">Report</a>
-      <a href="#">Sign Out</a>
     </div>
+
+    <hr />
+
+    <a routerLink="/profile-user" (click)="closeMenu()">Edit Profile</a>
+    <a routerLink="/contact-page" (click)="closeMenu()">Contact</a>
+    <a
+      *ngIf="role === 'farmer'"
+      routerLink="/report-page"
+      (click)="closeMenu()"
+    >
+      Report
+    </a>
+    <a routerLink="/login-page" (click)="closeMenu()">Sign Out</a>
+  </div>
 </header>
 
 
@@ -54,6 +61,14 @@
           class="search-box"
         />
       </div>
+      <!-- Add Sensor Button (Technician only) -->
+        <div 
+          class="add-sensor-box" 
+          *ngIf="role === 'technician'"
+          (click)="openAddSensor()"
+        >
+          <span class="plus-icon">+</span>
+        </div>
     </div>
 
     <!-- No Result Text -->
@@ -184,7 +199,7 @@
         <!-- Light Box -->
         <div class="box light" [ngClass]="lightColor">
           <p class="label">Light</p>
-          <p class="value">{{ lightValue }} lx</p>
+          <p class="value">{{ lightValue ? 'On' : 'Off' }}</p>
         </div>
       </div>
 
@@ -202,6 +217,81 @@
           Deactivate
         </button>
       </div>
+    </div>
+  </div>
+  <!-- Add Sensor Modal -->
+  <div
+    class="add-sensor-modal-overlay"
+    *ngIf="showAddSensorModal"
+    (click)="closeAddSensor()"
+  >
+    <div class="add-sensor-modal" (click)="$event.stopPropagation()">
+      <button class="add-sensor-close-btn" (click)="closeAddSensor()">✕</button>
+
+      <form (ngSubmit)="submitAddSensor()" #addSensorForm="ngForm" novalidate>
+        <h1>NEW SENSOR</h1>
+
+        <label for="sensorId"><b>Sensor ID</b></label>
+        <input
+          type="text"
+          id="sensorId"
+          name="sensorId"
+          [(ngModel)]="newSensor.id"
+          placeholder="Enter sensor ID"
+          required
+        />
+
+        <label for="sensorName"><b>Sensor Name</b></label>
+        <input
+          type="text"
+          id="sensorName"
+          name="sensorName"
+          [(ngModel)]="newSensor.name"
+          placeholder="Enter sensor name"
+          required
+        />
+
+        <div class="lat-long-row">
+          <div class="lat-long-field">
+            <label for="latitude"><b>Latitude</b></label>
+            <input
+              type="text"
+              id="latitude"
+              name="latitude"
+              [(ngModel)]="newSensor.latitude"
+              placeholder="Enter latitude"
+              required
+            />
+          </div>
+
+          <div class="lat-long-field">
+            <label for="longitude"><b>Longitude</b></label>
+            <input
+              type="text"
+              id="longitude"
+              name="longitude"
+              [(ngModel)]="newSensor.longitude"
+              placeholder="Enter longitude"
+              required
+            />
+          </div>
+        </div>
+
+        <label for="customerId"><b>Farmer Account</b></label>
+        <select
+          id="customerId"
+          name="customerId"
+          [(ngModel)]="newSensor.customerId"
+          required
+        >
+          <option value="" disabled>Select farmer</option>
+          <option *ngFor="let c of contacts" [value]="c.userId">
+            {{ c.name }}
+          </option>
+        </select>
+
+        <button type="submit">Add Sensor</button>
+      </form>
     </div>
   </div>
 </div>
