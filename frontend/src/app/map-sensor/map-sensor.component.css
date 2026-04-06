@@ -51,9 +51,9 @@
   font-size: 22px;
 }
 
-/* Hamburger Button */
+/* navbar menu button */
 .menu-button {
-  background: #fff;
+  background-color: #fff;
   border: 1px solid #C4BEBE;
   border-radius: 1px;
   width: 40px;
@@ -68,49 +68,63 @@
 }
 
 .menu-button span {
-  width: 25px; 
-  height: 2px; 
-  background: #C4BEBE;
+  width: 25px;
+  height: 2px;
+  background-color: #C4BEBE;
   display: block;
 }
 
-.menu-button:hover { 
-  background-color: #fff; 
-  transform: translateY(2px); 
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); 
+.menu-button:hover {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Dropdown Menu */
+/* dropdown menu */
 .dropdown-menu {
   position: absolute;
   top: 80px;
   right: 80px;
-  background: #fff;
   width: 200px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   padding: 10px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: Roboto;
   z-index: 1000;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.user-info strong {
+  display: block;
+  font-size: 16px; 
+  padding: 4px 14px;
+  margin: 0;
   font-family: Roboto;
 }
 
-.dropdown-menu a { 
-  display: block; 
-  padding: 8px 16px; color: #333; 
-  text-decoration: none; transition: 
-  background-color 0.2s ease; 
+.user-info small {
+  display: block;
+  font-size: 14px;
+  font-family: Roboto;
+  color: #666;
+  margin-left: 14px;
+  margin-top: -10px;
 }
 
-/* Fade Animation */
-@keyframes fadeIn { 
-  from { 
-    opacity: 0; 
-    transform: translateY(-5px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  } 
+.dropdown-menu a {
+  display: block;
+  padding: 8px 14px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  font-size: 15px;
+  font-family: Roboto;
+}
+
+.dropdown-menu a:hover {
+  background-color: #e5e3e3;  
+  color: #000000;               
 }
 
 /* Map Layout */
@@ -619,6 +633,9 @@ background: #e53935;
   font-family: Roboto;
 }
 
+.light-box.green { border-color: #3c8e3f !important; background: #f1f8f2 !important; }
+.light-box.red   { border-color: #e53935 !important; background: #fcf1f1 !important; }
+
 .label {
   font-size: 13px;
   margin-bottom: 4px;
@@ -675,7 +692,178 @@ background: #e53935;
   transform: scale(0.97);
 }
 
+.add-sensor-box {
+  margin: 12px 0;
+  width: 100%;
+  height: 80px;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
+}
 
+.add-sensor-box:hover {
+  border-color: #2e7d32;
+  background-color: #f1f8f4;
+}
 
+.plus-icon {
+  font-size: 32px;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.add-sensor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.add-sensor-modal {
+  position: relative;
+  width: 420px;
+  max-width: 90%;
+}
+
+.add-sensor-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: auto;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+}
+
+.add-sensor-close-btn:hover {
+  background: transparent;
+  color: #000;
+}
+
+.add-sensor-modal form {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  padding: 36px 40px 30px;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.add-sensor-modal form h1 {
+  text-align: center;
+  color: #237327;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-family: Roboto;
+}
+
+.add-sensor-modal label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 0;
+  font-family: Roboto;
+}
+
+.add-sensor-modal input[type="text"],
+.add-sensor-modal select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: Roboto;
+  font-size: 14px;
+}
+
+.add-sensor-modal button[type="submit"] {
+  width: 100%;
+  background-color: #3c8e3f;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Roboto;
+}
+
+.add-sensor-modal button[type="submit"]:hover {
+  background-color: #237327;
+}
+
+/* Improve select dropdown (Farmer Account) */
+.add-sensor-modal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Roboto;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover */
+.add-sensor-modal select:hover {
+  border-color: #2e7d32;
+}
+
+/* Focus */
+.add-sensor-modal select:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+/* Disabled option (Select farmer) */
+.add-sensor-modal select option[value=""] {
+  color: #888;
+}
+
+/* Dropdown option */
+.add-sensor-modal option {
+  font-size: 14px;
+}
+
+/* Lat - Long inline layout */
+.lat-long-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.lat-long-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lat-long-field input {
+  width: 100%;
+}
+
+.lat-long-field input {
+  margin-bottom: 16px;
+}
 
 
