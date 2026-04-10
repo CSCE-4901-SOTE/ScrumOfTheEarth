@@ -44,13 +44,16 @@ export class MapSensorComponent implements OnInit, OnDestroy {
   showAddSensorModal = false;
   userId: string | null = null;
   contacts: Contact[] = [];
+  addSensorError = '';
+  addSensorSuccess = '';
 
   newSensor = {
     id: '',
     name: '',
     latitude: '',
     longitude: '',
-    customerId: ''
+    customerId: '',
+    serialNumber: ''
   };
 
   openAddSensor() {
@@ -68,23 +71,33 @@ export class MapSensorComponent implements OnInit, OnDestroy {
       latitude: Number(this.newSensor.latitude),
       longitude: Number(this.newSensor.longitude),
       customerId: this.newSensor.customerId,
-      technicianId: this.userId
+      technicianId: this.userId,
+      serialNumber: this.newSensor.serialNumber.trim()
     };
 
     if (
       !payload.id ||
       !payload.name ||
+      !payload.serialNumber?.trim() || 
       !Number.isFinite(payload.latitude) ||
       !Number.isFinite(payload.longitude) ||
       !payload.customerId ||
       !payload.technicianId
     ) {
-      console.error('Invalid form');
+      this.addSensorError = 'Please fill in all required fields.';
       return;
     }
 
     this.sensorService.addSensor(payload).subscribe({
       next: (created) => {
+        alert('✅ Sensor is successfully added');
+
+        setTimeout(() => {
+          this.closeAddSensor();
+          this.addSensorSuccess = '';
+        }, 3000);
+
+        this.addSensorError = '';
         console.log('Added sensor:', created);
 
         this.sensors.push(created);
@@ -102,13 +115,18 @@ export class MapSensorComponent implements OnInit, OnDestroy {
           name: '',
           latitude: '',
           longitude: '',
-          customerId: ''
+          customerId: '',
+          serialNumber: ''
         };
-
         this.closeAddSensor();
+
       },
       error: (err) => {
         console.error('Add sensor failed', err);
+        this.addSensorSuccess = '';
+
+        this.addSensorError =
+        err?.error?.error || 'Failed to add sensor.';
       }
     });
   }
