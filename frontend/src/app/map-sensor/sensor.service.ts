@@ -11,7 +11,7 @@ export type SavedState = {
   battery: number;
   temperature: number;
   moisture: number;
-  light: number;
+  light: boolean;
 };
 
 export type Sensor = {
@@ -20,23 +20,22 @@ export type Sensor = {
   latitude: number;
   longitude: number;
   status: SensorStatus;
+  serialNumber?: string | null;
 
   rssi: number;
   packetLoss: number;
   battery: number;
   temperature: number;
   moisture: number;
-  light: number;
+  light: boolean;
 
   technicianName: string;
   customerName: string;
 
   savedState: SavedState | null;
 };
-type ApiUser = {
-  userId?: string;
-  name?: string;
-};
+
+type ApiUser = { userId?: string; fullName?: string };
 
 type ApiSensor = {
   id: string;
@@ -44,34 +43,69 @@ type ApiSensor = {
   latitude: number;
   longitude: number;
   status: SensorStatus;
+  serialNumber?: string | null;
 
   rssi?: number | null;
   packetLoss?: number | null;
   battery?: number | null;
   temperature?: number | null;
   moisture?: number | null;
-  light?: number | null;
+  light?: boolean | null;
 
   customer?: ApiUser | null;
   technician?: ApiUser | null;
 
-  // saved_* fields theo DB/entity
   savedStatus?: SensorStatus | null;
   savedRssi?: number | null;
   savedPacketLoss?: number | null;
   savedBattery?: number | null;
   savedTemperature?: number | null;
   savedMoisture?: number | null;
-  savedLight?: number | null;
+  savedLight?: boolean | null;
 };
+
+export type LatestRow = {
+  node_id: string;
+  node_name: string;
+  latitude: number | null;
+  longitude: number | null;
+  node_status: string | null;
+  temperature: number | null;
+  moisture: number | null;
+  light: boolean | null;
+  last_reading_at: string | null;
+  technician_name?: string | null;
+  customer_name?: string | null;
+};
+
+export function normalizeStatus(raw: string | null | undefined): SensorStatus {
+  const s = (raw ?? '').toString().trim().toLowerCase();
+  if (s === 'online' || s === 'active' || s === 'enabled') return 'online';
+  if (s === 'offline' || s === 'inactive') return 'offline';
+  if (s === 'weak' || s === 'low' || s === 'poor') return 'weak';
+  if (s === 'deactivate' || s === 'deactivated' || s === 'disabled') return 'deactivate';
+  return 'online';
+}
 
 @Injectable({ providedIn: 'root' })
 export class SensorService {
-  private readonly baseUrl = '/api/sensors';
+  private readonly baseUrl = 'http://localhost:8080/api/sensors';
 
   constructor(private http: HttpClient) {}
 
-  /* Converts RSSI (dBm) into a 1–5 signal strength level */
+  addSensor(payload: {
+    id: string;
+    name: string;
+    latitude: number;
+    longitude: number;
+    customerId: string;
+    technicianId: string | null;
+    serialNumber: string;
+  }) {
+    return this.http.post<ApiSensor>(this.baseUrl, payload)
+      .pipe(map(this.mapApiToSensor));
+  }
+
   convertDbmToLevel(dBm: number): number {
     if (dBm >= -55) return 5;
     if (dBm >= -65) return 4;
@@ -80,7 +114,6 @@ export class SensorService {
     return 1;
   }
 
-  // Compute online/weak/offline from stored readings
   computeStatusFromData(sensor: Sensor): 'online' | 'offline' | 'weak' {
     const lvl = this.convertDbmToLevel(sensor.rssi);
     if (lvl <= 1) return 'offline';
@@ -98,7 +131,7 @@ export class SensorService {
             battery: s.savedBattery ?? 0,
             temperature: s.savedTemperature ?? 0,
             moisture: s.savedMoisture ?? 0,
-            light: s.savedLight ?? 0
+            light: s.savedLight ?? false,
           }
         : null;
 
@@ -108,79 +141,71 @@ export class SensorService {
       latitude: s.latitude,
       longitude: s.longitude,
       status: s.status,
+      serialNumber: s.serialNumber ?? '',
 
       rssi: s.rssi ?? -120,
       packetLoss: s.packetLoss ?? 0,
       battery: s.battery ?? 0,
       temperature: s.temperature ?? 0,
       moisture: s.moisture ?? 0,
-      light: s.light ?? 0,
+      light: s.light ?? false,
 
-      technicianName: s.technician?.name ?? '',
-      customerName: s.customer?.name ?? '',
+      technicianName: s.technician?.fullName ?? '',
+      customerName: s.customer?.fullName ?? '',
 
-      savedState
+      savedState,
     };
   };
 
-  // GET sensors from backend
   getSensors(): Observable<Sensor[]> {
-    return this.http.get<ApiSensor[]>(this.baseUrl).pipe(
-      map(list => list.map(this.mapApiToSensor))
-    );
-  }
-
-  activate(sensor: Sensor): void {
-    if (sensor.status !== 'deactivate') return;
-
-    const saved = sensor.savedState;
-    if (saved) {
-      sensor.rssi = saved.rssi;
-      sensor.packetLoss = saved.packetLoss;
-      sensor.battery = saved.battery;
-      sensor.temperature = saved.temperature;
-      sensor.moisture = saved.moisture;
-      sensor.light = saved.light;
-    }
-
-    sensor.status = this.computeStatusFromData(sensor);
-  }
-
-  deactivate(sensor: Sensor): void {
-    if (sensor.status === 'deactivate') return;
-
-    sensor.savedState = {
-      status: sensor.status,
-      rssi: sensor.rssi,
-      packetLoss: sensor.packetLoss,
-      battery: sensor.battery,
-      temperature: sensor.temperature,
-      moisture: sensor.moisture,
-      light: sensor.light
-    };
-
-    sensor.status = 'deactivate';
-    sensor.rssi = -120;
-    sensor.packetLoss = 0;
-    sensor.battery = 0;
+    return this.http.get<ApiSensor[]>(this.baseUrl).pipe(map(list => list.map(this.mapApiToSensor)));
   }
 
   getSensorsByCustomer(customerId: string) {
-    return this.http.get<Sensor[]>(`http://localhost:8080/api/sensors/customer/${customerId}`);
+    return this.http.get<ApiSensor[]>(`${this.baseUrl}/customer/${customerId}`)
+      .pipe(map(list => (list ?? []).map(this.mapApiToSensor)));
   }
 
   getSensorsByTechnician(technicianId: string) {
-    return this.http.get<Sensor[]>(`http://localhost:8080/api/sensors/technician/${technicianId}`);
+    return this.http.get<ApiSensor[]>(`${this.baseUrl}/technician/${technicianId}`)
+      .pipe(map(list => (list ?? []).map(this.mapApiToSensor)));
   }
 
   deactivateSensor(id: string) {
-    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/deactivate`, {}).pipe(
-      map(this.mapApiToSensor));
+    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/deactivate`, {})
+      .pipe(map(this.mapApiToSensor));
   }
 
   activateSensor(id: string) {
-    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/activate`, {}).pipe(
-      map(this.mapApiToSensor));
+    return this.http.put<ApiSensor>(`${this.baseUrl}/${id}/activate`, {})
+      .pipe(map(this.mapApiToSensor));
   }
 
+  getLatestSensorsByRole(role: 'farmer' | 'technician', userId: string) {
+    const url =
+      role === 'farmer'
+        ? `http://localhost:8080/api/sensors/latest/customer/${userId}`
+        : `http://localhost:8080/api/sensors/latest/technician/${userId}`;
+
+    return this.http.get<LatestRow[]>(url).pipe(
+      map(list => (list ?? []).map(r => ({
+        id: r.node_id,
+        name: r.node_name,
+        latitude: Number(r.latitude ?? 0),
+        longitude: Number(r.longitude ?? 0),
+        status: normalizeStatus(r.node_status),
+
+        rssi: -70,
+        packetLoss: 0,
+        battery: 100,
+        temperature: Number(r.temperature ?? 0),
+        moisture: Number(r.moisture ?? 0),
+        light: !!r.light,
+
+        technicianName: r.technician_name ?? '',
+        customerName: r.customer_name ?? '',
+        savedState: null,
+      } as Sensor)))
+    );
+  }
 }
