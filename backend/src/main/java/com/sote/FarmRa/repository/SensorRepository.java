@@ -22,4 +22,6 @@ public interface SensorRepository extends JpaRepository<Sensor, String> {
 
     // Optional: filter by multiple statuses
     List<Sensor> findByStatusIn(List<String> statuses);
+
+    boolean existsBySerialNumber(String serialNumber);
 }
