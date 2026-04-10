@@ -866,4 +866,14 @@ background: #e53935;
   margin-bottom: 16px;
 }
 
+.add-sensor-error {
+  color: #e00e0e;
+  font-size: 10px;
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 20px;         
+  display: block;
+}
+
+
 
