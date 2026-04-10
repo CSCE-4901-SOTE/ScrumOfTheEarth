@@ -15,6 +15,9 @@ public class Sensor {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "serial_number", nullable = false, unique = true)
+    private String serialNumber;
+
     @Column(name = "latitude", nullable = false)
     private double latitude;
 
@@ -40,15 +43,16 @@ public class Sensor {
     @Column(name = "moisture")
     private Integer moisture;
 
+    // Supabase: light is boolean (TRUE/FALSE)
     @Column(name = "light")
     private Boolean light;
 
-    // for dashboard "Last Seen"
+    // ✅ for dashboard "Last Seen"
     @Column(name = "last_seen")
     private Instant lastSeen;
 
     // Relationships
-    // avoid serialize loop
+    // Dashboard v1 không cần trả customer/technician -> tránh serialize loop
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private User customer;
@@ -76,6 +80,7 @@ public class Sensor {
     @Column(name = "saved_moisture")
     private Integer savedMoisture;
 
+    // Supabase: saved_light is boolean (TRUE/FALSE)
     @Column(name = "saved_light")
     private Boolean savedLight;
 
@@ -88,6 +93,9 @@ public class Sensor {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getSerialNumber() { return serialNumber; }
+    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
 
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
