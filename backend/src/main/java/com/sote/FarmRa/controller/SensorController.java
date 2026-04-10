@@ -75,12 +75,22 @@ public class SensorController {
     public ResponseEntity<?> create(@RequestBody CreateSensorRequest req) {
         if (req.id() == null || req.id().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Sensor id is required"));
+                .body(Map.of("error", "Sensor id is required"));
         }
 
         if (req.name() == null || req.name().isBlank()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Sensor name is required"));
+                .body(Map.of("error", "Sensor name is required"));
+        }
+
+        if (req.serialNumber() == null || req.serialNumber().isBlank()) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Serial number is required"));
+        }
+
+        if (sensorRepository.existsBySerialNumber(req.serialNumber())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", "Serial number already exists"));
         }
 
         if (sensorRepository.existsById(req.id())) {
@@ -103,6 +113,7 @@ public class SensorController {
         Sensor sensor = new Sensor();
         sensor.setId(req.id());
         sensor.setName(req.name());
+        sensor.setSerialNumber(req.serialNumber());
         sensor.setLatitude(req.latitude());
         sensor.setLongitude(req.longitude());
 
@@ -150,6 +161,7 @@ public class SensorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
         }
+
 
         // Assign customer
         if (req.customerId != null) {
@@ -264,3 +276,6 @@ public class SensorController {
 
 
 }
+
+
+
