@@ -290,6 +290,19 @@
           </option>
         </select>
 
+        <label for="serialNumber"><b>Serial Number</b></label>
+        <input
+          type="text"
+          id="serialNumber"
+          name="serialNumber"
+          [(ngModel)]="newSensor.serialNumber"
+          placeholder="Enter serial number"
+          required
+        />
+        <p *ngIf="addSensorError" class="add-sensor-error">
+          {{ addSensorError }}
+        </p>
+
         <button type="submit">Add Sensor</button>
       </form>
     </div>
