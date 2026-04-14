@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export type SensorStatus = 'online' | 'weak' | 'offline' | 'deactivate';
 
@@ -89,7 +90,7 @@ export function normalizeStatus(raw: string | null | undefined): SensorStatus {
 
 @Injectable({ providedIn: 'root' })
 export class SensorService {
-  private readonly baseUrl = 'http://localhost:8080/api/sensors';
+  private readonly baseUrl = environment.backendUrl + "/sensors";
 
   constructor(private http: HttpClient) {}
 
@@ -184,8 +185,8 @@ export class SensorService {
   getLatestSensorsByRole(role: 'farmer' | 'technician', userId: string) {
     const url =
       role === 'farmer'
-        ? `http://localhost:8080/api/sensors/latest/customer/${userId}`
-        : `http://localhost:8080/api/sensors/latest/technician/${userId}`;
+        ? this.baseUrl + `/latest/customer/${userId}`
+        : this.baseUrl + `/latest/technician/${userId}`;
 
     return this.http.get<LatestRow[]>(url).pipe(
       map(list => (list ?? []).map(r => ({

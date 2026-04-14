@@ -28,13 +28,13 @@ public class UserController {
 
     public static class LoginRequest {
         private String email;
-        private String password;
+        private String passwordHash;
 
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
 
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
+        public String getPasswordHash() { return passwordHash; }
+        public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     }
 
     @PostMapping("/signup")
@@ -65,10 +65,10 @@ public class UserController {
         try {
             if (req.getEmail() == null || req.getEmail().isBlank())
                 return ResponseEntity.badRequest().body("Email is required");
-            if (req.getPassword() == null || req.getPassword().isBlank())
+            if (req.getPasswordHash() == null || req.getPasswordHash().isBlank())
                 return ResponseEntity.badRequest().body("Password is required");
 
-            User user = userService.loginUser(req.getEmail(), req.getPassword());
+            User user = userService.loginUser(req.getEmail(), req.getPasswordHash());
 
             String role = (user.getRole() != null && user.getRole().getName() != null)
                     ? user.getRole().getName().toLowerCase()

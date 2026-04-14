@@ -32,7 +32,7 @@ export class AppComponent {
         );
 
         if (typeof window !== 'undefined') {
-          this.role = (sessionStorage.getItem('userRole') || '').toLowerCase();
+          this.role = (sessionStorage.getItem('role') || '').toLowerCase();
           const userEmail = sessionStorage.getItem('userEmail') || '';
           // display local part of email, capitalized
           if (userEmail) {

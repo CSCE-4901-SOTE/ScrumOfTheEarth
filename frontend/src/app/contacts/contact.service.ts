@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Contact {
   id: string;
@@ -15,7 +16,7 @@ export interface Contact {
   providedIn: 'root'
 })
 export class ContactService {
-  private baseUrl = 'http://localhost:8080/api/contacts';
+  private baseUrl = environment.backendUrl + "/contacts";
 
   constructor(private http: HttpClient) {}
 

@@ -53,11 +53,11 @@ public class Sensor {
 
     // Relationships
     // Dashboard v1 không cần trả customer/technician -> tránh serialize loop
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private User customer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "technician_id")
     private User technician;
 

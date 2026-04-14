@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as maplibregl from 'maplibre-gl';
 import { SensorService, Sensor } from './sensor.service';
-import { ContactService, Contact } from '../contact-page/contact.service';
+import { ContactService, Contact } from '../contacts/contact.service';
 
 @Component({
   selector: 'app-map-sensor',
@@ -396,10 +396,10 @@ export class MapSensorComponent implements OnInit, OnDestroy {
   }
 
   // Map status -> marker color
-  private getMarkerColor(status: HardwareStatus) {
-    if (status === HardwareStatus.ONLINE) return '#3c8e3f';
-    if (status === HardwareStatus.OFFLINE) return '#e00e0e';
-    if (status === HardwareStatus.WEAK) return '#e6b800';
+  private getMarkerColor(status: string) {
+    if (status === 'online') return '#3c8e3f';
+    if (status === 'offline') return '#e00e0e';
+    if (status === 'weak') return '#e6b800';
     return '#777'; // deactivate
   }
 
@@ -467,14 +467,6 @@ export class MapSensorComponent implements OnInit, OnDestroy {
       zoom: 20,
       speed: 1.25,
     });
-  }
-
-  openSensorHistory() {
-    this.sensorModal()?.nativeElement.showModal();
-  }
-
-  closeSensorHistory() {
-    this.sensorModal()?.nativeElement.close();
   }
 
   /* Activates the selected sensor */
