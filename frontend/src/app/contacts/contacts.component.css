@@ -1,107 +1,432 @@
+/* navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  height: 70px;
+  padding: 0 80px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  position: relative;
+  font-family: Roboto;
+}
+
+/* navbar logo */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 90px;
+  object-fit: contain;
+  display: block;
+}
+
+/* navbar navigation */
+.navbar-center {
+  position: absolute;
+  right: 310px;
+}
+
+.navbar-center nav {
+  display: flex;
+  align-items: center;
+  gap: 200px;
+}
+
+.navbar-center a {
+  text-decoration: none;
+  color: #000;
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.navbar-center a:hover {
+  color: #999;
+}
+
+.navbar-center a.active {
+  color: #237327;
+  font-weight: 600;
+}
+
+/* navbar menu button */
+.menu-button {
+  background-color: #fff;
+  border: 1px solid #C4BEBE;
+  border-radius: 1px;
+  width: 40px;
+  height: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-right: 31px;
+}
+
+.menu-button span {
+  width: 25px;
+  height: 2px;
+  background-color: #C4BEBE;
+  display: block;
+}
+
+.menu-button:hover {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 80px;
+  right: 80px;
+  width: 200px;
+  padding: 10px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: Roboto;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.user-info strong {
+  display: block;
+  font-size: 16px;
+  padding: 4px 14px;
+  margin: 0;
+  font-family: Roboto;
+}
+
+.user-info small {
+  display: block;
+  font-size: 14px;
+  font-family: Roboto;
+  color: #666;
+  margin-left: 14px;
+  margin-top: -10px;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px 14px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  font-size: 15px;
+  font-family: Roboto;
+}
+
+.dropdown-menu a:hover {
+  background-color: #e5e3e3;
+  color: #000000;
+}
+
 .contacts-container {
-    width: 96%;
-    max-width: 1500px;
-    margin: 40px auto;
-    font-family: "Inter", sans-serif;
-  }
-  
-  .header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  h2 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-  }
-  
-  .add-contact-btn {
-    background: #2ecc71;
-    border: none;
-    padding: 10px 22px;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 15px;
-  }
-  
-  .search-box {
-    width: 100%;
-    padding: 11px 15px;
-    border: 2px solid #c8c8c8;
-    margin: 20px 0;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-  
-  .contacts-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .contacts-table th {
-    text-align: left;
-    background: #f3f3f3;
-    padding: 12px;
-    border-bottom: 2px solid #333;
-  }
-  
-  .contacts-table td {
-    padding: 14px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  /* MODAL */
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    width: 380px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .modal input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .modal-btns {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-  
-  .modal .save {
-    background: #2ecc71;
-    border: none;
-    padding: 8px 16px;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .modal .cancel {
-    background: #ccc;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
+  width: 96%;
+  max-width: 1500px;
+  margin: 40px auto;
+  font-family: Roboto;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #7f4b30;
+}
+
+.add-contact-btn {
+  background: #237327;
+  border: none;
+  padding: 10px 22px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Roboto;
+}
+
+.add-contact-btn:hover {
+  background: #1b5f1f;
+}
+
+.search-box {
+  width: 1335px;
+  padding: 11px 15px;
+  border: 1px solid #c8c8c8;
+  margin: 20px 0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: Roboto;
+}
+
+.contacts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.contacts-table th {
+  text-align: center;
+  background: #f3f3f3;
+  padding: 12px;
+  border-bottom: 2px solid #333;
+  border: 1px solid #333;
+}
+
+.contacts-table td {
+  padding: 14px;
+  border-bottom: 1px solid #333;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+/* checkbox column */
+.checkbox-cell {
+  width: 52px;
+  padding: 0;
+}
+
+.contacts-table th.checkbox-column,
+.contacts-table td.checkbox-cell {
+  width: 52px;
+  text-align: center;
+}
+
+.checkbox-cell input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* actions below table */
+.table-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 18px;
+}
+
+.delete-contact-btn {
+  background: #b42318;
+  border: none;
+  padding: 10px 22px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Roboto;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.delete-contact-btn:hover {
+  background: #911d14;
+}
+
+.delete-contact-btn:disabled {
+  background: #d3d3d3;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  font-family: Roboto;
+}
+
+/* title */
+.modal h3 {
+  text-align: center;
+  color: #237327;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* label */
+.modal label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #000000;
+  margin-bottom: 2px;
+}
+
+/* input text */
+.modal input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: #3c8e3f;
+  box-shadow: 0 0 0 2px rgba(60, 142, 63, 0.12);
+}
+
+/* button layout */
+.modal-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+/* save button */
+.modal .save {
+  width: 100%;
+  background-color: #3c8e3f;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.modal .save:hover {
+  background-color: #237327;
+}
+
+/* cancel button */
+.modal .cancel {
+  width: 100%;
+  background-color: #e5e5e5;
+  color: #333;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal .cancel:hover {
+  background-color: #d6d6d6;
+}
+
+.modal .delete {
+  width: 100%;
+  background-color: #b42318;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.modal .delete:hover {
+  background-color: #911d14;
+}
+
+/* DELETE MODAL */
+.delete-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  font-family: Roboto;
+}
+
+.delete-text {
+  text-align: center;
+  font-size: 17px;
+  color: #333;
+  margin-top: 8px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.delete-modal-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.delete-modal-btns .cancel,
+.delete-modal-btns .delete {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+
+.delete-modal-btns .cancel {
+  background-color: #e5e5e5;
+  color: #333;
+}
+
+.delete-modal-btns .cancel:hover {
+  background-color: #d6d6d6;
+}
+
+.delete-modal-btns .delete {
+  background-color: #b42318;
+  color: white;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.delete-modal-btns .delete:hover {
+  background-color: #911d14;
+}
+
+.error-text {
+  color: #e00e0e;
+  font-size: 12px;
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  display: block;
+}

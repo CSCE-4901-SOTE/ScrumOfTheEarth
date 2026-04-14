@@ -8,4 +8,5 @@ import com.sote.FarmRa.model.User;
 public interface UserRepository extends JpaRepository<User, java.util.UUID> {
     // Automatically generates the query: SELECT * FROM users WHERE email = ?
     User findByEmail(String email);
+    Optional<User> findByEmailIgnoreCase(String email);
 }

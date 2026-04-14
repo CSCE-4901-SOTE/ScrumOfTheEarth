@@ -1,5 +1,6 @@
 package com.sote.FarmRa.repository;
 
+import com.sote.FarmRa.entity.Sensor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -39,11 +40,13 @@ public interface SensorRepository extends JpaRepository<SensorNode, String> {
     List<SensorNode> findByTechnician_UserId(UUID userId);
 
     // Filter sensors by status (online/weak/offline/deactivate)
-    List<SensorNode> findByStatus(HardwareStatus status);
+    List<Sensor> findByStatus(String status);
 
     // Dashboard: count sensors by status
     long countByStatus(String status);
 
-    // Filter by multiple statuses
-    List<SensorNode> findByStatusIn(List<String> statuses);
+    // Optional: filter by multiple statuses
+    List<Sensor> findByStatusIn(List<String> statuses);
+
+    boolean existsBySerialNumber(String serialNumber);
 }

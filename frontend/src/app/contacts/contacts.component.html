@@ -1,53 +1,144 @@
-<div class="contacts-container">
+<!-- navbar -->
+<header class="navbar">
+  <!-- logo -->
+  <div class="navbar-left">
+    <img src="assets/dashfarmhouse.png" alt="Farmhouse Logo" class="logo" />
+  </div>
 
-    <div class="header-row">
-      <h2>Contacts</h2>
-      <button class="add-contact-btn" (click)="openAddModal()">Add Contact</button>
-    </div>
-  
-    <input
-      class="search-box"
-      type="text"
-      placeholder="Search"
-      [(ngModel)]="searchTerm"
-    />
-  
-    <table class="contacts-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Phone Number</th>
-          <th>Email</th>
-          <th>Number of Nodes</th>
-        </tr>
-      </thead>
-  
-      <tbody>
-        <tr *ngFor="let c of filteredContacts()">
-          <td>{{ c.name }}</td>
-          <td>{{ c.phone }}</td>
-          <td>{{ c.email }}</td>
-          <td>{{ c.nodes }}</td>
-        </tr>
-      </tbody>
-    </table>
-  
-<!-- add contact -->
-    <div class="modal-backdrop" *ngIf="showModal">
-      <div class="modal">
-        <h3>Add Contact</h3>
-  
-        <input type="text" placeholder="Name" [(ngModel)]="newContact.name" />
-        <input type="text" placeholder="Phone Number" [(ngModel)]="newContact.phone" />
-        <input type="text" placeholder="Email" [(ngModel)]="newContact.email" />
-        <input type="number" placeholder="Number of Nodes" [(ngModel)]="newContact.nodes" />
-  
-        <div class="modal-btns">
-          <button class="save" (click)="saveContact()">Save</button>
-          <button class="cancel" (click)="closeAddModal()">Cancel</button>
-        </div>
+  <!-- navigation -->
+  <div class="navbar-center">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/map-sensor" routerLinkActive="active">Map Sensor</a>
+      <a routerLink="/alerts" routerLinkActive="active">Alert</a>
+    </nav>
+  </div>
+
+  <!-- menu button -->
+  <button class="menu-button" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- dropdown menu -->
+  <div class="dropdown-menu" *ngIf="menuOpen">
+    <div class="dropdown-header">
+      <div class="user-info">
+        <strong>{{ fullName || 'User' }}</strong><br />
+        <small>{{ displayRole }}</small>
       </div>
     </div>
-  
+
+    <hr />
+
+    <a routerLink="/edit-profile" (click)="closeMenu()">Edit Profile</a>
+    <a routerLink="/contacts" (click)="closeMenu()">Contact</a>
+    <a
+      *ngIf="role?.toLowerCase() === 'farmer'"
+      routerLink="/report-page"
+      (click)="closeMenu()"
+    >
+      Report
+    </a>
+    <a routerLink="/login-page" (click)="closeMenu()">Sign Out</a>
   </div>
-  
+</header>
+
+<div class="contacts-container">
+  <div class="header-row">
+    <h2>Contacts</h2>
+
+    <button
+      *ngIf="isTechnician"
+      class="add-contact-btn"
+      (click)="openAddModal()"
+    >
+      Add Contact
+    </button>
+  </div>
+
+  <input
+    class="search-box"
+    type="text"
+    placeholder="Search"
+    [(ngModel)]="searchTerm"
+  />
+
+  <table class="contacts-table">
+    <thead>
+      <tr>
+        <th *ngIf="isTechnician" class="checkbox-column"></th>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+        <th>{{ nodeColumnTitle }}</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let c of filteredContacts()">
+        <td *ngIf="isTechnician" class="checkbox-cell">
+          <input
+            type="checkbox"
+            [checked]="isContactSelected(c.id)"
+            (change)="toggleContactSelection(c.id)"
+          />
+        </td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.phone }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.nodes }}</td>
+      </tr>
+
+      <tr *ngIf="filteredContacts().length === 0">
+        <td [attr.colspan]="isTechnician ? 5 : 4">No contacts found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="table-actions" *ngIf="isTechnician">
+    <button
+      class="delete-contact-btn"
+      [disabled]="selectedContactIds.length === 0"
+      (click)="openDeleteModal()"
+    >
+      Delete Contact
+    </button>
+  </div>
+
+  <!-- add contact -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal">
+      <h3>New Contact</h3>
+
+      <label>Email</label>
+      <input
+        type="text"
+        placeholder="Enter your customer email"
+        [(ngModel)]="newContact.email"
+      />
+
+      <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+
+      <div class="modal-btns">
+        <button class="save" (click)="saveContact()">Save Contact</button>
+        <button class="cancel" (click)="closeAddModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- delete confirm modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteModal">
+    <div class="delete-modal">
+      <p class="delete-text">Are you sure to delete this contact?</p>
+
+      <div class="delete-modal-btns">
+        <button class="cancel" (click)="closeDeleteModal()">Cancel</button>
+        <button class="delete" (click)="confirmDeleteSelectedContacts()">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
