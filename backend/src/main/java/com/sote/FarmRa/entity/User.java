@@ -1,4 +1,4 @@
-package com.sote.FarmRa.model;
+package com.sote.FarmRa.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -38,5 +38,3 @@ public class User {
         return fullName;
     }
 }
-
-

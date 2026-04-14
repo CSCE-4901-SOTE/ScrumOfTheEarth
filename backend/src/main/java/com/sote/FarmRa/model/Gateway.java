@@ -1,14 +1,11 @@
 package com.sote.FarmRa.model;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -20,9 +17,10 @@ public class Gateway {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    /*
     @OneToMany(mappedBy = "gateway")
-    private List<SensorNode> sensorNodes;
-
+    private List<Sensor> sensorNodes;
+    */
     @Enumerated(EnumType.STRING)
     private HardwareStatus gatewayStatus;
 

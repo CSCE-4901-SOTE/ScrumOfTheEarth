@@ -3,10 +3,9 @@ package com.sote.FarmRa.model;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sote.FarmRa.entity.Sensor;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -30,7 +29,7 @@ public class SensorReadings {
     @JoinColumn(name="node_id")
     @Setter
     @JsonIgnore
-    private SensorNode node;
+    private Sensor node;
     
     private Instant createdAt;
 

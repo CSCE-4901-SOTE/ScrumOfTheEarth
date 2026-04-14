@@ -2,7 +2,7 @@ package com.sote.FarmRa.service;
 
 import com.sote.FarmRa.model.dto.DashboardDTO;
 import com.sote.FarmRa.model.dto.SensorDTO;
-import com.sote.FarmRa.model.SensorNode;
+import com.sote.FarmRa.entity.Sensor;
 import com.sote.FarmRa.repository.SensorRepository;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +60,7 @@ public class DashboardService {
     }
 
     // Helpers
-    private SensorDTO toSensorDto(SensorNode s) {
+    private SensorDTO toSensorDto(Sensor s) {
         return new SensorDTO(
                 s.getId(),
                 s.getName(),

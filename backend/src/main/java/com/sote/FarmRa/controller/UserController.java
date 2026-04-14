@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
+    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
     try {
         if (req.getEmail() == null || req.getEmail().isBlank())
             return ResponseEntity.badRequest().body("Email is required");

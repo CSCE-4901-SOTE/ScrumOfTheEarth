@@ -1,7 +1,7 @@
 package com.sote.FarmRa.controller;
 
 import com.sote.FarmRa.entity.Sensor;
-import com.sote.FarmRa.model.User;
+import com.sote.FarmRa.entity.User;
 import com.sote.FarmRa.model.dto.CreateSensorRequest;
 import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
@@ -28,10 +28,10 @@ public class SensorController {
     }
 
     // Get all sensors
-    @@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     @GetMapping
-    public List<SensorNode> getAll() {
-        return sensorRepository.getSensorsWithReadings();
+    public List<Sensor> getAll() {
+        return sensorRepository.findAll();
     }
 
     // Get sensor by id
@@ -56,15 +56,14 @@ public class SensorController {
     // Get sensors by customer (farmer)
     @Transactional(readOnly = true)
     @GetMapping("/customer/{customerId}")
-    public List<SensorNode> getByCustomer(@PathVariable UUID customerId) {
+    public List<Sensor> getByCustomer(@PathVariable UUID customerId) {
         return sensorRepository.findByCustomer_UserId(customerId);
     }
 
     // Get sensors by technician
     @Transactional(readOnly = true)
     @GetMapping("/technician/{technicianId}")
-    @Transactional(readOnly = true)
-    public List<SensorNode> getByTechnician(@PathVariable UUID technicianId) {
+    public List<Sensor> getByTechnician(@PathVariable UUID technicianId) {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }
 
@@ -130,8 +129,8 @@ public class SensorController {
     // Update basic sensor data
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-                                    @RequestBody SensorNode req) {
-        SensorNode sensor = sensorRepository.findById(id).orElse(null);
+                                    @RequestBody Sensor req) {
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
@@ -153,7 +152,7 @@ public class SensorController {
     @PutMapping("/{id}/assign")
     public ResponseEntity<?> assign(@PathVariable String id,
                                     @RequestBody AssignRequest req) {
-        SensorNode sensor = sensorRepository.findById(id).orElse(null);
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
@@ -205,14 +204,14 @@ public class SensorController {
 
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivate(@PathVariable String id) {
-        SensorNode sensor = sensorRepository.findById(id).orElse(null);
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
         }
 
         // If already deactivate, do nothing 
-        if (sensor.getStatus() == HardwareStatus.DEACTIVATED) {
+        if ("deactivate".equals(sensor.getStatus())) {
             return ResponseEntity.ok(sensor);
         }
 
@@ -223,7 +222,7 @@ public class SensorController {
         sensor.setSavedBattery(sensor.getBattery());
 
         // Set to deactivate 
-        sensor.setStatus(HardwareStatus.DEACTIVATED);
+        sensor.setStatus("deactivate");
         sensor.setRssi(null);
         sensor.setPacketLoss(null);
         sensor.setBattery(null);
@@ -233,7 +232,7 @@ public class SensorController {
 
     @PutMapping("/{id}/activate")
     public ResponseEntity<?> activate(@PathVariable String id) {
-        SensorNode sensor = sensorRepository.findById(id).orElse(null);
+        Sensor sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));

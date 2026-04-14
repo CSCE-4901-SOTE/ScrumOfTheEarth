@@ -1,4 +1,4 @@
-package com.sote.FarmRa.controller;
+package com.sote.FarmRa.model.dto;
 
 import java.util.UUID;
 
@@ -16,3 +16,4 @@ public class LoginResponse {
     public UUID getUserId() { return userId; }
     public String getRole() { return role; }
     public String getFullName() { return fullName; }
+}

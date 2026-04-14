@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.sote.FarmRa.model.Role;
+import com.sote.FarmRa.entity.Role;
 
 
 // Repository for working with the "role" table through the Role entity

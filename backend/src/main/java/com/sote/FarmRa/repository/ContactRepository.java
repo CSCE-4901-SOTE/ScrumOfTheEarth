@@ -1,7 +1,8 @@
 package com.sote.FarmRa.repository;
 
-import com.sote.FarmRa.repository.ContactResponse;
 import com.sote.FarmRa.entity.Contact;
+import com.sote.FarmRa.model.dto.ContactResponse;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,7 +20,7 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
     Optional<Contact> findByIdAndOwnerId(UUID id, UUID ownerId);
 
    @Query("""
-        SELECT new com.example.backend.dto.ContactResponse(
+        SELECT new com.sote.FarmRa.model.dto.ContactResponse(
             c.id,
             u.userId,
             u.fullName,
@@ -37,7 +38,7 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
     """)
     List<ContactResponse> findTechnicianContactResponses(UUID ownerId);
     @Query("""
-        SELECT new com.example.backend.dto.ContactResponse(
+        SELECT new com.sote.FarmRa.model.dto.ContactResponse(
             c.id,
             u.userId,
             u.fullName,

@@ -4,21 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.sote.FarmRa.model.Gateway;
-import com.sote.FarmRa.model.HardwareStatus;
-import com.sote.FarmRa.model.SensorNode;
-import com.sote.FarmRa.model.SensorReading;
+import com.sote.FarmRa.entity.Sensor;
 import com.sote.FarmRa.entity.User;
-import com.sote.FarmRa.model.dto.UploadSensorDto;
-import com.sote.FarmRa.model.dto.UploadSensorReadingDto;
-import com.sote.FarmRa.model.mapper.SensorMapper;
-import com.sote.FarmRa.repository.GatewayRepository;
-import com.sote.FarmRa.repository.SensorReadingRepository;
 import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
 
@@ -30,49 +20,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SensorService {
     private final SensorRepository sensorRepository;
-    private final SensorReadingRepository sensorReadingRepository;
-    private final GatewayRepository gatewayRepository;
     private final UserRepository userRepository;
 
-    public List<SensorNode> getSensors() {
+    public List<Sensor> getSensors() {
         return sensorRepository.findAll();
     }
 
-    //Phuong's code
-    public List<SensorNode> getByStatus(HardwareStatus status) {
-        return sensorRepository.findByStatus(status);
-    }
-
-    public List<SensorNode> getByCustomer(UUID customerId) {
+    public List<Sensor> getByCustomer(UUID customerId) {
         return sensorRepository.findByCustomer_UserId(customerId);
     }
 
-    public List<SensorNode> getByTechnician(UUID technicianId) {
+    public List<Sensor> getByTechnician(UUID technicianId) {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }
-    // End
 
-    public void saveSenorNode(UploadSensorDto sensorNodeDto) throws NotFoundException {
-        Gateway gateway = gatewayRepository.findById(sensorNodeDto.getGatewayId()).orElseThrow(NotFoundException::new);
-        SensorNode sensorNode = SensorMapper.mapSensorNode(sensorNodeDto);
-        sensorNode.setGateway(gateway);
-        sensorNode.setStatus(HardwareStatus.ONLINE);
-        sensorRepository.save(sensorNode);
-    }
-
-    public void saveSensorData(UploadSensorReadingDto reading) throws NotFoundException {
-        SensorNode sensorNode = sensorRepository.findById(reading.getNodeId()).orElseThrow(NotFoundException::new);
-        SensorReadings sensorReading = SensorMapper.mapSensorReading(reading);
-        sensorReading.setNode(sensorNode);
-        sensorReadingRepository.save(sensorReading);
-    }
-
-    public SensorNode getById(String id) {
+    public Sensor getById(String id) {
         return sensorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found: " + id));
     }
 
-    public SensorNode create(SensorNode sensor) {
+    public Sensor create(Sensor sensor) {
         if (sensor.getId() == null || Objects.isNull(sensor.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sensor id is required");
         }
@@ -82,8 +49,8 @@ public class SensorService {
         return sensorRepository.save(sensor);
     }
 
-    public SensorNode update(String id, SensorNode patch) {
-        SensorNode s = getById(id);
+    public Sensor update(String id, Sensor patch) {
+        Sensor s = getById(id);
         if (patch.getName() != null) s.setName(patch.getName());
         if (patch.getStatus() != null) s.setStatus(patch.getStatus());
         s.setLatitude(patch.getLatitude());
@@ -94,30 +61,30 @@ public class SensorService {
         return sensorRepository.save(s);
     }
 
-    public SensorNode assignCustomer(String sensorId, UUID customerId) {
-        SensorNode s = getById(sensorId);
+    public Sensor assignCustomer(String sensorId, UUID customerId) {
+        Sensor s = getById(sensorId);
         User customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Customer not found: " + customerId));
         s.setCustomer(customer);
         return sensorRepository.save(s);
     }
 
-    public SensorNode clearCustomer(String sensorId) {
-        SensorNode s = getById(sensorId);
+    public Sensor clearCustomer(String sensorId) {
+        Sensor s = getById(sensorId);
         s.setCustomer(null);
         return sensorRepository.save(s);
     }
 
-    public SensorNode assignTechnician(String sensorId, UUID technicianId) {
-        SensorNode s = getById(sensorId);
+    public Sensor assignTechnician(String sensorId, UUID technicianId) {
+        Sensor s = getById(sensorId);
         User tech = userRepository.findById(technicianId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Technician not found: " + technicianId));
         s.setTechnician(tech);
         return sensorRepository.save(s);
     }
 
-    public SensorNode clearTechnician(String sensorId) {
-        SensorNode s = getById(sensorId);
+    public Sensor clearTechnician(String sensorId) {
+        Sensor s = getById(sensorId);
         s.setTechnician(null);
         return sensorRepository.save(s);
     }
