@@ -45,7 +45,7 @@ public class Sensor {
 
     // Supabase: light is boolean (TRUE/FALSE)
     @Column(name = "light")
-    private Boolean light;
+    private Integer light;
 
     // ✅ for dashboard "Last Seen"
     @Column(name = "last_seen")
@@ -82,7 +82,7 @@ public class Sensor {
 
     // Supabase: saved_light is boolean (TRUE/FALSE)
     @Column(name = "saved_light")
-    private Boolean savedLight;
+    private Integer savedLight;
 
     // Constructors
     public Sensor() {}
@@ -121,8 +121,8 @@ public class Sensor {
     public Integer getMoisture() { return moisture; }
     public void setMoisture(Integer moisture) { this.moisture = moisture; }
 
-    public Boolean getLight() { return light; }
-    public void setLight(Boolean light) { this.light = light; }
+    public Integer getLight() { return light; }
+    public void setLight(Integer light) { this.light = light; }
 
     public Instant getLastSeen() { return lastSeen; }
     public void setLastSeen(Instant lastSeen) { this.lastSeen = lastSeen; }
@@ -151,6 +151,6 @@ public class Sensor {
     public Integer getSavedMoisture() { return savedMoisture; }
     public void setSavedMoisture(Integer savedMoisture) { this.savedMoisture = savedMoisture; }
 
-    public Boolean getSavedLight() { return savedLight; }
-    public void setSavedLight(Boolean savedLight) { this.savedLight = savedLight; }
+    public Integer getSavedLight() { return savedLight; }
+    public void setSavedLight(Integer savedLight) { this.savedLight = savedLight; }
 }
