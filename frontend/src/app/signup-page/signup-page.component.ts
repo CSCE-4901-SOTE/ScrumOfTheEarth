@@ -72,7 +72,7 @@ export class SignupPageComponent {
       email: this.email,
       phone: this.phone,
       passwordHash: this.password,
-      role: { name: this.role }  // backend reads "role.name"
+      role: this.role
     };
 
     this.http.post(this.backendUrl + '/signup', userData)
