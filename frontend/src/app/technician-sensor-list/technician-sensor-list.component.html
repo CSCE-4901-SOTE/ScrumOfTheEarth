@@ -22,6 +22,18 @@
                 </tr>
                 }
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <div 
+                            class="add-sensor-box" 
+                            (click)="openAddSensorModal()"
+                        >
+                            <span class="plus-icon">+</span>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -34,6 +46,7 @@
 
 <app-add-sensor-modal
     [show]="showAddSensorModal"
-    (close)="closeAddSensorModal()"
-    (addSensor)="onAddSensor($event)">
+    [contacts]="contacts"
+    [userId]="userId"
+    (close)="closeAddSensorModal()">
 </app-add-sensor-modal>

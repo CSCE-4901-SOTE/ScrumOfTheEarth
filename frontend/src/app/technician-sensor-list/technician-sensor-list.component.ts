@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { SensorService } from '../services/sensor.service';
 import { TechnicianSensorListFilterComponent } from "./technician-sensor-list-filter/technician-sensor-list-filter.component";
 import { Sensor } from '../models/sensor.model';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SensorDetailsModalComponent } from './sensor-details-modal/sensor-details-modal.component';
 import { AddSensorModalComponent } from './add-sensor-modal/add-sensor-modal.component';
+import { Contact, ContactService } from '../contacts/contact.service';
 
 @Component({
   selector: 'app-technician-sensor-list',
@@ -14,15 +15,45 @@ import { AddSensorModalComponent } from './add-sensor-modal/add-sensor-modal.com
 })
 export class TechnicianSensorListComponent implements OnInit {
   SensorService: SensorService = inject(SensorService);
+  ContactService: ContactService = inject(ContactService);
+  platformId = inject(PLATFORM_ID);
+
   sensors: Sensor[] = [];
+  contacts: Contact[] = [];
+  userId: string | null = null;
   filteredSensors: Sensor[] = [];
   selectedSensor: Sensor | null = null;
   showSensorModal = false;
   showAddSensorModal = false;
   customerFilter = '';
 
+  // Taken from Map sensor component. Thank you Phuong
+  private safeGet(key: string): string | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    try {
+      return window.sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
   ngOnInit() {
+    this.userId = this.safeGet('userId');
+
     this.loadSensors();
+
+    if(this.userId) {
+      this.ContactService.getContacts(this.userId).subscribe({
+        next: (contacts: Contact[]) => {
+          this.contacts = contacts ?? [];
+        },
+        error: (err: unknown) => {
+          console.error('Failed to load contacts', err);
+          this.contacts = [];
+        }
+      });
+    }
+    
   }
 
   loadSensors() {
@@ -53,11 +84,6 @@ export class TechnicianSensorListComponent implements OnInit {
 
   closeAddSensorModal() {
     this.showAddSensorModal = false;
-  }
-
-  onAddSensor(sensorData: any) {
-    console.log('Adding sensor:', sensorData);
-    this.loadSensors();
   }
 
   onCustomerFilterChange(filter: string) {

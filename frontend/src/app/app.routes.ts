@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'report-page', component: ReportPageComponent },
   { path: 'alerts', component: AlertsComponent },
   { path: 'map-sensor', component: MapSensorComponent },
-  { path: '', redirectTo: 'signup-page', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent }
 ];
 

@@ -1,41 +1,108 @@
-@if(show) {
-    <div class="modal-overlay" (click)="close.emit()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Add New Sensor</h2>
-      <button class="close-btn" (click)="close.emit()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <form (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="customer">Customer</label>
-            <select type="text" id="customerDropdown" [(ngModel)]="newSensor.customerName" name="customerName" required>
-                <option>Henry</option>
-                <option>Sarah</option>
-            </select>
-        </div>
-        <div class="form-group">
-          <label for="nodeId">Node ID:</label>
-          <input type="text" id="nodeId" [(ngModel)]="newSensor.id" name="id" required>
-        </div>
-        <div class="form-group">
-          <label for="customerName">Customer Name:</label>
-          <input type="text" id="customerName" [(ngModel)]="newSensor.customerName" name="customerName" required>
-        </div>
-        <div class="form-group">
-          <label for="latitude">Latitude:</label>
-          <input type="number" id="latitude" [(ngModel)]="newSensor.latitude" name="latitude" step="any">
-        </div>
-        <div class="form-group">
-          <label for="longitude">Longitude:</label>
-          <input type="number" id="longitude" [(ngModel)]="newSensor.longitude" name="longitude" step="any">
-        </div>
-        <div class="modal-footer">
-          <button type="button" (click)="close.emit()">Cancel</button>
+@if(show()) {
+  @if(!loading) {
+    <div
+      class="add-sensor-modal-overlay"
+      (click)="close.emit()"
+    >
+      <div class="add-sensor-modal" (click)="$event.stopPropagation()">
+        <button class="add-sensor-close-btn" (click)="close.emit()">✕</button>
+
+        <form (ngSubmit)="onSubmit()" [formGroup]="newSensorForm">
+          <h1>NEW SENSOR</h1>
+
+          <label for="sensorId"><b>Sensor ID</b></label>
+          <input
+            type="text"
+            id="sensorId"
+            name="sensorId"
+            formControlName="id"
+            placeholder="Enter sensor ID"
+            required
+          />
+
+          <label for="sensorName"><b>Sensor Name</b></label>
+          <input
+            type="text"
+            id="sensorName"
+            name="sensorName"
+            formControlName="name"
+            placeholder="Enter sensor name"
+            required
+          />
+
+          <div class="lat-long-row">
+            <div class="lat-long-field">
+              <label for="latitude"><b>Latitude</b></label>
+              <input
+                type="number"
+                id="latitude"
+                name="latitude"
+                class="coord-input"
+                formControlName="latitude"
+                placeholder="Enter latitude"
+                step="any"
+                required
+              />
+            </div>
+
+            <div class="lat-long-field">
+              <label for="longitude"><b>Longitude</b></label>
+              <input
+                type="number"
+                id="longitude"
+                name="longitude"
+                class="coord-input"
+                formControlName="longitude"
+                placeholder="Enter longitude"
+                step="any"
+                required
+              />
+            </div>
+          </div>
+
+          <label for="customerId"><b>Farmer Account</b></label>
+          <select
+            id="customerId"
+            name="customerId"
+            formControlName="customerId"
+            required
+          >
+            <option value="" disabled>Select farmer</option>
+            @for(c of this.contacts(); track c.name) {
+              <option>
+              {{ c.name }}
+            </option>
+            }
+            
+          </select>
+
+          <label for="serialNumber"><b>Serial Number</b></label>
+          <input
+            type="text"
+            id="serialNumber"
+            name="serialNumber"
+            formControlName="serialNumber"
+            placeholder="Enter serial number"
+            required
+          />
+
+          @if (newSensorForm.invalid && (newSensorForm.touched || newSensorForm.dirty)) {
+            <p class="add-sensor-error">
+              All fields required
+            </p>
+          }
+
           <button type="submit">Add Sensor</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
-</div>
+  }
+  @else {
+    <div class="add-sensor-modal-overlay">
+      <div class="add-sensor-modal add-sensor-loading-modal" role="status" aria-live="polite" aria-label="Adding sensor">
+        <div class="add-sensor-spinner"></div>
+        <p class="add-sensor-loading-text">Adding sensor...</p>
+      </div>
+    </div>
+  }
 }
