@@ -1,55 +1,76 @@
-import { Component } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   showNavbar = true;
-  role = '';
-  userName: string = '';
+  menuOpen = false;
 
-  menuOpen = false;     
-  toggleMenu() {        
-    this.menuOpen = !this.menuOpen;
+  role: string = '';
+  fullName: string = '';
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.updateSessionData();
+
+      this.showNavbar = !(
+        this.router.url.includes('/login-page') ||
+        this.router.url.includes('/signup-page')
+      );
+
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe((event: any) => {
+          const currentUrl = event.urlAfterRedirects;
+
+          this.showNavbar = !(
+            currentUrl.includes('/login-page') ||
+            currentUrl.includes('/signup-page')
+          );
+
+          this.updateSessionData();
+          this.closeMenu();
+        });
+    }
   }
 
-  constructor(private router: Router) {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        const currentUrl = event.urlAfterRedirects;
-
-        this.showNavbar = !(
-          currentUrl.includes('/login-page') ||
-          currentUrl.includes('/signup-page')
-        );
-
-        if (typeof window !== 'undefined') {
-          this.role = (sessionStorage.getItem('role') || '').toLowerCase();
-          const userEmail = sessionStorage.getItem('userEmail') || '';
-          // display local part of email, capitalized
-          if (userEmail) {
-            const local = userEmail.split('@')[0];
-            this.userName = local.charAt(0).toUpperCase() + local.slice(1);
-          } else {
-            this.userName = '';
-          }
-        }
-      });
+  updateSessionData(): void {
+    this.role = (sessionStorage.getItem('role') || '').toLowerCase();
+    this.fullName = sessionStorage.getItem('fullName') || '';
   }
 
-  isFarmer() {
+  get displayRole(): string {
+    if (this.role === 'farmer') return 'Farmer';
+    if (this.role === 'technician') return 'Technician';
+    return 'User';
+  }
+
+  isFarmer(): boolean {
     return this.role === 'farmer';
   }
 
-  isTechnician() {
+  isTechnician(): boolean {
     return this.role === 'technician';
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 }
