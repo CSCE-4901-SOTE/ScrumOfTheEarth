@@ -31,7 +31,7 @@
 
     <!-- deactivated -->
     <div class="data-box">
-      <h2>🔴 Deactivated Nodes</h2>
+      <h2>⚪ Deactivated Nodes</h2>
       <p class="metric-value">{{ summary.deactivatedNodes }}</p>
 
       <div
@@ -143,59 +143,15 @@
   </div>
 
   <!-- lower section -->
-  <app-map-sensor></app-map-sensor>
-  <!-- Total nodes line -->
-  <div class="total-nodes">
-    Total number of nodes: {{ sensorInventory.length }}
-  </div>
-
-  <div class="recent-trends-box">
-    <h2>Sensor Inventory</h2>
-
-        <div class="sensor-table-wrapper">
-          <table class="info-table">
-            <thead>
-              <tr>
-                <th>Sensor</th>
-                <th>Status</th>
-                <th>Last Seen</th>
-                <th>Battery</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              @for (sensor of sensorInventory; track $index) {
-                <tr>
-                  <td>{{ sensor.id }}</td>
-                  <td>
-                    <span class="status-cell">
-                      <span class="status-dot" [ngClass]="statusLabel(sensor.status)"></span>
-                      <span class="status-text">{{ sensor.status.toString() }}</span>
-                    </span>
-                  </td>
-
-                  <td>{{ sensor.lastSeen ? (sensor.lastSeen | date:'medium') : '—' }}</td>
-                  <td>{{ sensor.battery !== null ? (sensor.battery + '%') : '—' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-  </div>
-</ng-container>
-
-<!-- technician view -->
-<ng-template #technicianView>
-  <div class="box-container">
-    <div class="data-box"><h2>Online Nodes</h2></div>
-    <div class="data-box"><h2>Offline Nodes</h2></div>
-    <div class="data-box"><h2>Low-battery Nodes</h2></div>
-    <div class="data-box"><h2>Unread Alerts</h2></div>
-  </div>
-
   <div class="lower-section">
-    <div class="map-box">
-      <div #mapContainer id="sensor-map"></div>
+    <div class="map-column">
+      <div class="map-box">
+        <div #mapContainer id="sensor-map"></div>
+      </div>
+      <!-- Total nodes line -->
+      <div class="total-nodes">
+        Total number of nodes: {{ sensorInventory.length }}
+      </div>
     </div>
 
     <div class="info-section">
@@ -210,16 +166,22 @@
             <th>Maximum Threshold</th>
           </tr>
           <tr>
-            <td>Signal strength</td>
-            <td>dBm</td>
-            <td>-110</td>
-            <td>-80</td>
+            <td>Temperature</td>
+            <td>°F</td>
+            <td>50</td>
+            <td>95</td>
           </tr>
           <tr>
-            <td>Packet loss</td>
+            <td>Soil moisture</td>
+            <td>%</td>
+            <td>20</td>
+            <td>60</td>
+          </tr>
+          <tr>
+            <td>Light</td>
             <td>%</td>
             <td>0</td>
-            <td>40</td>
+            <td>100</td>
           </tr>
           <tr>
             <td>Battery</td>
@@ -232,12 +194,169 @@
 
       <div class="additional-box">
         <h2>Sensor Inventory</h2>
+
+        <div class="sensor-table-wrapper">
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Sensor</th>
+                <th>Status</th>
+                <th>Last Seen</th>
+                <th>Battery</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let s of sensorInventory">
+                <td>{{ s.id }}</td>
+
+                <td>
+                  <span class="status-cell">
+                    <span class="status-dot" [ngClass]="getSensorStatus(s)"></span>
+                    <span class="status-text">{{ getSensorStatusLabel(s) }}</span>
+                  </span>
+                </td>
+
+                <td>{{ s.lastSeen ? (s.lastSeen | date:'MM-dd-yyyy, h:mm a') : '—' }}</td>
+                <td>{{ s.battery !== null ? (s.battery + '%') : '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="recent-trends-box">
+    <div class="trends-header">
+      <div class="trends-title-group">
+        <h2>Sensor Condition Overview</h2>
+        <p class="trends-subtitle">
+          Based on the most recent reading from each sensor
+        </p>
+      </div>
+
+      <div class="trends-filter">
+        <label for="metricFilter">Filter by:</label>
+        <select
+          id="metricFilter"
+          [(ngModel)]="selectedMetric"
+          (change)="updatePieChart()">
+          <option value="moisture">Soil Moisture</option>
+          <option value="temperature">Temperature</option>
+          <option value="light">Light</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="trends-content">
+      <div class="pie-chart-wrapper">
+        <canvas
+          baseChart
+          [data]="pieChartData"
+          [type]="'pie'"
+          [options]="pieChartOptions">
+        </canvas>
+      </div>
+    </div>
+</div>
+</ng-container>
+
+<!-- technician view -->
+<ng-template #technicianView>
+  <div class="box-container">
+    <!-- online -->
+    <div class="data-box">
+      <h2>🟢 Online Nodes</h2>
+      <p class="metric-value">{{ onlineNodes }}</p>
+      <div class="metric-change neutral">— currently active</div>
+    </div>
+
+    <!-- offline -->
+    <div class="data-box">
+      <h2>🔴 Offline Nodes</h2>
+      <p class="metric-value">{{ offlineNodes }}</p>
+      <div class="metric-change neutral">— needs attention</div>
+    </div>
+
+    <!-- low battery -->
+    <div class="data-box">
+      <h2>🟡 Weak Nodes</h2>
+      <p class="metric-value">{{ weakNodes }}</p>
+      <div class="metric-change neutral">— unstable signal</div>
+    </div>
+
+    <!-- unread alerts -->
+    <div class="data-box">
+      <h2>⚠️ Unread Alerts</h2>
+      <p class="metric-value">{{ summary.unreadAlerts }}</p>
+      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+    </div>
+  </div>
+
+  <div class="lower-section">
+    <div class="map-column">
+      <div class="map-box">
+        <div #mapContainer id="sensor-map"></div>
+      </div>
+
+      <div class="total-nodes">
+        Total number of nodes: {{ sensorInventory.length }}
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-box">
+        <h2>Standard Threshold Values</h2>
+
         <table class="info-table">
           <tr>
-            <th>Customer</th>
-            <th>Number of Nodes</th>
+            <th>Metric</th>
+            <th>Unit</th>
+            <th>Minimum Threshold</th>
+            <th>Maximum Threshold</th>
+          </tr>
+
+          <tr>
+            <td>Battery</td>
+            <td>%</td>
+            <td>20</td>
+            <td>100</td>
           </tr>
         </table>
+      </div>
+
+      <div class="additional-box">
+        <h2>Sensor Inventory</h2>
+
+        <div class="sensor-table-wrapper">
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Sensor</th>
+                <th>Status</th>
+                <th>Last Seen</th>
+                <th>Battery</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let s of sensorInventory">
+                <td>{{ s.id }}</td>
+
+                <td>
+                  <span class="status-cell">
+                    <span class="status-dot" [ngClass]="getSensorStatus(s)"></span>
+                    <span class="status-text">{{ getSensorStatusLabel(s) }}</span>
+                  </span>
+                </td>
+
+                <td>{{ s.lastSeen ? (s.lastSeen | date:'MM-dd-yyyy, h:mm a') : '—' }}</td>
+                <td>{{ s.battery !== null ? (s.battery + '%') : '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
