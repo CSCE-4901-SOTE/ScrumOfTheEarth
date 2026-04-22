@@ -40,12 +40,19 @@ public class SensorService {
     }
 
     public Sensor create(Sensor sensor) {
-        if (sensor.getId() == null || Objects.isNull(sensor.getId())) {
+        if (sensor.getId() == null || sensor.getId().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sensor id is required");
         }
         if (sensorRepository.existsById(sensor.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Sensor already exists: " + sensor.getId());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Sensor id already exists: " + sensor.getId());
         }
+        if (sensor.getName() == null || sensor.getName().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
+        }
+        if (sensor.getStatus() == null || sensor.getStatus().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is required");
+        }
+
         return sensorRepository.save(sensor);
     }
 
@@ -55,9 +62,10 @@ public class SensorService {
         if (patch.getStatus() != null) s.setStatus(patch.getStatus());
         s.setLatitude(patch.getLatitude());
         s.setLongitude(patch.getLongitude());
-        if (patch.getRssi() != null) s.setRssi(patch.getRssi());
-        if (patch.getPacketLoss() != null) s.setPacketLoss(patch.getPacketLoss());
         if (patch.getBattery() != null) s.setBattery(patch.getBattery());
+        if (patch.getTemperature() != null) s.setTemperature(patch.getTemperature());
+        if (patch.getMoisture() != null) s.setMoisture(patch.getMoisture());
+        if (patch.getLight() != null) s.setLight(patch.getLight());
         return sensorRepository.save(s);
     }
 
