@@ -2,80 +2,70 @@ package com.sote.FarmRa.controller;
 
 import com.sote.FarmRa.entity.User;
 import com.sote.FarmRa.service.UserService;
+import com.sote.FarmRa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    public static class SignupRequest {
-        private String email;
-        private String password;
+    @Autowired
+    private UserRepository userRepository;
 
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUser(@PathVariable UUID id) {
+        return userRepository.findById(id)
+                .<ResponseEntity<?>>map(u -> {
+                    Map<String, Object> body = new HashMap<>();
+                    body.put("userId", u.getUserId());
+                    body.put("email", u.getEmail() != null ? u.getEmail() : "");
+                    body.put("phone", u.getPhone() != null ? u.getPhone() : "");
+                    body.put("fullName", u.getFullName() != null ? u.getFullName() : "");
+                    body.put("profileImage", u.getProfileImage() != null ? u.getProfileImage() : "");
+                    return ResponseEntity.ok(body);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    public static class LoginRequest {
-        private String email;
-        private String passwordHash;
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+        return userRepository.findById(id)
+                .<ResponseEntity<?>>map(u -> {
+                    if (body.containsKey("phone")) {
+                        u.setPhone(body.get("phone"));
+                    }
 
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
+                    if (body.containsKey("fullName")) {
+                        u.setFullName(body.get("fullName"));
+                    } else if (body.containsKey("name")) {
+                        u.setFullName(body.get("name"));
+                    }
 
-        public String getPasswordHash() { return passwordHash; }
-        public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+                    if (body.containsKey("profileImage")) {
+                        u.setProfileImage(body.get("profileImage"));
+                    }
+
+                    userRepository.save(u);
+                    return ResponseEntity.ok(Map.of("message", "Profile updated"));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-    try {
-        if (req.getEmail() == null || req.getEmail().isBlank())
-            return ResponseEntity.badRequest().body("Email is required");
-        if (req.getPassword() == null || req.getPassword().isBlank())
-            return ResponseEntity.badRequest().body("Password is required");
-
-        User u = new User();
-        u.setEmail(req.getEmail());
-        u.setPhone("9999999999");       
-        u.setPasswordHash(req.getPassword());
-
-        User savedUser = userService.registerUser(u);
-        return ResponseEntity.ok(savedUser);
-
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.internalServerError().body("Unexpected error: " + e.getMessage());
-    }
-}
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<?> signup(@RequestBody User user) {
         try {
-            if (req.getEmail() == null || req.getEmail().isBlank())
-                return ResponseEntity.badRequest().body("Email is required");
-            if (req.getPasswordHash() == null || req.getPasswordHash().isBlank())
-                return ResponseEntity.badRequest().body("Password is required");
-
-            User user = userService.loginUser(req.getEmail(), req.getPasswordHash());
-
-            String role = (user.getRole() != null && user.getRole().getName() != null)
-                    ? user.getRole().getName().toLowerCase()
-                    : "user";
-
-            return ResponseEntity.ok(new LoginResponse(user.getUserId(), role));
-
+            User savedUser = userService.registerUser(user);
+            return ResponseEntity.ok(savedUser);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -83,17 +73,26 @@ public class UserController {
         }
     }
 
-    // ✅ Response DTO
-    public static class LoginResponse {
-        private UUID userId;
-        private String role;
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        try {
+            User user = userService.loginUser(
+                    loginRequest.getEmail(),
+                    loginRequest.getPasswordHash()
+            );
 
-        public LoginResponse(UUID userId, String role) {
-            this.userId = userId;
-            this.role = role;
+            String role = user.getRole().getName().toLowerCase();
+
+            return ResponseEntity.ok(new LoginResponse(
+                    user.getUserId(),
+                    role,
+                    user.getFullName()
+            ));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Unexpected error: " + e.getMessage());
         }
-
-        public UUID getUserId() { return userId; }
-        public String getRole() { return role; }
     }
 }
