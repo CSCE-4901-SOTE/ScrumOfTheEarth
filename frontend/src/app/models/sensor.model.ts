@@ -13,7 +13,11 @@ export interface Sensor {
     sensorReadings: SensorReading[];
 
     battery: number | null;
+    lastSeen?: string | Date | null;
 
-    customer: User | null;
-    technician: User | null;
+    customerId?: string | null;
+    serialNumber?: string | null;
+
+    technicianName: string;
+    customerName: string;
 }

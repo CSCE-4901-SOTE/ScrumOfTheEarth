@@ -34,6 +34,9 @@ public class User {
 
     private Instant createdAt = Instant.now();
 
+    @Column(name = "profile_image", columnDefinition = "text")
+    private String profileImage;
+
     public String getFullName() {
         return fullName;
     }
