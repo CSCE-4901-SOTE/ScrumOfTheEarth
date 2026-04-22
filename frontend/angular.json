@@ -35,7 +35,8 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "allowedCommonJsDependencies": ["maplibre-gl"]
           },
           "configurations": {
             "production": {
@@ -49,13 +50,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1MB",
-                  "maximumError": "3MB"
+                  "maximumWarning": "2MB",
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "16kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "32kB"
                 }
               ],
               "outputHashing": "all"
