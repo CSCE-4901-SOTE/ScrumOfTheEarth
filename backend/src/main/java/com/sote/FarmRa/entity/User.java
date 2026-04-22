@@ -19,9 +19,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "full_name")
-    private String name;
-
     @Column(nullable = false)
     private String phone;
 

@@ -152,8 +152,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     ],
   };
-
-  private baseUrl = 'https://your-backend-url/api';
+  
   private weatherApiKey: string = '0b8120fcdfd87c4be96bb4a644287b3d';
 
   private map: maplibregl.Map | null = null;
