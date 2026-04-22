@@ -32,11 +32,11 @@
             ],
             "scripts": [],
             "server": "src/main.server.ts",
-            "outputMode": "server",
+            "outputMode": "static",
+            "prerender": false,
             "ssr": {
               "entry": "src/server.ts"
-            },
-            "allowedCommonJsDependencies": ["maplibre-gl"]
+            }
           },
           "configurations": {
             "production": {
