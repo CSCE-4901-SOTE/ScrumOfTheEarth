@@ -1,7 +1,9 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AlertService } from './services/alert.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -11,16 +13,18 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  alertService = inject(AlertService);
   showNavbar = true;
   menuOpen = false;
 
   role: string = '';
   fullName: string = '';
+  unreadAlerts = 0;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -44,6 +48,9 @@ export class AppComponent implements OnInit {
           this.updateSessionData();
           this.closeMenu();
         });
+
+      this.alertService.getAlerts().subscribe();
+      this.alertService.unreadCount$.subscribe(count => this.unreadAlerts = count);
     }
   }
 
@@ -58,7 +65,7 @@ export class AppComponent implements OnInit {
     return 'User';
   }
 
-  isFarmer(): boolean {
+  isFarmer() {
     return this.role === 'farmer';
   }
 

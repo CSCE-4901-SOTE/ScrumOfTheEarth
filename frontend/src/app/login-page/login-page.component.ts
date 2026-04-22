@@ -59,6 +59,11 @@ export class LoginPageComponent {
             window.sessionStorage.setItem('role', res.role);
             //window.sessionStorage.setItem('fullName', res.fullName);
           }
+          this.http.get<any>(`${this.backendUrl}/users/${res.userId}`).subscribe({
+            next: (profile) => {
+              if (profile.name) window.localStorage.setItem('userName', profile.name);
+            }
+          });
           console.log('✅ Login successful!');
           setTimeout(() => this.router.navigate(['/dashboard']), 300);
         },
