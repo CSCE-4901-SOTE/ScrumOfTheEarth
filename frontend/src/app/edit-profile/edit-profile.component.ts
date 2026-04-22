@@ -13,8 +13,6 @@ import { backendUrl } from '../../environment';
 })
 export class EditProfileComponent implements OnInit {
   fullName = '';
-  dob = '';
-  farm = '';
   phone = '';
   userId = '';
   email = '';
@@ -28,18 +26,28 @@ export class EditProfileComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.userId = localStorage.getItem('userId') || '';
-    if (this.userId) {
-      this.http.get<any>(`${backendUrl}/users/${this.userId}`).subscribe({
-        next: (data) => {
-          this.fullName = data.name ?? '';
-          this.email = data.email ?? '';
-          this.phone = data.phone ?? '';
-        },
-        error: () => {}
-      });
+    if (isPlatformBrowser(this.platformId)) {
+      this.role = sessionStorage.getItem('role');
+      this.fullName = sessionStorage.getItem('fullName') ?? '';
+      this.userId = sessionStorage.getItem('userId') ?? '';
+      this.phone = sessionStorage.getItem('phone') ?? '';
+      
+      if (this.userId) {
+        this.http.get<any>(`${backendUrl}/users/${this.userId}`).subscribe({
+          next: (data) => {
+            this.fullName = data.fullName ?? data.name ?? '';
+              this.email = data.email ?? '';
+              this.phone = data.phone ?? '';
+              this.profileImageUrl = data.profileImage ?? null;
+
+              sessionStorage.setItem('fullName', this.fullName);
+              sessionStorage.setItem('phone', this.phone);
+          },
+          error: (err) => {
+              console.error('Failed to load profile:', err);
+        });
+      }
     }
-  }
 
   onPickImage(fileInput: HTMLInputElement) {
     const file = fileInput.files?.[0];
@@ -59,8 +67,18 @@ export class EditProfileComponent implements OnInit {
     this.saveMessage = '';
     this.saveError = '';
 
-    this.http.put<any>(`${backendUrl}/users/${this.userId}`, { phone: this.phone, name: this.fullName }).subscribe({
-      next: () => this.saveMessage = 'Profile saved successfully.',
+    const payload = {
+      phone: this.phone,
+      fullName: this.fullName,
+      profileImage: this.profileImageUrl
+    };
+    
+    this.http.put<any>(`${backendUrl}/users/${this.userId}`, payload).subscribe({
+      next: () => {
+        this.saveMessage = 'Profile saved successfully.';
+        sessionStorage.setItem('fullName', this.fullName);
+        sessionStorage.setItem('phone', this.phone);
+      },
       error: () => this.saveError = 'Failed to save. Please try again.'
     });
   }
