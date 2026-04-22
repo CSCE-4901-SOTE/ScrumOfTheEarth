@@ -12,16 +12,12 @@ export interface Sensor {
     gateway: Gateway;
     sensorReadings: SensorReading[];
 
-    rssi: number | null;
-    packetLoss: number | null;
     battery: number | null;
+    lastSeen?: string | Date | null;
 
-    customer: User | null;
-    technician: User | null;
+    customerId?: string | null;
+    serialNumber?: string | null;
 
-    // saved_* fields theo DB/entity
-    savedStatus: HardwareStatus | null;
-    savedRssi: number | null;
-    savedPacketLoss: number | null;
-    savedBattery: number | null;
+    technicianName: string;
+    customerName: string;
 }
