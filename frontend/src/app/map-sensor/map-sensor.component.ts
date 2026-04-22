@@ -15,37 +15,44 @@ import { ContactService, Contact } from '../contacts/contact.service';
 })
 export class MapSensorComponent implements OnInit, OnDestroy {
   role: 'farmer' | 'technician' = 'farmer';
-  fullName: string | null = null;
-
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private sensorService: SensorService,
-    private contactService: ContactService
-  ) {}
-
-  private safeGet(key: string): string | null {
-    if (!isPlatformBrowser(this.platformId)) return null;
-    try {
-      return window.sessionStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  }
-
-  menuOpen = false;
-  toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-  }
-
-  closeMenu(): void {
-    this.menuOpen = false;
-  }
+  userId: string | null = null;
 
   showAddSensorModal = false;
-  userId: string | null = null;
-  contacts: Contact[] = [];
   addSensorError = '';
-  addSensorSuccess = '';
+
+  isEditMode = false;
+  editSensorId = '';
+
+  showDeleteSensorModal = false;
+  sensorToDelete: Sensor | null = null;
+  deleteSensorError = '';
+
+  contacts: Contact[] = [];
+  sensors: Sensor[] = [];
+
+  searchSensor = '';
+
+  map: maplibregl.Map | null = null;
+  selectedSensor: Sensor | null = null;
+
+  batteryLevel = 100;
+  batteryColorClass = 'green';
+
+  tempValue = 0;
+  moistValue = 0;
+  lightValue = 0;
+
+  tempColor = 'green';
+  moistColor = 'green';
+  lightColor = 'green';
+
+  private markerMap = new Map<string, maplibregl.Marker>();
+
+  THRESHOLDS = {
+    temperature: { low: 60, idealMin: 70, idealMax: 85, high: 95 },
+    moisture: { low: 20, idealMin: 30, idealMax: 60, high: 80 },
+    light: { low: 20, idealMin: 40, idealMax: 70, high: 90 },
+  };
 
   newSensor = {
     id: '',
@@ -53,18 +60,110 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     latitude: '',
     longitude: '',
     customerId: '',
-    serialNumber: ''
+    serialNumber: '',
   };
 
-  openAddSensor() {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private sensorService: SensorService,
+    private contactService: ContactService
+  ) {}
+
+  // Safely get a value from sessionStorage in browser only.
+  private safeGet(key: string): string | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+
+    try {
+      return window.sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  // Open add sensor modal and reset form state.
+  openAddSensor(): void {
+    this.isEditMode = false;
+    this.editSensorId = '';
+    this.addSensorError = '';
+
+    this.newSensor = {
+      id: '',
+      name: '',
+      latitude: '',
+      longitude: '',
+      customerId: '',
+      serialNumber: '',
+    };
+
     this.showAddSensorModal = true;
   }
 
-  closeAddSensor() {
+  // Close add/edit sensor modal and clear error.
+  closeAddSensor(): void {
     this.showAddSensorModal = false;
+    this.addSensorError = '';
   }
 
-  submitAddSensor() {
+  // Submit add or edit sensor form based on current mode.
+  submitAddSensor(): void {
+    if (this.isEditMode) {
+      const payload = {
+        name: this.newSensor.name.trim(),
+        latitude: Number(this.newSensor.latitude),
+        longitude: Number(this.newSensor.longitude),
+        customerId: this.newSensor.customerId,
+      };
+
+      if (
+        !this.editSensorId ||
+        !payload.name ||
+        !Number.isFinite(payload.latitude) ||
+        !Number.isFinite(payload.longitude) ||
+        !payload.customerId
+      ) {
+        this.addSensorError = 'Please fill in all required fields.';
+        return;
+      }
+
+      this.sensorService.updateSensor(this.editSensorId, payload).subscribe({
+        next: (updated) => {
+          alert('✅ Sensor is successfully updated');
+          this.addSensorError = '';
+
+          this.sensors = this.sensors.map((s) =>
+            s.id === this.editSensorId
+              ? {
+                  ...s,
+                  ...updated,
+                  serialNumber: s.serialNumber,
+                }
+              : s
+          );
+
+          if (this.selectedSensor?.id === this.editSensorId) {
+            const current =
+              this.sensors.find((s) => s.id === this.editSensorId) || null;
+            this.selectedSensor = current;
+            this.refreshSelectedSensorUI();
+          }
+
+          const current = this.sensors.find((s) => s.id === this.editSensorId);
+          if (current) {
+            this.updateMarker(current);
+          }
+
+          this.closeAddSensor();
+        },
+        error: (err) => {
+          console.error('Update sensor failed', err);
+          this.addSensorError =
+            err?.error?.error || 'Failed to update sensor.';
+        },
+      });
+
+      return;
+    }
+
     const payload = {
       id: this.newSensor.id.trim(),
       name: this.newSensor.name.trim(),
@@ -72,13 +171,13 @@ export class MapSensorComponent implements OnInit, OnDestroy {
       longitude: Number(this.newSensor.longitude),
       customerId: this.newSensor.customerId,
       technicianId: this.userId,
-      serialNumber: this.newSensor.serialNumber.trim()
+      serialNumber: this.newSensor.serialNumber.trim(),
     };
 
     if (
       !payload.id ||
       !payload.name ||
-      !payload.serialNumber?.trim() || 
+      !payload.serialNumber ||
       !Number.isFinite(payload.latitude) ||
       !Number.isFinite(payload.longitude) ||
       !payload.customerId ||
@@ -91,15 +190,9 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     this.sensorService.addSensor(payload).subscribe({
       next: (created) => {
         alert('✅ Sensor is successfully added');
-
-        setTimeout(() => {
-          this.closeAddSensor();
-          this.addSensorSuccess = '';
-        }, 3000);
+        this.closeAddSensor();
 
         this.addSensorError = '';
-        console.log('Added sensor:', created);
-
         this.sensors.push(created);
 
         if (this.map) {
@@ -116,115 +209,104 @@ export class MapSensorComponent implements OnInit, OnDestroy {
           latitude: '',
           longitude: '',
           customerId: '',
-          serialNumber: ''
+          serialNumber: '',
         };
-        this.closeAddSensor();
-
       },
       error: (err) => {
         console.error('Add sensor failed', err);
-        this.addSensorSuccess = '';
-
-        this.addSensorError =
-        err?.error?.error || 'Failed to add sensor.';
-      }
+        this.addSensorError = err?.error?.error || 'Failed to add sensor.';
+      },
     });
   }
 
-  get displayRole(): string {
-    if (!this.role) return 'No Role';
+  // Open edit mode and load selected sensor details into the form.
+  editSelected(): void {
+    if (!this.selectedSensor) return;
 
-    switch (this.role.toLowerCase()) {
-      case 'farmer':
-        return 'Farmer';
-      case 'technician':
-        return 'Technician';
-      default:
-        return this.role;
+    const sensorId = this.selectedSensor.id;
+
+    this.sensorService.getSensorById(sensorId).subscribe({
+      next: (s) => {
+        this.isEditMode = true;
+        this.editSensorId = sensorId;
+        this.addSensorError = '';
+
+        this.newSensor = {
+          id: s.id ?? '',
+          name: s.name ?? '',
+          latitude: String(s.latitude ?? ''),
+          longitude: String(s.longitude ?? ''),
+          customerId: (s as any).customerId ?? '',
+          serialNumber: (s as any).serialNumber ?? '',
+        };
+
+        this.showAddSensorModal = true;
+      },
+      error: (err) => {
+        console.error('Failed to load sensor detail:', err);
+        this.addSensorError = 'Failed to load sensor details.';
+      },
+    });
+  }
+
+  // Open delete confirmation modal for a sensor.
+  openDeleteSensor(sensor: Sensor): void {
+    this.sensorToDelete = sensor;
+    this.deleteSensorError = '';
+    this.showDeleteSensorModal = true;
+  }
+
+  // Close delete modal and reset delete state.
+  closeDeleteSensor(): void {
+    this.showDeleteSensorModal = false;
+    this.sensorToDelete = null;
+    this.deleteSensorError = '';
+  }
+
+  // Delete selected sensor and remove it from map and list.
+  confirmDeleteSensor(): void {
+    if (!this.sensorToDelete) return;
+
+    const sensorId = this.sensorToDelete.id;
+
+    this.sensorService.deleteSensor(sensorId).subscribe({
+      next: () => {
+        this.sensors = this.sensors.filter((s) => s.id !== sensorId);
+
+        const marker = this.markerMap.get(sensorId);
+        if (marker) {
+          marker.remove();
+          this.markerMap.delete(sensorId);
+        }
+
+        if (this.selectedSensor?.id === sensorId) {
+          this.selectedSensor = null;
+        }
+
+        this.closeDeleteSensor();
+      },
+      error: (err) => {
+        console.error('Delete sensor failed', err);
+        this.deleteSensorError =
+          err?.error?.error || 'Failed to delete sensor.';
+      },
+    });
+  }
+
+  // Update battery color class based on battery percentage.
+  updateBatteryColor(): void {
+    if (this.batteryLevel > 60) {
+      this.batteryColorClass = 'green';
+    } else if (this.batteryLevel > 30) {
+      this.batteryColorClass = 'yellow';
+    } else if (this.batteryLevel > 15) {
+      this.batteryColorClass = 'orange';
+    } else {
+      this.batteryColorClass = 'red';
     }
   }
 
-  searchSensor = '';
-  map: maplibregl.Map | null = null;
-
-  selectedSensor: Sensor | null = null;
-  popupPosition: { x: number; y: number } = { x: 0, y: 0 };
-
-  signalLevel = 2;
-  batteryLevel = 100;
-  batteryColorClass = 'green';
-
-  // Keep marker refs to update color when status changes
-  private markerMap = new Map<string, maplibregl.Marker>();
-
-  THRESHOLDS = {
-    temperature: { low: 60, idealMin: 70, idealMax: 85, high: 95 },
-    moisture: { low: 20, idealMin: 30, idealMax: 60, high: 80 },
-  };
-
-  tempValue = 0;
-  moistValue = 0;
-  lightValue = false;
-
-  tempColor = 'green';
-  moistColor = 'green';
-  lightColor = 'green';
-
-  sensors: Sensor[] = [];
-
-  /* Converts RSSI (dBm) into a 1–5 signal strength level */
-  convertDbmToLevel(dBm: number): number {
-    return this.sensorService.convertDbmToLevel(dBm);
-  }
-
-  /* Returns human-readable text for the signal strength level */
-  get signalLabel() {
-    switch (this.signalLevel) {
-      case 5:
-        return 'Excellent';
-      case 4:
-        return 'Strong';
-      case 3:
-        return 'Medium';
-      case 2:
-        return 'Weak';
-      default:
-        return 'Offline';
-    }
-  }
-
-  /* Converts raw packet loss % into severity level 0–5 */
-  get packetLossLevel() {
-    const loss = this.selectedSensor?.packetLoss || 0;
-
-    if (loss >= 40) return 5;
-    if (loss >= 25) return 4;
-    if (loss >= 15) return 3;
-    if (loss >= 8) return 2;
-    if (loss > 0) return 1;
-    return 0;
-  }
-
-  /* Returns descriptive text for packet loss severity */
-  get packetLossLabel() {
-    const lvl = this.packetLossLevel;
-    if (lvl === 0) return 'No Loss';
-    if (lvl === 1) return 'Very Low';
-    if (lvl === 2) return 'Low';
-    if (lvl === 3) return 'Medium';
-    if (lvl === 4) return 'High';
-    return 'Severe';
-  }
-
-  /* Updates battery color class depending on battery percentage */
-  updateBatteryColor() {
-    if (this.batteryLevel > 60) this.batteryColorClass = 'green';
-    else if (this.batteryLevel > 30) this.batteryColorClass = 'yellow';
-    else if (this.batteryLevel > 15) this.batteryColorClass = 'orange';
-    else this.batteryColorClass = 'red';
-  }
-
-  /* Evaluates sensor reading (temp/moist/light) and returns box color */
+  // Get UI color for a metric value based on thresholds.
   getBoxColor(type: string, value: number): string {
     const t = this.THRESHOLDS[type as keyof typeof this.THRESHOLDS];
 
@@ -235,29 +317,25 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     return 'red';
   }
 
-  // Sync UI values from selectedSensor
-  refreshSelectedSensorUI() {
+  // Refresh selected sensor detail values and colors.
+  refreshSelectedSensorUI(): void {
     const s = this.selectedSensor;
     if (!s) return;
 
-    // Update signal level
-    this.signalLevel = this.convertDbmToLevel(s.rssi);
-
-    // Update battery level
     this.batteryLevel = s.battery;
     this.updateBatteryColor();
 
     this.tempValue = s.temperature;
     this.moistValue = s.moisture;
-    this.lightValue = !!s.light;
+    this.lightValue = s.light;
 
     this.tempColor = this.getBoxColor('temperature', s.temperature);
     this.moistColor = this.getBoxColor('moisture', s.moisture);
-    this.lightColor = this.lightValue ? 'green' : 'red';
+    this.lightColor = this.getBoxColor('light', s.light);
   }
 
-  /* Filters sensor list by search keyword (name or ID) */
-  get filteredSensors() {
+  // Return filtered sensor list based on search text.
+  get filteredSensors(): Sensor[] {
     const keyword = this.searchSensor.trim().toLowerCase();
     if (!keyword) return this.sensors;
 
@@ -268,18 +346,17 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     });
   }
 
-  /* Returns true if user typed something but no sensors match */
-  get noResultFound() {
+  // Check whether current search has no matching results.
+  get noResultFound(): boolean {
     return this.filteredSensors.length === 0 && this.searchSensor.trim() !== '';
   }
 
-  /* Initializes map after component loads */
+  // Load user info, contacts, sensors, and initialize map.
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const role = this.safeGet('role') as 'farmer' | 'technician' | null;
     const userId = this.safeGet('userId');
-    this.fullName = this.safeGet('fullName');
 
     if (!role || !userId) {
       console.error('Missing login info');
@@ -299,7 +376,7 @@ export class MapSensorComponent implements OnInit, OnDestroy {
         error: (err: unknown) => {
           console.error('Failed to load contacts', err);
           this.contacts = [];
-        }
+        },
       });
     }
 
@@ -307,8 +384,6 @@ export class MapSensorComponent implements OnInit, OnDestroy {
 
     req$.subscribe({
       next: (sensors) => {
-        console.log('Sensors data:', sensors);
-        console.log('Sensors JSON:', JSON.stringify(sensors, null, 2));
         this.sensors = sensors ?? [];
         this.initMap();
       },
@@ -320,8 +395,8 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Clean up markers and map instance when component is destroyed.
   ngOnDestroy(): void {
-    // cleanup markers + map
     this.markerMap.forEach((m) => m.remove());
     this.markerMap.clear();
 
@@ -331,14 +406,13 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     }
   }
 
-  /* Initializes the AWS MapLibre map instance */
+  // Initialize AWS MapLibre map and load markers.
   initMap(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
     const apiKey =
       'v1.public.eyJqdGkiOiI2MDM1MGM1NS01NTA2LTRiN2UtOTMyYi1lMjY2MGE4YzYxOTAifRCpWzRX3DXl_fDGk-Ot2SIc9KbxXaQ2ocnJ3uNYCPb3yWlrLF_GDLcype-t7GZe7hy09jWdPhk9SGTWh6B4of40o-sbQnRe_TKYUkypJ1B0LGh3NcF54lVHbsYjP7BZbXYLnD4W0hFtr7q5mRVMbYLsDZ9MfrDPVBWyxoWVsrvf4rp9DpxWQ3asaBIWxSsEcKDqRhI-Pqm03-Hmwi99r84QIcoo_wjF6MdupZbUFmiP4rCO8mLf1N1__aTUUeQpoHtwYRZ1lazKawvR09eVKnPrBtL_sQyLGZhxXYQPpDelPx1MqShVDLkcqn_h-9SbJPi3ngVhZqkezJ2R4B69FJk.ZWU0ZWIzMTktMWRhNi00Mzg0LTllMzYtNzlmMDU3MjRmYTkx';
-
     const region = 'us-east-1';
     const style = 'Standard';
     const colorScheme = 'Light';
@@ -354,7 +428,7 @@ export class MapSensorComponent implements OnInit, OnDestroy {
       this.map = new maplibregl.Map({
         container: 'sensor-map',
         style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${style}/descriptor?key=${apiKey}&color-scheme=${colorScheme}`,
-        center: [-97.0910, 33.2560],
+        center: [-97.091, 33.256],
         zoom: 16,
       });
 
@@ -369,7 +443,8 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private fitToSensors() {
+  // Fit map bounds to all valid sensor coordinates.
+  private fitToSensors(): void {
     if (!this.map) return;
     if (!this.sensors || this.sensors.length === 0) return;
 
@@ -395,16 +470,34 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Map status -> marker color
-  private getMarkerColor(status: string) {
+  // Calculate current status from sensor lastSeen value.
+  calculateStatus(sensor: Sensor): 'online' | 'weak' | 'offline' | 'deactivate' {
+    const lastSeenRaw = (sensor as any).lastSeen;
+
+    if (!lastSeenRaw) return 'deactivate';
+
+    const now = new Date().getTime();
+    const lastSeen = new Date(lastSeenRaw).getTime();
+    const diff = now - lastSeen;
+
+    const oneDay = 24 * 60 * 60 * 1000;
+    const twoDays = 2 * 24 * 60 * 60 * 1000;
+
+    if (diff < oneDay) return 'online';
+    if (diff < twoDays) return 'weak';
+    return 'offline';
+  }
+
+  // Get marker color based on sensor status.
+  private getMarkerColor(status: string): string {
     if (status === 'online') return '#3c8e3f';
     if (status === 'offline') return '#e00e0e';
     if (status === 'weak') return '#e6b800';
-    return '#777'; // deactivate
+    return '#777';
   }
 
-  // Create marker and bind click -> open card
-  private createMarker(sensor: Sensor) {
+  // Create a marker for one sensor and bind click behavior.
+  private createMarker(sensor: Sensor): maplibregl.Marker | null {
     const lat = Number((sensor as any).latitude);
     const lng = Number((sensor as any).longitude);
 
@@ -414,7 +507,7 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     }
 
     const marker = new maplibregl.Marker({
-      color: this.getMarkerColor(sensor.status),
+      color: this.getMarkerColor(this.calculateStatus(sensor)),
     }).setLngLat([lng, lat]);
 
     const el = marker.getElement();
@@ -428,8 +521,8 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     return marker;
   }
 
-  /* Adds all sensor markers to the map and attaches click event handlers */
-  addMarkers(map: maplibregl.Map) {
+  // Remove old markers and render all sensor markers.
+  addMarkers(map: maplibregl.Map): void {
     this.markerMap.forEach((m) => m.remove());
     this.markerMap.clear();
 
@@ -440,12 +533,10 @@ export class MapSensorComponent implements OnInit, OnDestroy {
       marker.addTo(map);
       this.markerMap.set(sensor.id, marker);
     });
-
-    console.log('Markers added:', this.markerMap.size);
   }
 
-  // Update marker color after status change
-  private updateMarker(sensor: Sensor) {
+  // Replace one existing marker after sensor data changes.
+  private updateMarker(sensor: Sensor): void {
     if (!this.map) return;
 
     const oldMarker = this.markerMap.get(sensor.id);
@@ -458,50 +549,17 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     this.markerMap.set(sensor.id, newMarker);
   }
 
-  /* Moves the map camera to focus on a selected sensor marker */
-  focusSensor(sensor: Sensor) {
+  // Move map focus to a specific sensor and update detail panel.
+  focusSensor(sensor: Sensor): void {
     if (!this.map) return;
+
+    this.selectedSensor = sensor;
+    this.refreshSelectedSensorUI();
 
     this.map.flyTo({
       center: [sensor.longitude, sensor.latitude],
       zoom: 20,
       speed: 1.25,
-    });
-  }
-
-  /* Activates the selected sensor */
-  activateSelected() {
-    const s = this.selectedSensor;
-    if (!s) return;
-
-    this.sensorService.activateSensor(s.id).subscribe({
-      next: (updated) => {
-        this.selectedSensor = updated;
-        const idx = this.sensors.findIndex((x) => x.id === updated.id);
-        if (idx !== -1) this.sensors[idx] = updated;
-
-        this.refreshSelectedSensorUI();
-        this.updateMarker(updated);
-      },
-      error: (err) => console.error('activate failed', err),
-    });
-  }
-
-  /* Deactivates the selected sensor */
-  deactivateSelected() {
-    const s = this.selectedSensor;
-    if (!s) return;
-
-    this.sensorService.deactivateSensor(s.id).subscribe({
-      next: (updated) => {
-        this.selectedSensor = updated;
-        const idx = this.sensors.findIndex((x) => x.id === updated.id);
-        if (idx !== -1) this.sensors[idx] = updated;
-
-        this.refreshSelectedSensorUI();
-        this.updateMarker(updated);
-      },
-      error: (err) => console.error('deactivate failed', err),
     });
   }
 }
