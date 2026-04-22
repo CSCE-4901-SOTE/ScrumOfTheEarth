@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { backendUrl } from '../../environment';
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-edit-profile',
@@ -12,7 +12,12 @@ import { backendUrl } from '../../environment';
   styleUrls: ['./edit-profile.component.css'],
 })
 export class EditProfileComponent implements OnInit {
+  platformId = inject(PLATFORM_ID);
+
+  backendUrl = environment.backendUrl;
+
   fullName = '';
+  role = '';
   phone = '';
   userId = '';
   email = '';
@@ -27,13 +32,13 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.role = sessionStorage.getItem('role');
+      this.role = sessionStorage.getItem('role') ?? '';
       this.fullName = sessionStorage.getItem('fullName') ?? '';
       this.userId = sessionStorage.getItem('userId') ?? '';
       this.phone = sessionStorage.getItem('phone') ?? '';
       
       if (this.userId) {
-        this.http.get<any>(`${backendUrl}/users/${this.userId}`).subscribe({
+        this.http.get<any>(`${this.backendUrl}/users/${this.userId}`).subscribe({
           next: (data) => {
             this.fullName = data.fullName ?? data.name ?? '';
               this.email = data.email ?? '';
@@ -45,9 +50,11 @@ export class EditProfileComponent implements OnInit {
           },
           error: (err) => {
               console.error('Failed to load profile:', err);
+          }
         });
       }
     }
+  }
 
   onPickImage(fileInput: HTMLInputElement) {
     const file = fileInput.files?.[0];
@@ -73,7 +80,7 @@ export class EditProfileComponent implements OnInit {
       profileImage: this.profileImageUrl
     };
     
-    this.http.put<any>(`${backendUrl}/users/${this.userId}`, payload).subscribe({
+    this.http.put<any>(`${this.backendUrl}/users/${this.userId}`, payload).subscribe({
       next: () => {
         this.saveMessage = 'Profile saved successfully.';
         sessionStorage.setItem('fullName', this.fullName);

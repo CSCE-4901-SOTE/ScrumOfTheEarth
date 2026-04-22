@@ -18,7 +18,6 @@ import * as maplibregl from 'maplibre-gl';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MapSensorComponent } from '../map-sensor/map-sensor.component';
-import { SensorService } from '../services/sensor.service';
 import { Sensor } from '../models/sensor.model';
 import { SensorInventory } from '../models/sensor-inventory.model';
 import { lstatSync } from 'fs';
@@ -32,6 +31,7 @@ import {
   ChartOptions,
   registerables,
 } from 'chart.js';
+import { environment } from '../../environments/environment';
 
 Chart.register(...registerables);
 
@@ -88,9 +88,9 @@ interface SensorLatestApiRow {
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  sensorService = inject(SensorService);
   sensors: Sensor[] = [];
   statusLabel = mapHardwareStatusToClass;
+  apiBase = environment.backendUrl;
 
   menuOpen = false;
   toggleMenu(): void {

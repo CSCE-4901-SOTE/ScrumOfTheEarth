@@ -1,4 +1,4 @@
-package com.sote.FarmRa.controller;
+package com.sote.FarmRa.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
