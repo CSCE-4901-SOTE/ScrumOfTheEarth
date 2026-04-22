@@ -66,7 +66,7 @@ public class DashboardService {
                 s.getName(),
                 s.getLatitude(),
                 s.getLongitude(),
-                s.getStatus() != null ? s.getStatus() : null,
+                s.getStatus(),
                 s.getBattery(),
                 s.getLastSeen()
         );
