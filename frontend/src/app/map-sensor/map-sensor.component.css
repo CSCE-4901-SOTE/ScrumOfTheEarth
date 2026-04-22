@@ -1,4 +1,4 @@
-/* main layout of map page */
+/* Map Layout */
 .map-layout {
   display: flex;
   gap: 35px;
@@ -7,27 +7,25 @@
   box-sizing: border-box;
 }
 
-/* left sidebar (search + sensor list) */
+/* Left Panel */
 .left-panel {
   width: 300px;
+  
   display: flex;
   flex-direction: column;
   gap: 20px;
-  flex-shrink: 0;
+  flex-shrink: 0;  
 }
 
-/* sidebar wrapper */
+/* Search bar */
 .sidebar {
   padding: 5px;
 }
-
-/* search container */
-.search-wrapper {
-  position: relative;
-  width: 100%;
+.search-wrapper { 
+  position: relative; 
+  width: 100%; 
 }
 
-/* search icon inside input */
 .search-icon {
   position: absolute;
   left: 14px;
@@ -38,7 +36,6 @@
   pointer-events: none;
 }
 
-/* search input field */
 .search-box {
   width: 80%;
   padding: 12px 15px 12px 45px;
@@ -46,21 +43,22 @@
   font-size: 15px;
   border-radius: 10px;
   border: 1px solid #ccc;
-  background: #fff;
+  background: #ffff; 
   transition: 0.2s ease;
 }
 
-/* sensor list container */
+/* Sensor List */
 .sensor-list {
   overflow-y: auto;
   max-height: calc(100vh - 180px);
   padding-right: 6px;
   margin-left: 4px;
+  font-family: Roboto;
 }
 
-/* each sensor card */
 .sensor-card {
   width: 89%;
+  min-height: unset;
   background: #fff;
   border: 1px solid #e6e6e6;
   padding: 16px;
@@ -70,51 +68,53 @@
   transition: 0.2s;
 }
 
-/* hover effect for card */
 .sensor-card:hover {
   box-shadow: 0 4px 6px rgba(0,0,0,0.10);
   transform: translateY(-2px);
 }
 
-/* sensor header */
+/* Sensor Header */
 .sensor-header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 25px;
+  font-family: Roboto;
 }
 
-/* title row (name + status) */
 .sensor-title-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
-/* sensor name */
-.sensor-name {
-  font-size: 18px;
-  font-weight: 600;
+.sensor-name { 
+  font-size: 18px; 
+  font-weight: 600; 
+  font-family: Roboto;
 }
 
-/* status dot */
+/* Status for sensor mini cards */
 .status-icon {
-  width: 10px;
-  height: 10px;
+  width: 10px; height: 10px;
   border-radius: 50%;
 }
 
 .status-icon.online { background: #3c8e3f; }
 .status-icon.offline { background: #e00e0e; }
 .status-icon.weak { background: #e6b800; }
-.status-icon.deactivate { display: none; }
+.status-icon.deactivate { background: #999; }
 
-/* sensor id text */
 .sensor-id {
+  margin: 10px 0 6px 0;
   font-size: 14px;
   color: #666;
+  font-family: Roboto;
 }
 
-/* coordinates display */
+/* Coordination */
 .sensor-coords {
   display: flex;
   align-items: center;
@@ -123,7 +123,21 @@
   color: #888;
 }
 
-/* map container */
+.coord-icon {
+  font-size: 18px;
+  color: #e00e0e;
+  margin-left: -2px;
+}
+
+/* Can't search the sensor id/name */
+.no-result-text {
+  color: #888;
+  font-size: 14px;
+  margin: -32px 0 0 7px;
+  font-family: Roboto;
+}
+
+/* Map Container */
 .map-container {
   flex: 1;
   background: #f5f5f5;
@@ -133,40 +147,53 @@
   position: relative;
 }
 
-/* map element */
 #sensor-map {
   width: 100%;
   height: 100%;
 }
 
-/* sensor detail modal */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+/* Detail Card */
 .sensor-detail-card {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 420px;
+  max-height: 85%;
   transform: translate(-50%, -50%);
+  width: 420px;
   padding: 22px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  z-index: 999;
+  pointer-events: auto;
 }
 
-/* modal header */
+/* Detail Header */
 .header {
   display: flex;
   align-items: center;
   gap: 6px;
   position: relative;
+  font-family: Roboto;
 }
 
-/* modal title */
 .header h2 {
+  margin: 0;
   font-size: 24px;
   font-weight: 600;
+  font-family: Roboto;
 }
 
-/* status dot in modal */
 .status-dot {
   width: 10px;
   height: 10px;
@@ -178,110 +205,464 @@
 .status-dot.weak { background: #e6b800; }
 .status-dot.deactivate { background: gray; }
 
-/* close button */
+/* Close detailed sensor card */
 .close-btn {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 0px;
+  top: 0px;
   border: none;
   background: transparent;
+  font-size: 14px;
   cursor: pointer;
 }
 
-/* add sensor box */
+/* Sensor informations */
+.id-line, .tech-line, .coords {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #777;
+  font-family: Roboto;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #7e7e7e; 
+}
+
+/* Signal Section */
+.signal-section {
+  margin-top: 10px;
+  font-family: Roboto;
+  font-size: 16px;
+  color: #515050;
+}
+
+/* Battery Section */
+.battery-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+  
+}
+
+.battery-wrapper label {
+  display: inline-block;
+  line-height: 12px; 
+  font-weight: 600;
+  font-family: Roboto;
+}
+
+.battery-bar {
+  width: 180px;
+  height: 7px;
+  background: #e9e9e9;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-left: 54px;
+  position: relative;
+  top: -3px;
+}
+
+.battery-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  transition: width 0.35s ease, background-color 0.25s ease;
+}
+
+/* Battery color */
+.battery-fill.green {
+  background-color: #3c8e3f; /* >60% */
+}
+
+.battery-fill.yellow {
+  background-color: #ffcc00; /* 30–60% */
+}
+
+.battery-fill.orange {
+  background-color: #ff9900; /* 15–30% */
+}
+
+.battery-fill.red {
+  background-color: #e53935; /* <15% */
+}
+
+.battery-text {
+  line-height: 12px; 
+  padding-bottom: 0px; 
+  display: inline-block;
+  font-weight: 600;
+  font-family: Roboto; 
+}
+
+/* Threshold box position */
+.sensor-mini-boxes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+/* Mini Sensor Boxes */
+.box {
+  width: 100px;
+  height: 75px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Box status color */
+.box.green  { border-color: #3c8e3f; background: #f1f8f2; }
+.box.yellow { border-color: #ffcc00; background: #fcfaec; }
+.box.red    { border-color: #e53935; background: #fcf1f1; }
+
+.value {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Roboto;
+}
+
+.light-box.green { border-color: #3c8e3f !important; background: #f1f8f2 !important; }
+.light-box.red   { border-color: #e53935 !important; background: #fcf1f1 !important; }
+
+.label {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #666;
+  font-family: Roboto;
+}
+
+/* Technician Action Buttons */
+.action-buttons{
+  display:flex;
+  gap:14px;
+  margin-top:18px;
+}
+
+/* Button in detailed box */
+.btn{
+  flex:1;
+  height:38px;
+  border-radius:8px;
+  font-family:Roboto;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  background:#fff;
+  transition:0.2s ease;
+}
+
+.btn-edit{
+  border: 1px solid #3c8e3f;
+  background-color: #3c8e3f;
+  color: #ffffff;
+}
+
+.btn-edit:hover{
+  border: 1px solid #2f7032;
+  background-color: #2f7032;
+}
+
+.btn-edit:active {
+  transform: scale(0.97);
+}
+
+.btn-delete{
+  border: 1px solid #ba241a;
+  background-color: #ba241a;
+  color: #ffffff;
+}
+
+.btn-delete:hover{
+  background-color: #a51f15;
+  border: 1px solid #a51f15; 
+}
+
+.btn-delete:active {
+  transform: scale(0.97);
+}
+
+/* Add sensor */
 .add-sensor-box {
   margin: 12px 0;
+  width: 100%;
   height: 80px;
   border: 2px dashed #ccc;
   border-radius: 12px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
 }
 
-/* hover add sensor */
 .add-sensor-box:hover {
   border-color: #2e7d32;
   background-color: #f1f8f4;
 }
 
-/* plus icon */
 .plus-icon {
   font-size: 32px;
   color: #2e7d32;
+  font-weight: bold;
 }
 
-/* modal overlay */
 .add-sensor-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2000;
 }
 
-/* modal form */
+.add-sensor-modal {
+  position: relative;
+  width: 420px;
+  max-width: 90%;
+}
+
+.add-sensor-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: auto;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+}
+
+.add-sensor-close-btn:hover {
+  background: transparent;
+  color: #000;
+}
+
 .add-sensor-modal form {
-  background: #fff;
+  background-color: #fff;
   border-radius: 8px;
-  padding: 36px 40px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  padding: 36px 40px 30px;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
 }
 
-/* input + select fields */
-.add-sensor-modal input,
+.add-sensor-modal form h1 {
+  text-align: center;
+  color: #237327;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-family: Roboto;
+}
+
+.add-sensor-modal label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 0;
+  font-family: Roboto;
+}
+
+.add-sensor-modal input[type="text"],
 .add-sensor-modal select {
   width: 100%;
   padding: 10px;
-  margin: 8px 0 16px;
+  margin: 8px 0 16px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-sizing: border-box;
+  font-family: Roboto;
+  font-size: 14px;
 }
 
-/* submit button */
 .add-sensor-modal button[type="submit"] {
   width: 100%;
-  background: #3c8e3f;
+  background-color: #3c8e3f;
   color: white;
   padding: 12px;
   border: none;
   border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Roboto;
 }
 
-/* delete modal overlay */
+.add-sensor-modal button[type="submit"]:hover {
+  background-color: #237327;
+}
+
+/* Improve select dropdown (Farmer Account) */
+.add-sensor-modal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Roboto;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover */
+.add-sensor-modal select:hover {
+  border-color: #2e7d32;
+}
+
+/* Focus */
+.add-sensor-modal select:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+/* Disabled option (Select farmer) */
+.add-sensor-modal select option[value=""] {
+  color: #888;
+}
+
+/* Dropdown option */
+.add-sensor-modal option {
+  font-size: 14px;
+}
+
+/* Lat - Long inline layout */
+.lat-long-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.lat-long-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lat-long-field input {
+  width: 100%;
+}
+
+.lat-long-field input {
+  margin-bottom: 16px;
+}
+
+.add-sensor-error {
+  color: #e00e0e;
+  font-size: 10px;
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 20px;         
+  display: block;
+}
+
 .modal-backdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2000;
 }
 
-/* delete modal box */
 .delete-modal {
   background: #fff;
   border-radius: 12px;
-  padding: 30px;
+  padding: 32px 28px;
   width: 380px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  font-family: Roboto;
 }
 
-/* delete modal buttons */
+.delete-text {
+  text-align: center;
+  font-size: 17px;
+  color: #333;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.delete-sensor-name {
+  text-align: center;
+  font-size: 15px;
+  color: #d24023;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
 .delete-modal-btns {
   display: flex;
+  justify-content: space-between;
   gap: 10px;
+  margin-top: 6px;
 }
 
-/* delete button */
+.delete-modal-btns .cancel,
 .delete-modal-btns .delete {
-  background: #b42318;
-  color: white;
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: Roboto;
 }
 
-/* cancel button */
 .delete-modal-btns .cancel {
-  background: #e5e5e5;
+  background-color: #e5e5e5;
+  color: #333;
 }
+
+.delete-modal-btns .cancel:hover {
+  background-color: #d6d6d6;
+}
+
+.delete-modal-btns .delete {
+  background-color: #b42318;
+  color: white;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.delete-modal-btns .delete:hover {
+  background-color: #911d14;
+}
+
+.error-text {
+  color: #e00e0e;
+  font-size: 12px;
+  padding: 0;
+  margin-top: -6px;
+  margin-bottom: 16px;
+  display: block;
+  text-align: center;
+}
+
+.add-sensor-modal input[readonly] {
+  background: #eaeaea;
+}
+
