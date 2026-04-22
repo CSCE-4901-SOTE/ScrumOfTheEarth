@@ -6,21 +6,22 @@
     <div class="sidebar">
       <div class="search-wrapper">
         <span class="material-icons search-icon">search</span>
-        <input 
+        <input
           type="text"
           placeholder="Search sensor"
           [(ngModel)]="searchSensor"
           class="search-box"
         />
       </div>
+
       <!-- Add Sensor Button (Technician only) -->
-        <div 
-          class="add-sensor-box" 
-          *ngIf="role === 'technician'"
-          (click)="openAddSensor()"
-        >
-          <span class="plus-icon">+</span>
-        </div>
+      <div
+        class="add-sensor-box"
+        *ngIf="role === 'technician'"
+        (click)="openAddSensor()"
+      >
+        <span class="plus-icon">+</span>
+      </div>
     </div>
 
     <!-- No Result Text -->
@@ -28,23 +29,29 @@
       No results found
     </p>
 
-
     <!-- Sensor List -->
     <div class="sensor-list">
-      <div class="sensor-card" 
-           *ngFor="let s of filteredSensors"
-           (click)="focusSensor(s)">
+      <div
+        class="sensor-card"
+        *ngFor="let s of filteredSensors"
+        (click)="focusSensor(s)"
+      >
         <div class="sensor-header">
-          <h4 class="sensor-name">{{ s.name }}</h4>
-          <span class="status-icon" [ngClass]="s.status"></span>
-          <span *ngIf="s.status === 'deactivate'" class="material-icons cloud-off-icon">cloud_off</span>
+          <div class="sensor-title-row">
+            <h4 class="sensor-name">{{ s.name }}</h4>
+            <span
+              class="status-dot"
+              [ngClass]="calculateStatus(s)"
+            ></span>
+          </div>
         </div>
 
         <!-- Sensor ID -->
         <p class="sensor-id">ID: {{ s.id }}</p>
+
         <!-- Sensor Coordinates -->
         <div class="sensor-coords">
-          <span class="material-icons coord-icon">location_on</span>
+          <span class="material-icons coord-icon">📍 </span>
           <span>{{ s.latitude }}, {{ s.longitude }}</span>
         </div>
       </div>
@@ -54,81 +61,54 @@
   <!-- Map Container -->
   <div class="map-container">
     <div id="sensor-map"></div>
-    <div 
-      class="overlay" 
+
+    <div
+      class="overlay"
       *ngIf="selectedSensor"
-      (click)="selectedSensor = null">
-    </div>
+      (click)="selectedSensor = null"
+    ></div>
 
     <!-- Sensor Detail Card -->
     <div class="sensor-detail-card" *ngIf="selectedSensor">
       <!-- Detail Header -->
       <div class="header">
         <h2>{{ selectedSensor.name }}</h2>
-        <span 
-          class="status-dot" 
-          [ngClass]="selectedSensor.status">
-        </span>
+        <span
+          class="status-dot"
+          [ngClass]="calculateStatus(selectedSensor)"
+        ></span>
         <button class="close-btn" (click)="selectedSensor = null">✕</button>
       </div>
 
       <!-- Detail Basic Info -->
       <p class="id-line">Sensor ID: {{ selectedSensor.id }}</p>
+
       <!-- Technician line of farmer -->
-        <p class="tech-line" *ngIf="role === 'farmer'">Technician: {{ selectedSensor.technicianName }}</p>
+      <p class="tech-line" *ngIf="role === 'farmer'">
+        Technician: {{ selectedSensor.technicianName }}
+      </p>
+
       <!-- Farmer line of technician -->
-        <p class="tech-line" *ngIf="role === 'technician'">Customer: {{ selectedSensor.customerName }}</p>
+      <p class="tech-line" *ngIf="role === 'technician'">
+        Customer: {{ selectedSensor.customerName }}
+      </p>
 
       <p class="coords">
         📍 {{ selectedSensor.latitude }}, {{ selectedSensor.longitude }}
       </p>
 
-      <hr>
+      <hr />
 
-      <!-- Signal Section -->
       <div class="signal-section">
-        <!-- Signal Strength -->
-        <div class="signal-row">
-          <strong class="signal-text">Signal Strength:</strong>
-          <div class="signal-bars">
-            <span [class.active]="signalLevel >= 1" [attr.lvl]="signalLevel"></span>
-            <span [class.active]="signalLevel >= 2" [attr.lvl]="signalLevel"></span>
-            <span [class.active]="signalLevel >= 3" [attr.lvl]="signalLevel"></span>
-            <span [class.active]="signalLevel >= 4" [attr.lvl]="signalLevel"></span>
-            <span [class.active]="signalLevel >= 5" [attr.lvl]="signalLevel"></span>
-
-            <div class="signal-tooltip-white">
-              {{ signalLabel }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Packet Loss -->
-        <div class="packet-loss-row">
-          <strong class="packet-loss-text">Packet Loss:</strong>
-
-          <div class="packet-loss-bars">
-            <span [class.active]="packetLossLevel >= 1" [attr.lvl]="packetLossLevel"></span>
-            <span [class.active]="packetLossLevel >= 2" [attr.lvl]="packetLossLevel"></span>
-            <span [class.active]="packetLossLevel >= 3" [attr.lvl]="packetLossLevel"></span>
-            <span [class.active]="packetLossLevel >= 4" [attr.lvl]="packetLossLevel"></span>
-            <span [class.active]="packetLossLevel >= 5" [attr.lvl]="packetLossLevel"></span>
-
-            <div class="packet-loss-tooltip">
-              {{ packetLossLabel }}
-            </div>
-          </div>
-        </div>
-
         <!-- Battery -->
         <div class="battery-wrapper">
           <strong>Battery:</strong>
           <div class="battery-bar">
-            <div 
+            <div
               class="battery-fill"
               [style.width.%]="batteryLevel"
-              [ngClass]="batteryColorClass">
-            </div>
+              [ngClass]="batteryColorClass"
+            ></div>
           </div>
           <span class="battery-text">{{ batteryLevel }}%</span>
         </div>
@@ -151,27 +131,30 @@
         <!-- Light Box -->
         <div class="box light" [ngClass]="lightColor">
           <p class="label">Light</p>
-          <p class="value">{{ lightValue ? 'On' : 'Off' }}</p>
+          <p class="value">{{ lightValue }}%</p>
         </div>
       </div>
 
-      <!-- Technician: Mini Box Section -->
+      <!-- Technician buttons -->
       <div class="action-buttons" *ngIf="role === 'technician'">
         <button
-          class="btn btn-activate"
-          (click)="activateSelected(); $event.stopPropagation()">
-          Activate
+          class="btn btn-edit"
+          (click)="editSelected(); $event.stopPropagation()"
+        >
+          Edit
         </button>
 
         <button
-          class="btn btn-deactivate"
-          (click)="deactivateSelected(); $event.stopPropagation()">
-          Deactivate
+          class="btn btn-delete"
+          (click)="openDeleteSensor(selectedSensor!); $event.stopPropagation()"
+        >
+          Delete
         </button>
       </div>
     </div>
   </div>
-  <!-- Add Sensor Modal -->
+
+  <!-- Add / Edit Sensor Modal -->
   <div
     class="add-sensor-modal-overlay"
     *ngIf="showAddSensorModal"
@@ -181,7 +164,7 @@
       <button class="add-sensor-close-btn" (click)="closeAddSensor()">✕</button>
 
       <form (ngSubmit)="submitAddSensor()" #addSensorForm="ngForm" novalidate>
-        <h1>NEW SENSOR</h1>
+        <h1>{{ isEditMode ? 'EDIT SENSOR' : 'NEW SENSOR' }}</h1>
 
         <label for="sensorId"><b>Sensor ID</b></label>
         <input
@@ -190,6 +173,9 @@
           name="sensorId"
           [(ngModel)]="newSensor.id"
           placeholder="Enter sensor ID"
+          [readonly]="isEditMode"
+          [style.opacity]="isEditMode ? '0.6' : '1'"
+          [style.cursor]="isEditMode ? 'not-allowed' : 'text'"
           required
         />
 
@@ -249,14 +235,42 @@
           name="serialNumber"
           [(ngModel)]="newSensor.serialNumber"
           placeholder="Enter serial number"
+          [readonly]="isEditMode"
+          [style.opacity]="isEditMode ? '0.6' : '1'"
+          [style.cursor]="isEditMode ? 'not-allowed' : 'text'"
           required
         />
+
         <p *ngIf="addSensorError" class="add-sensor-error">
           {{ addSensorError }}
         </p>
 
-        <button type="submit">Add Sensor</button>
+        <button type="submit">
+          {{ isEditMode ? 'Save Changes' : 'Add Sensor' }}
+        </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Delete Sensor Confirm Modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteSensorModal">
+    <div class="delete-modal">
+      <p class="delete-text">
+        Are you sure to delete this sensor?
+      </p>
+
+      <p *ngIf="sensorToDelete" class="delete-sensor-name">
+        {{ sensorToDelete.name }}
+      </p>
+
+      <p *ngIf="deleteSensorError" class="error-text">
+        {{ deleteSensorError }}
+      </p>
+
+      <div class="delete-modal-btns">
+        <button class="cancel" (click)="closeDeleteSensor()">Cancel</button>
+        <button class="delete" (click)="confirmDeleteSensor()">Delete</button>
+      </div>
     </div>
   </div>
 </div>
