@@ -2,9 +2,11 @@ package com.sote.FarmRa.controller;
 
 import com.sote.FarmRa.entity.Sensor;
 import com.sote.FarmRa.entity.User;
+import com.sote.FarmRa.model.dto.UpdateSensorRequest;
 import com.sote.FarmRa.model.dto.CreateSensorRequest;
 import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
+import com.sote.FarmRa.repository.SensorReadingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +22,14 @@ public class SensorController {
 
     private final SensorRepository sensorRepository;
     private final UserRepository userRepository;
+    private final SensorReadingRepository sensorReadingRepository;
 
     public SensorController(SensorRepository sensorRepository,
-                            UserRepository userRepository) {
+                            UserRepository userRepository,
+                            SensorReadingRepository sensorReadingRepository) {
         this.sensorRepository = sensorRepository;
         this.userRepository = userRepository;
+        this.sensorReadingRepository = sensorReadingRepository;
     }
 
     // Get all sensors
@@ -50,7 +55,7 @@ public class SensorController {
     @Transactional(readOnly = true)
     @GetMapping("/status/{status}")
     public List<Sensor> getByStatus(@PathVariable String status) {
-       return sensorRepository.findByStatus(status.toLowerCase());
+        return sensorRepository.findByStatus(status.toLowerCase());
     }
 
     // Get sensors by customer (farmer)
@@ -67,83 +72,97 @@ public class SensorController {
         return sensorRepository.findByTechnician_UserId(technicianId);
     }
 
-    // Post 
-
     // Create a new sensor
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CreateSensorRequest req) {
-        if (req.id() == null || req.id().isBlank()) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "Sensor id is required"));
+        try {
+            if (req.id() == null || req.id().isBlank()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Sensor id is required"));
+            }
+
+            if (req.name() == null || req.name().isBlank()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Sensor name is required"));
+            }
+
+            if (req.serialNumber() == null || req.serialNumber().isBlank()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Serial number is required"));
+            }
+
+            if (sensorRepository.existsBySerialNumber(req.serialNumber())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Serial number already exists"));
+            }
+
+            if (sensorRepository.existsById(req.id())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "Sensor id already exists"));
+            }
+
+            User customer = userRepository.findById(req.customerId()).orElse(null);
+            if (customer == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Customer not found"));
+            }
+
+            User technician = userRepository.findById(req.technicianId()).orElse(null);
+            if (technician == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Technician not found"));
+            }
+
+            Sensor sensor = new Sensor();
+            sensor.setId(req.id());
+            sensor.setName(req.name());
+            sensor.setSerialNumber(req.serialNumber());
+            sensor.setLatitude(req.latitude());
+            sensor.setLongitude(req.longitude());
+            sensor.setStatus("offline");
+            sensor.setCustomer(customer);
+            sensor.setTechnician(technician);
+
+            Sensor saved = sensorRepository.saveAndFlush(sensor);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Create sensor failed: " + e.getMessage()));
         }
-
-        if (req.name() == null || req.name().isBlank()) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "Sensor name is required"));
-        }
-
-        if (req.serialNumber() == null || req.serialNumber().isBlank()) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "Serial number is required"));
-        }
-
-        if (sensorRepository.existsBySerialNumber(req.serialNumber())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("error", "Serial number already exists"));
-        }
-
-        if (sensorRepository.existsById(req.id())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", "Sensor id already exists"));
-        }
-
-        User customer = userRepository.findById(req.customerId()).orElse(null);
-        if (customer == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Customer not found"));
-        }
-
-        User technician = userRepository.findById(req.technicianId()).orElse(null);
-        if (technician == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Technician not found"));
-        }
-
-        Sensor sensor = new Sensor();
-        sensor.setId(req.id());
-        sensor.setName(req.name());
-        sensor.setSerialNumber(req.serialNumber());
-        sensor.setLatitude(req.latitude());
-        sensor.setLongitude(req.longitude());
-
-        sensor.setStatus("offline");
-        sensor.setCustomer(customer);
-        sensor.setTechnician(technician);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(sensorRepository.save(sensor));
     }
-
-    // Put 
 
     // Update basic sensor data
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
-                                    @RequestBody Sensor req) {
+                                    @RequestBody UpdateSensorRequest req) {
         Sensor sensor = sensorRepository.findById(id).orElse(null);
         if (sensor == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Sensor not found", "id", id));
         }
 
-        if (req.getName() != null) sensor.setName(req.getName());
-        if (req.getStatus() != null) sensor.setStatus(req.getStatus().toLowerCase());
-        sensor.setLatitude(req.getLatitude());
-        sensor.setLongitude(req.getLongitude());
+        if (req.name() != null && !req.name().isBlank()) {
+            sensor.setName(req.name());
+        }
 
-        sensor.setRssi(req.getRssi());
-        sensor.setPacketLoss(req.getPacketLoss());
-        sensor.setBattery(req.getBattery());
+        if (req.latitude() != null) {
+            sensor.setLatitude(req.latitude());
+        }
+
+        if (req.longitude() != null) {
+            sensor.setLongitude(req.longitude());
+        }
+
+        if (req.customerId() != null) {
+            User customer = userRepository.findById(req.customerId()).orElse(null);
+            if (customer == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Customer not found"));
+            }
+            sensor.setCustomer(customer);
+        }
 
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
@@ -158,8 +177,6 @@ public class SensorController {
                     .body(Map.of("error", "Sensor not found", "id", id));
         }
 
-
-        // Assign customer
         if (req.customerId != null) {
             User customer = userRepository.findById(req.customerId).orElse(null);
             if (customer == null) {
@@ -169,7 +186,6 @@ public class SensorController {
             sensor.setCustomer(customer);
         }
 
-        // Assign technician
         if (req.technicianId != null) {
             User technician = userRepository.findById(req.technicianId).orElse(null);
             if (technician == null) {
@@ -182,82 +198,31 @@ public class SensorController {
         return ResponseEntity.ok(sensorRepository.save(sensor));
     }
 
-    // Delete sensor by id
-
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> delete(@PathVariable String id) {
-        if (!sensorRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Sensor not found"));
+        try {
+            if (!sensorRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Sensor not found"));
+            }
+
+            sensorReadingRepository.deleteByNodeId(id);
+            sensorRepository.deleteById(id);
+            sensorRepository.flush();
+
+            return ResponseEntity.ok(Map.of("message", "Sensor deleted successfully"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete sensor: " + e.getMessage()));
         }
-        sensorRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
-    // Request Body
-
-    // Simple request body for assign API
     public static class AssignRequest {
         public UUID customerId;
         public UUID technicianId;
     }
-
-    @PutMapping("/{id}/deactivate")
-    public ResponseEntity<?> deactivate(@PathVariable String id) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
-        if (sensor == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Sensor not found", "id", id));
-        }
-
-        // If already deactivate, do nothing 
-        if ("deactivate".equals(sensor.getStatus())) {
-            return ResponseEntity.ok(sensor);
-        }
-
-        // Save current state -> saved_*
-        sensor.setStatus(sensor.getStatus());
-        sensor.setSavedRssi(sensor.getRssi());
-        sensor.setSavedPacketLoss(sensor.getPacketLoss());
-        sensor.setSavedBattery(sensor.getBattery());
-
-        // Set to deactivate 
-        sensor.setStatus("deactivate");
-        sensor.setRssi(null);
-        sensor.setPacketLoss(null);
-        sensor.setBattery(null);
-
-        return ResponseEntity.ok(sensorRepository.save(sensor));
-    }
-
-    @PutMapping("/{id}/activate")
-    public ResponseEntity<?> activate(@PathVariable String id) {
-        Sensor sensor = sensorRepository.findById(id).orElse(null);
-        if (sensor == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Sensor not found", "id", id));
-        }
-
-        if (sensor.getSavedStatus() == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "No saved state to restore. Deactivate first."));
-        }
-
-        // Restore from saved_*
-        sensor.setStatus(sensor.getSavedStatus());
-        sensor.setRssi(sensor.getSavedRssi());
-        sensor.setPacketLoss(sensor.getSavedPacketLoss());
-        sensor.setBattery(sensor.getSavedBattery());
-        // Clear saved state
-        sensor.setSavedStatus(null);
-        sensor.setSavedRssi(null);
-        sensor.setSavedPacketLoss(null);
-        sensor.setSavedBattery(null);
-
-        return ResponseEntity.ok(sensorRepository.save(sensor));
-    }
-
-
 }
 
 
