@@ -78,7 +78,7 @@ export function normalizeStatus(raw: string | null | undefined): SensorStatus {
   providedIn: 'root'
 })
 export class SensorService {
-  private readonly baseUrl = 'http://localhost:8080/api/sensors';
+  private readonly baseUrl = environment.backendUrl + "/sensors";
 
   constructor(private http: HttpClient) {}
 
