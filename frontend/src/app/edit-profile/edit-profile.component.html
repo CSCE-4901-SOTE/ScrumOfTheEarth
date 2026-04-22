@@ -33,20 +33,15 @@
 
     <!--form -->
     <div class="right">
-      <form class="form">
+      <form class="form" (ngSubmit)="onSave()">
         <div class="field">
           <label>Full Name</label>
           <input type="text" [(ngModel)]="fullName" name="fullName" />
         </div>
 
         <div class="field">
-          <label>Date of Birth (MM/DD/YYYY)</label>
-          <input type="text" [(ngModel)]="dob" name="dob" placeholder="MM/DD/YYYY" />
-        </div>
-
-        <div class="field">
-          <label>Your Farm</label>
-          <input type="text" [(ngModel)]="farm" name="farm" />
+          <label>Email</label>
+          <input type="text" [value]="email" name="email" readonly style="opacity:0.6;cursor:not-allowed" />
         </div>
 
         <div class="field">
@@ -56,8 +51,11 @@
 
         <div class="field">
           <label>User ID</label>
-          <input type="text" [(ngModel)]="userId" name="userId" />
+          <input type="text" [value]="userId" name="userId" readonly style="opacity:0.6;cursor:not-allowed" />
         </div>
+
+        <div *ngIf="saveMessage" style="color:green;font-size:14px;margin-bottom:8px">{{ saveMessage }}</div>
+        <div *ngIf="saveError" style="color:red;font-size:14px;margin-bottom:8px">{{ saveError }}</div>
 
         <div class="actions">
           <button type="submit" class="save-btn">Save</button>
