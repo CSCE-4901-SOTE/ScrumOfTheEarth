@@ -359,41 +359,6 @@
         </div>
       </div>
     </div>
-
-    <!-- deactivated -->
-    <div class="data-box">
-      <h2>🔴 Deactivated Nodes</h2>
-      <p class="metric-value">{{ summary.deactivatedNodes }}</p>
-
-      <div
-        class="metric-change"
-        [ngClass]="
-          summary.deactivatedDeltaToday > 0 ? 'up' :
-          summary.deactivatedDeltaToday < 0 ? 'down' : 'neutral'
-        "
-      >
-        <ng-container *ngIf="summary.deactivatedDeltaToday !== 0; else deactNoChange">
-          {{ summary.deactivatedDeltaToday > 0 ? '▲' : '▼' }}
-          {{ summary.deactivatedDeltaToday > 0 ? '+' : '' }}{{ summary.deactivatedDeltaToday }} today
-        </ng-container>
-
-        <ng-template #deactNoChange>
-          — no change
-        </ng-template>
-      </div>
-    </div>
-    <div class="data-box">
-      <h2>⚠️ Low Battery Nodes</h2>
-      <p class="metric-value">{{ summary.deactivatedNodes }}</p>
-      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
-    </div>
-    <!-- alerts -->
-    <div class="data-box">
-      <h2>⚠️ Unread Alerts</h2>
-      <p class="metric-value">{{ summary.unreadAlerts }}</p>
-      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
-    </div>
+    <app-technician-sensor-list></app-technician-sensor-list>
   </div>
-
-  <app-technician-sensor-list></app-technician-sensor-list>
 </ng-template>

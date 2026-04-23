@@ -1,11 +1,10 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { SensorService } from '../services/sensor.service';
 import { TechnicianSensorListFilterComponent } from "./technician-sensor-list-filter/technician-sensor-list-filter.component";
-import { Sensor } from '../models/sensor.model';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SensorDetailsModalComponent } from './sensor-details-modal/sensor-details-modal.component';
 import { AddSensorModalComponent } from './add-sensor-modal/add-sensor-modal.component';
 import { Contact, ContactService } from '../contacts/contact.service';
+import { Sensor, SensorService } from '../map-sensor/sensor.service';
 
 @Component({
   selector: 'app-technician-sensor-list',
@@ -57,7 +56,7 @@ export class TechnicianSensorListComponent implements OnInit {
   }
 
   loadSensors() {
-    this.SensorService.getSensors().subscribe({
+    this.SensorService.getLatestSensorsByRole('technician', this.userId ?? "").subscribe({
       next: (sensors) => {
         this.sensors = sensors;
         this.filteredSensors = sensors;
@@ -94,7 +93,7 @@ export class TechnicianSensorListComponent implements OnInit {
   applyFilters() {
     this.filteredSensors = this.sensors.filter(sensor =>
       !this.customerFilter ||
-      sensor.customer?.name.toLowerCase().includes(this.customerFilter.toLowerCase())
+      sensor.customerName.toLowerCase().includes(this.customerFilter.toLowerCase())
     );
   }
 }

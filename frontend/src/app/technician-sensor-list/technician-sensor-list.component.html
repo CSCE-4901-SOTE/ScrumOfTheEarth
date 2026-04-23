@@ -16,7 +16,7 @@
                 @for (sensor of filteredSensors; track $index) {
                     <tr (click)="onRowClick(sensor)" style="cursor: pointer;">
                     <td>{{ sensor.id }}</td>
-                    <td>{{ sensor.customer?.name || 'N/A' }}</td>
+                    <td>{{ sensor.customerName || 'N/A' }}</td>
                     <td>{{ sensor.status }}</td>
                     <td>{{ sensor.battery }}%</td>
                 </tr>

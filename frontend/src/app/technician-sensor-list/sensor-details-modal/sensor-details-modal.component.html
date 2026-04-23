@@ -6,11 +6,9 @@
     </div>
     <div class="modal-body" *ngIf="sensor">
       <p><strong>Node ID:</strong> {{ sensor.id }}</p>
-      <p><strong>Customer:</strong> {{ sensor.customer?.name || 'N/A' }}</p>
+      <p><strong>Customer:</strong> {{ sensor.customerName || 'N/A' }}</p>
       <p><strong>Status:</strong> {{ sensor.status }}</p>
       <p><strong>Battery:</strong> {{ sensor.battery }}%</p>
-      <p><strong>RSSI:</strong> {{ sensor.rssi }} dBm</p>
-      <p><strong>Packet Loss:</strong> {{ sensor.packetLoss }}%</p>
       <p><strong>Latitude:</strong> {{ sensor.latitude }}</p>
       <p><strong>Longitude:</strong> {{ sensor.longitude }}</p>
     </div>

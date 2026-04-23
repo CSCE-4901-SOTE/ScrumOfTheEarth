@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Sensor } from '../../models/sensor.model';
 import { CommonModule } from '@angular/common';
+import { Sensor } from '../../map-sensor/sensor.service';
 
 @Component({
   selector: 'app-sensor-details-modal',
