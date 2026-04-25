@@ -1,0 +1,53 @@
+<div class="list">
+    <app-technician-sensor-list-filter
+        (addSensorClick)="openAddSensorModal()">
+    </app-technician-sensor-list-filter>
+    <div class="sensor-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Node ID</th>
+                    <th>Customer Name</th>
+                    <th>Status</th>
+                    <th>Battery</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (sensor of filteredSensors; track $index) {
+                    <tr (click)="onRowClick(sensor)" style="cursor: pointer;">
+                    <td>{{ sensor.id }}</td>
+                    <td>{{ sensor.customerName || 'N/A' }}</td>
+                    <td>{{ sensor.status }}</td>
+                    <td>{{ sensor.battery }}%</td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <div 
+                            class="add-sensor-box" 
+                            (click)="openAddSensorModal()"
+                        >
+                            <span class="plus-icon">+</span>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<app-sensor-details-modal
+    [sensor]="selectedSensor"
+    [show]="showSensorModal"
+    (close)="closeSensorModal()"
+    (edit)="editSensor($event)">
+</app-sensor-details-modal>
+
+<app-add-sensor-modal
+    [show]="showAddSensorModal"
+    [contacts]="contacts"
+    [userId]="userId"
+    (close)="closeAddSensorModal()">
+</app-add-sensor-modal>

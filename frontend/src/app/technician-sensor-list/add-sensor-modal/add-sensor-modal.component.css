@@ -1,0 +1,201 @@
+.add-sensor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.add-sensor-modal {
+  position: relative;
+  width: 420px;
+  max-width: 90%;
+}
+
+.add-sensor-loading-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.add-sensor-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #d7e8d8;
+  border-top-color: #2e7d32;
+  border-radius: 50%;
+  animation: add-sensor-spin 0.8s linear infinite;
+}
+
+.add-sensor-loading-text {
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-family: Roboto;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+@keyframes add-sensor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.add-sensor-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: auto;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+}
+
+.add-sensor-close-btn:hover {
+  background: transparent;
+  color: #000;
+}
+
+.add-sensor-modal form {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  padding: 36px 40px 30px;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.add-sensor-modal form h1 {
+  text-align: center;
+  color: #237327;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-family: Roboto;
+}
+
+.add-sensor-modal label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 0;
+  font-family: Roboto;
+}
+
+.add-sensor-modal input[type="text"],
+.add-sensor-modal select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: Roboto;
+  font-size: 14px;
+}
+
+.add-sensor-modal button[type="submit"] {
+  width: 100%;
+  background-color: #3c8e3f;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Roboto;
+}
+
+.add-sensor-modal button[type="submit"]:hover {
+  background-color: #237327;
+}
+
+/* Improve select dropdown (Farmer Account) */
+.add-sensor-modal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Roboto;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover */
+.add-sensor-modal select:hover {
+  border-color: #2e7d32;
+}
+
+/* Focus */
+.add-sensor-modal select:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+/* Disabled option (Select farmer) */
+.add-sensor-modal select option[value=""] {
+  color: #888;
+}
+
+/* Dropdown option */
+.add-sensor-modal option {
+  font-size: 14px;
+}
+
+/* Lat - Long inline layout */
+.lat-long-row {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.lat-long-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.lat-long-field input {
+  width: 100%;
+}
+
+.lat-long-field input {
+  margin-bottom: 14px;
+}
+
+.add-sensor-error {
+  color: #e00e0e;
+  font-size: 10px;
+  padding: 0;
+  margin-top: -10px;
+  margin-bottom: 20px;         
+  display: block;
+}
+
+.coord-input {
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  color:#333;
+  width: 100%
+}

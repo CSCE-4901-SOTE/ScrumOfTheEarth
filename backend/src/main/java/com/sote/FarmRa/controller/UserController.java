@@ -1,6 +1,8 @@
 package com.sote.FarmRa.controller;
 
+import com.sote.FarmRa.entity.Role;
 import com.sote.FarmRa.entity.User;
+import com.sote.FarmRa.model.dto.SignupUserDTO;
 import com.sote.FarmRa.service.UserService;
 import com.sote.FarmRa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,16 +63,34 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody User user) {
-        try {
-            User savedUser = userService.registerUser(user);
-            return ResponseEntity.ok(savedUser);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Unexpected error: " + e.getMessage());
+    public ResponseEntity<?> signup(@RequestBody SignupUserDTO req) {
+    try {
+        if (req.getEmail() == null || req.getEmail().isBlank())
+            return ResponseEntity.badRequest().body("Email is required");
+        if (req.getPasswordHash() == null || req.getPasswordHash().isBlank())
+            return ResponseEntity.badRequest().body("Password is required");
+        if (req.getPhone() == null || req.getPhone().isBlank())
+            return ResponseEntity.badRequest().body("Phone is required");
+        if(req.getRole() == null || req.getRole().isBlank()) {
+            return ResponseEntity.badRequest().body("Role is required");
         }
+        User u = new User();
+        u.setEmail(req.getEmail());
+        u.setPhone(req.getPhone());       
+        u.setPasswordHash(req.getPasswordHash());
+        u.setRole(
+            Role.builder().name(req.getRole()).build()
+        );
+
+        User savedUser = userService.registerUser(u);
+        return ResponseEntity.ok(savedUser);
+
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().body("Unexpected error: " + e.getMessage());
     }
+}
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {

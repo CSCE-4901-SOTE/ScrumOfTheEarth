@@ -1,0 +1,25 @@
+<div class="modal-overlay" *ngIf="show" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header">
+        <h2>{{ sensor?.name }}</h2>
+        <span
+          class="status-dot"
+          [ngClass]="sensor?.status"
+        ></span>
+        <div (click)="onEdit()" class="edit">
+          <i class="bi bi-pencil-square"></i>
+        </div>
+      </div>
+      <button class="close-btn" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body" *ngIf="sensor">
+      <p><strong>Node ID:</strong> {{ sensor.id }}</p>
+      <P><strong>Serial Number:</strong> {{ sensor.serialNumber }}</P>
+      <p><strong>Customer:</strong> {{ sensor.customerName || 'N/A' }}</p>
+      <p><strong>Status:</strong> {{ sensor.status }}</p>
+      <p><strong>Battery:</strong> {{ sensor.battery }}%</p>
+      <p><strong>Location:</strong><i class="bi bi-geo-fill" style="color: red;"></i> {{ latitudeToString(sensor.latitude) }}, {{ longitudeToString(sensor.longitude) }}</p>
+    </div>
+  </div>
+</div>
