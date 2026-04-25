@@ -36,8 +36,4 @@ public class User {
 
     @Column(name = "profile_image", columnDefinition = "text")
     private String profileImage;
-
-    public String getFullName() {
-        return fullName;
-    }
 }

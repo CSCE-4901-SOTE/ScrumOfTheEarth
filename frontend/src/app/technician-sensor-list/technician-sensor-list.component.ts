@@ -4,7 +4,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SensorDetailsModalComponent } from './sensor-details-modal/sensor-details-modal.component';
 import { AddSensorModalComponent } from './add-sensor-modal/add-sensor-modal.component';
 import { Contact, ContactService } from '../contacts/contact.service';
-import { Sensor, SensorService } from '../map-sensor/sensor.service';
+import { SensorService } from '../map-sensor/sensor.service';
+import { TechnicianSensor } from '../models/technician-sensor.model';
 
 @Component({
   selector: 'app-technician-sensor-list',
@@ -17,11 +18,11 @@ export class TechnicianSensorListComponent implements OnInit {
   ContactService: ContactService = inject(ContactService);
   platformId = inject(PLATFORM_ID);
 
-  sensors: Sensor[] = [];
+  sensors: TechnicianSensor[] = [];
   contacts: Contact[] = [];
   userId: string | null = null;
-  filteredSensors: Sensor[] = [];
-  selectedSensor: Sensor | null = null;
+  filteredSensors: TechnicianSensor[] = [];
+  selectedSensor: TechnicianSensor | null = null;
   showSensorModal = false;
   showAddSensorModal = false;
   customerFilter = '';
@@ -39,9 +40,8 @@ export class TechnicianSensorListComponent implements OnInit {
   ngOnInit() {
     this.userId = this.safeGet('userId');
 
-    this.loadSensors();
-
     if(this.userId) {
+      this.loadSensors();
       this.ContactService.getContacts(this.userId).subscribe({
         next: (contacts: Contact[]) => {
           this.contacts = contacts ?? [];
@@ -56,7 +56,7 @@ export class TechnicianSensorListComponent implements OnInit {
   }
 
   loadSensors() {
-    this.SensorService.getLatestSensorsByRole('technician', this.userId ?? "").subscribe({
+    this.SensorService.getSensorsByTechnician(this.userId ?? "").subscribe({
       next: (sensors) => {
         this.sensors = sensors;
         this.filteredSensors = sensors;
@@ -67,7 +67,7 @@ export class TechnicianSensorListComponent implements OnInit {
     });
   }
 
-  onRowClick(sensor: Sensor) {
+  onRowClick(sensor: TechnicianSensor) {
     this.selectedSensor = sensor;
     this.showSensorModal = true;
   }
@@ -83,6 +83,7 @@ export class TechnicianSensorListComponent implements OnInit {
 
   closeAddSensorModal() {
     this.showAddSensorModal = false;
+    this.loadSensors();
   }
 
   onCustomerFilterChange(filter: string) {
@@ -93,7 +94,7 @@ export class TechnicianSensorListComponent implements OnInit {
   applyFilters() {
     this.filteredSensors = this.sensors.filter(sensor =>
       !this.customerFilter ||
-      sensor.customerName.toLowerCase().includes(this.customerFilter.toLowerCase())
+      sensor.customerName?.toLowerCase().includes(this.customerFilter.toLowerCase())
     );
   }
 }

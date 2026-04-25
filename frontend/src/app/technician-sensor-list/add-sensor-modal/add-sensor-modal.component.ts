@@ -24,7 +24,6 @@ export class AddSensorModalComponent {
   newSensorForm = new FormGroup({
     name: new FormControl('', Validators.required),
     id: new FormControl('', Validators.required),
-    customerName: new FormControl('', Validators.required),
     latitude: new FormControl(0, [Validators.required, Validators.min(-90), Validators.max(90)]),
     longitude: new FormControl(0, [Validators.required, Validators.min(-180), Validators.max(180)]),
     customerId: new FormControl('', Validators.required),
@@ -37,7 +36,13 @@ export class AddSensorModalComponent {
       return;
     }
 
+    console.log("Submitting");
+
     const formValues = this.newSensorForm.value;
+
+    const customerId = this.getContactIdFromName(formValues.customerId ?? '');
+
+    if(!customerId) return;
 
     // Submit sensor. This is awfully sus but thats ok
     const payload = {
@@ -45,7 +50,7 @@ export class AddSensorModalComponent {
       name: formValues.name?.trim() ?? '',
       latitude: formValues.latitude ?? 0,
       longitude: formValues.longitude ?? 0,
-      customerId: formValues.customerId ?? '',
+      customerId: customerId,
       technicianId: this.userId() ?? '',
       serialNumber: formValues.serialNumber?.trim() ?? ''
     };
@@ -76,5 +81,10 @@ export class AddSensorModalComponent {
         err?.error?.error || 'Failed to add sensor.';
       },
     });
+  }
+
+  getContactIdFromName(name: string) {
+    const contact = this.contacts().find((s) => s.name == name)
+    return contact == undefined ? null : contact.userId;
   }
 }
