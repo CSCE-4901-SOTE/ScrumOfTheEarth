@@ -60,4 +60,4 @@ public class SensorLiveController {
         String where = "WHERE sn.technician_id = ?";
         return jdbcTemplate.queryForList(String.format(BASE_SQL, where), technicianId);
     }
-}v
+}
