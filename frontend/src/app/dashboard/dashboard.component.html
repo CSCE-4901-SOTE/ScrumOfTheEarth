@@ -264,35 +264,73 @@
 
 <!-- technician view -->
 <ng-template #technicianView>
-  <div class="box-container">
-    <!-- online -->
-    <div class="data-box">
-      <h2>🟢 Online Nodes</h2>
-      <p class="metric-value">{{ onlineNodes }}</p>
-      <div class="metric-change neutral">— currently active</div>
-    </div>
+  <div class="card">
+    <div class="box-container">
+      <!-- online -->
+      <div class="data-box">
+        <h2>🟢 Online Nodes</h2>
+        <p class="metric-value">{{ onlineNodes }}</p>
+        <div class="metric-change neutral">— currently active</div>
+      </div>
 
-    <!-- offline -->
-    <div class="data-box">
-      <h2>🔴 Offline Nodes</h2>
-      <p class="metric-value">{{ offlineNodes }}</p>
-      <div class="metric-change neutral">— needs attention</div>
-    </div>
+      <!-- offline -->
+      <div class="data-box">
+        <h2>🔴 Offline Nodes</h2>
+        <p class="metric-value">{{ offlineNodes }}</p>
+        <div class="metric-change neutral">— needs attention</div>
+      </div>
 
-    <!-- low battery -->
-    <div class="data-box">
-      <h2>🟡 Weak Nodes</h2>
-      <p class="metric-value">{{ weakNodes }}</p>
-      <div class="metric-change neutral">— unstable signal</div>
-    </div>
+      <!-- low battery -->
+      <div class="data-box">
+        <h2>🟡 Weak Nodes</h2>
+        <p class="metric-value">{{ weakNodes }}</p>
+        <div class="metric-change neutral">— unstable signal</div>
+      </div>
 
-    <!-- unread alerts -->
-    <div class="data-box">
-      <h2>⚠️ Unread Alerts</h2>
-      <p class="metric-value">{{ summary.unreadAlerts }}</p>
-      <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+      <!-- unread alerts -->
+      <div class="data-box">
+        <h2>⚠️ Unread Alerts</h2>
+        <p class="metric-value">{{ summary.unreadAlerts }}</p>
+        <div class="metric-change neutral">— {{ summary.alertDeltaLabel }}</div>
+      </div>
+    </div>
+    <div class="lower-section">
+      <div class="row">
+        <app-technician-sensor-list style="width: 100%;"></app-technician-sensor-list>
+      </div>
+      <div class="row">
+        <div class="map-column">
+          <div class="map-box">
+            <div #mapContainer id="sensor-map"></div>
+          </div>
+
+          <div class="total-nodes">
+            Total number of nodes: {{ sensorInventory.length }}
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-box">
+            <h2>Standard Threshold Values</h2>
+
+            <table class="info-table">
+              <tr>
+                <th>Metric</th>
+                <th>Unit</th>
+                <th>Minimum Threshold</th>
+                <th>Maximum Threshold</th>
+              </tr>
+
+              <tr>
+                <td>Battery</td>
+                <td>%</td>
+                <td>20</td>
+                <td>100</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <app-technician-sensor-list></app-technician-sensor-list>
 </ng-template>

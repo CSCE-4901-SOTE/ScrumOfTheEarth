@@ -3,11 +3,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 2em;
 }
 
 .sensor-table {
-    width: 80%;
+    width: 100%;
 }
 
 .sensor-table table {

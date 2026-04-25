@@ -24,6 +24,7 @@ public class SensorLiveController {
           sn.latitude              AS latitude,
           sn.longitude             AS longitude,
           sn.status                AS node_status,
+          sn.serial_number         AS serial_number,
           sn.customer_id           AS customer_id,
           sn.technician_id         AS technician_id,
           cust.full_name           AS customer_name,

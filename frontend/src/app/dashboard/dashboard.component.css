@@ -272,9 +272,23 @@
 .lower-section {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   gap: 40px;
   margin-top: 60px;
+  flex-direction: column;
+}
+
+.card {
+  justify-self: center;
+  width: 80%;
+  padding: 1em;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  width: 100%;
 }
 
 .info-section {

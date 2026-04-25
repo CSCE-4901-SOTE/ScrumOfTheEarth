@@ -35,6 +35,48 @@
   cursor: pointer;
 }
 
+.close-btn:hover {
+  color: darkgray;
+}
+
+.edit {
+  margin-left: 3px;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .modal-body p {
   margin: 10px 0;
+  font-family: Roboto;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  font-family: Roboto;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: Roboto;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-dot.online { background: #3c8e3f; }
+.status-dot.offline { background: #e00e0e; }
+.status-dot.weak { background: #e6b800; }
+.status-dot.deactivate { background: gray; }

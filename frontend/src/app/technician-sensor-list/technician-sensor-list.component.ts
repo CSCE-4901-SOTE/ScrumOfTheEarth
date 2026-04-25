@@ -4,8 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SensorDetailsModalComponent } from './sensor-details-modal/sensor-details-modal.component';
 import { AddSensorModalComponent } from './add-sensor-modal/add-sensor-modal.component';
 import { Contact, ContactService } from '../contacts/contact.service';
-import { SensorService } from '../map-sensor/sensor.service';
-import { TechnicianSensor } from '../models/technician-sensor.model';
+import { Sensor, SensorService } from '../map-sensor/sensor.service';
 
 @Component({
   selector: 'app-technician-sensor-list',
@@ -18,11 +17,11 @@ export class TechnicianSensorListComponent implements OnInit {
   ContactService: ContactService = inject(ContactService);
   platformId = inject(PLATFORM_ID);
 
-  sensors: TechnicianSensor[] = [];
+  sensors: Sensor[] = [];
   contacts: Contact[] = [];
   userId: string | null = null;
-  filteredSensors: TechnicianSensor[] = [];
-  selectedSensor: TechnicianSensor | null = null;
+  filteredSensors: Sensor[] = [];
+  selectedSensor: Sensor | null = null;
   showSensorModal = false;
   showAddSensorModal = false;
   customerFilter = '';
@@ -56,7 +55,7 @@ export class TechnicianSensorListComponent implements OnInit {
   }
 
   loadSensors() {
-    this.SensorService.getSensorsByTechnician(this.userId ?? "").subscribe({
+    this.SensorService.getLatestSensorsByRole("technician",this.userId ?? "").subscribe({
       next: (sensors) => {
         this.sensors = sensors;
         this.filteredSensors = sensors;
@@ -67,7 +66,7 @@ export class TechnicianSensorListComponent implements OnInit {
     });
   }
 
-  onRowClick(sensor: TechnicianSensor) {
+  onRowClick(sensor: Sensor) {
     this.selectedSensor = sensor;
     this.showSensorModal = true;
   }
@@ -75,6 +74,10 @@ export class TechnicianSensorListComponent implements OnInit {
   closeSensorModal() {
     this.showSensorModal = false;
     this.selectedSensor = null;
+  }
+
+  editSensor(sensor: Sensor) {
+    this.openAddSensorModal();
   }
 
   openAddSensorModal() {

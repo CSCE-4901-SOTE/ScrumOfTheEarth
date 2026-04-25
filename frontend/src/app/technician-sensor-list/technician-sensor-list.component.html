@@ -41,7 +41,8 @@
 <app-sensor-details-modal
     [sensor]="selectedSensor"
     [show]="showSensorModal"
-    (close)="closeSensorModal()">
+    (close)="closeSensorModal()"
+    (edit)="editSensor($event)">
 </app-sensor-details-modal>
 
 <app-add-sensor-modal
