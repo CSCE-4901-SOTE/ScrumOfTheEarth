@@ -553,12 +553,12 @@ export class MapSensorComponent implements OnInit, OnDestroy {
   focusSensor(sensor: Sensor): void {
     if (!this.map) return;
 
-    this.selectedSensor = sensor;
+    this.selectedSensor = null;
     this.refreshSelectedSensorUI();
 
     this.map.flyTo({
       center: [sensor.longitude, sensor.latitude],
-      zoom: 20,
+      zoom: 16,
       speed: 1.25,
     });
   }
