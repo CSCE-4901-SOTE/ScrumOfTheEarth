@@ -51,12 +51,13 @@ export class LoginPageComponent {
     };
 
     // Send request POST to backend
-    this.http.post<{ userId: string; role: 'farmer' | 'technician'; }>(this.backendUrl + '/login', loginData)
+    this.http.post<{ userId: string; role: 'farmer' | 'technician'; token: string; }>(this.backendUrl + '/login', loginData)
       .subscribe({
         next: (res) => {
           if (isPlatformBrowser(this.platformId)) {
             window.sessionStorage.setItem('userId', res.userId);
             window.sessionStorage.setItem('role', res.role);
+            window.sessionStorage.setItem('token', res.token);
             //window.sessionStorage.setItem('fullName', res.fullName);
           }
           this.http.get<any>(`${this.backendUrl}/users/${res.userId}`).subscribe({
