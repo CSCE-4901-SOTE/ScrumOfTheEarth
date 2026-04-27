@@ -62,6 +62,8 @@ export class LoginPageComponent {
           this.http.get<any>(`${this.backendUrl}/users/${res.userId}`).subscribe({
             next: (profile) => {
               if (profile.name) window.localStorage.setItem('userName', profile.name);
+              if (profile.fullName) window.sessionStorage.setItem('fullName', profile.fullName);
+              if (profile.profileImage) window.sessionStorage.setItem('profileImage', profile.profileImage);
             }
           });
           console.log('✅ Login successful!');

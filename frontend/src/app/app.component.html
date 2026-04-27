@@ -33,6 +33,10 @@
   <!-- dropdown menu -->
   <div class="dropdown-menu" *ngIf="menuOpen" (click)="menuOpen = false">
     <div class="dropdown-header">
+      <img *ngIf="profileImage" [src]="profileImage" alt="Profile" class="dropdown-profile-pic" />
+      <div *ngIf="!profileImage" class="dropdown-profile-placeholder">
+        {{ (fullName?.charAt(0) || 'U').toUpperCase() }}
+      </div>
       <div class="user-info">
         <strong>{{ fullName || 'User' }}</strong><br />
         <small>{{ displayRole }}</small>
@@ -50,7 +54,7 @@
     >
       Report
     </a>
-    <a routerLink="/login-page" (click)="closeMenu()">Sign Out</a>
+    <a (click)="signOut()">Sign Out</a>
   </div>
 </header>
 

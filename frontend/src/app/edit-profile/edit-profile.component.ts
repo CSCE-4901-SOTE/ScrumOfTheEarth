@@ -47,6 +47,7 @@ export class EditProfileComponent implements OnInit {
 
               sessionStorage.setItem('fullName', this.fullName);
               sessionStorage.setItem('phone', this.phone);
+              sessionStorage.setItem('profileImage', data.profileImage ?? '');
           },
           error: (err) => {
               console.error('Failed to load profile:', err);
@@ -85,6 +86,7 @@ export class EditProfileComponent implements OnInit {
         this.saveMessage = 'Profile saved successfully.';
         sessionStorage.setItem('fullName', this.fullName);
         sessionStorage.setItem('phone', this.phone);
+        sessionStorage.setItem('profileImage', this.profileImageUrl ?? '');
       },
       error: () => this.saveError = 'Failed to save. Please try again.'
     });

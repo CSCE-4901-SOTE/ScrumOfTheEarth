@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
 
   role: string = '';
   fullName: string = '';
+  profileImage: string = '';
   unreadAlerts = 0;
 
   constructor(
@@ -57,6 +58,7 @@ export class AppComponent implements OnInit {
   updateSessionData(): void {
     this.role = (sessionStorage.getItem('role') || '').toLowerCase();
     this.fullName = sessionStorage.getItem('fullName') || '';
+    this.profileImage = sessionStorage.getItem('profileImage') || '';
   }
 
   get displayRole(): string {
@@ -79,5 +81,14 @@ export class AppComponent implements OnInit {
 
   closeMenu(): void {
     this.menuOpen = false;
+  }
+
+  signOut(): void {
+    sessionStorage.clear();
+    this.role = '';
+    this.fullName = '';
+    this.profileImage = '';
+    this.menuOpen = false;
+    this.router.navigate(['/login-page']);
   }
 }
