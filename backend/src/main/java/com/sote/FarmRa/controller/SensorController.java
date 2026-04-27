@@ -4,6 +4,7 @@ import com.sote.FarmRa.entity.Sensor;
 import com.sote.FarmRa.entity.User;
 import com.sote.FarmRa.model.dto.UpdateSensorRequest;
 import com.sote.FarmRa.model.dto.CreateSensorRequest;
+import com.sote.FarmRa.model.dto.CreateSensorResponse;
 import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
 import com.sote.FarmRa.repository.SensorReadingRepository;
@@ -124,8 +125,24 @@ public class SensorController {
             sensor.setTechnician(technician);
 
             Sensor saved = sensorRepository.saveAndFlush(sensor);
+            CreateSensorResponse resp = CreateSensorResponse.builder()
+                .id(saved.getId())
+                .name(saved.getName())
+                .latitude(saved.getLatitude())
+                .longitude(saved.getLongitude())
+                .status(saved.getStatus())
+                .lastSeen(saved.getLastSeen())
+                .serialNumber(saved.getSerialNumber())
+                .customerId(customer.getUserId().toString())
+                .battery(saved.getBattery())
+                .temperature(saved.getTemperature())
+                .moisture(saved.getMoisture())
+                .light(saved.getLight())
+                .technicianName(technician.getFullName())
+                .customerName(customer.getFullName())
+                .build();
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

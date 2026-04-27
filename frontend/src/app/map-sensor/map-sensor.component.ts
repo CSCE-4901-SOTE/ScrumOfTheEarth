@@ -190,10 +190,15 @@ export class MapSensorComponent implements OnInit, OnDestroy {
     this.sensorService.addSensor(payload).subscribe({
       next: (created) => {
         alert('✅ Sensor is successfully added');
+
+        window.location.reload();
+
         this.closeAddSensor();
 
         this.addSensorError = '';
         this.sensors.push(created);
+
+        this.refreshSelectedSensorUI();
 
         if (this.map) {
           const marker = this.createMarker(created);

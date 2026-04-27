@@ -295,20 +295,19 @@
       </div>
     </div>
     <div class="lower-section">
-      <div class="row">
-        <app-technician-sensor-list style="width: 100%;"></app-technician-sensor-list>
+      <div class="row-technician">
+        <app-technician-sensor-list style="width: 100%" ></app-technician-sensor-list>
+        <div class="map-column-technician">
+            <div class="map-box-technician">
+              <div #mapContainer id="sensor-map"></div>
+            </div>
+
+            <div class="total-nodes">
+              Total number of nodes: {{ sensorInventory.length }}
+            </div>
+          </div>
       </div>
       <div class="row">
-        <div class="map-column">
-          <div class="map-box">
-            <div #mapContainer id="sensor-map"></div>
-          </div>
-
-          <div class="total-nodes">
-            Total number of nodes: {{ sensorInventory.length }}
-          </div>
-        </div>
-
         <div class="info-section">
           <div class="info-box">
             <h2>Standard Threshold Values</h2>
