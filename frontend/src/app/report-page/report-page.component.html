@@ -1,1 +1,59 @@
-<p>report-page works!</p>
+<div class="report-page">
+  <h1 class="report-title">Historical Trends</h1>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Sensor</label>
+      <select [(ngModel)]="selectedSensorId" (change)="loadHistory()">
+        <option *ngFor="let s of sensors" [value]="s.node_id">{{ s.node_name }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Interval</label>
+      <div class="interval-buttons">
+        <button
+          *ngFor="let i of intervals"
+          [class.active]="selectedInterval === i.value"
+          (click)="selectedInterval = i.value; loadHistory()">
+          {{ i.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state-msg">Loading...</div>
+  <div *ngIf="!loading && noData" class="state-msg">No data available for this sensor and interval.</div>
+
+  <div *ngIf="!loading && !noData" class="charts">
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-dot" style="background:#e05c5c"></span>
+        <h2>Temperature (°F)</h2>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart [data]="tempData" [options]="chartOptions" type="line"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-dot" style="background:#3c8e3f"></span>
+        <h2>Moisture (%)</h2>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart [data]="moistureData" [options]="chartOptions" type="line"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-dot" style="background:#e6b800"></span>
+        <h2>Light</h2>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart [data]="lightData" [options]="chartOptions" type="line"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
