@@ -12,4 +12,6 @@ public interface AlertRepository extends JpaRepository<Alert, UUID> {
     List<Alert> findAllByOrderByCreatedAtDesc();
 
     boolean existsBySensorIdAndAlertTypeAndAcknowledgedFalse(String sensorId, AlertType alertType);
+
+    java.util.Optional<Alert> findBySensorIdAndAlertTypeAndAcknowledgedFalse(String sensorId, AlertType alertType);
 }
