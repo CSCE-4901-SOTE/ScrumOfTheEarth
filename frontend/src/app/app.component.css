@@ -18,6 +18,11 @@
   align-items: center;
 }
 
+.navbar-left a {
+  display: flex;
+  align-items: center;
+}
+
 .logo {
   height: 90px;
   object-fit: contain;
