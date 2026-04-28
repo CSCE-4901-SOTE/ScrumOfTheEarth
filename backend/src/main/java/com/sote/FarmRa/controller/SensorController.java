@@ -9,7 +9,6 @@ import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
 import com.sote.FarmRa.repository.SensorReadingRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
