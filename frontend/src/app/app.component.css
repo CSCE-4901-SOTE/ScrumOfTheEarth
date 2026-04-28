@@ -27,7 +27,8 @@
 /* navbar navigation */
 .navbar-center {
   position: absolute;
-  right: 310px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .navbar-center nav {
