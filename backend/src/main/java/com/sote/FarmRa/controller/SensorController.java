@@ -9,6 +9,7 @@ import com.sote.FarmRa.repository.SensorRepository;
 import com.sote.FarmRa.repository.UserRepository;
 import com.sote.FarmRa.repository.SensorReadingRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,12 +45,20 @@ public class SensorController {
     @Transactional(readOnly = true)
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        return sensorRepository.findById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                .body(Map.of("error", "Sensor not found", "id", id))
-                );
+        Sensor sensor = sensorRepository.findById(id).orElseGet(null);
+        if(sensor != null) {
+            CreateSensorResponse resp = CreateSensorResponse.builder()
+                .id(sensor.getId())
+                .name(sensor.getName())
+                .latitude(sensor.getLatitude())
+                .longitude(sensor.getLongitude())
+                .serialNumber(sensor.getSerialNumber())
+                .customerId(sensor.getCustomer().getUserId().toString())
+                .build();
+            return ResponseEntity.status(HttpStatus.OK).body(resp);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Sensor not found", "id", id));
+        }
     }
 
     // Get sensors by status
