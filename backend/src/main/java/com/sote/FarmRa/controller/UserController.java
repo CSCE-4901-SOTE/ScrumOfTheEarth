@@ -3,6 +3,7 @@ package com.sote.FarmRa.controller;
 import com.sote.FarmRa.entity.Role;
 import com.sote.FarmRa.entity.User;
 import com.sote.FarmRa.model.dto.SignupUserDTO;
+import com.sote.FarmRa.security.JwtService;
 import com.sote.FarmRa.service.UserService;
 import com.sote.FarmRa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtService jwtService;
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUser(@PathVariable UUID id) {
@@ -101,11 +105,13 @@ public class UserController {
             );
 
             String role = user.getRole().getName().toLowerCase();
+            String token = jwtService.generateToken(user.getUserId().toString(), role);
 
             return ResponseEntity.ok(new LoginResponse(
                     user.getUserId(),
                     role,
-                    user.getFullName()
+                    user.getFullName(),
+                    token
             ));
 
         } catch (IllegalArgumentException e) {
