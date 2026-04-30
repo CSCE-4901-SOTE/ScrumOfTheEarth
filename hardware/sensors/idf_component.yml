@@ -1,0 +1,5 @@
+version: "1.0"
+description: "Smart Field Sensor Node for LoRa Transmission"
+dependencies:
+  espressif/onewire_bus: "*"
+  espressif/ds18b20: "*"
