@@ -1,0 +1,16 @@
+[Unit]
+Description=LoRa Supabase Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 -u /home/pi/lora_supabase_bridge.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/pi/logs/bridge.log
+StandardError=append:/home/pi/logs/bridge.log
+
+[Install]
+WantedBy=multi-user.target

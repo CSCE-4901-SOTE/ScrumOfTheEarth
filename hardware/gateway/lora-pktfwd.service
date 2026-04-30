@@ -1,0 +1,19 @@
+[Unit]
+Description=LoRa Packet Forwarder
+After=network-online.target lora-bridge.service
+Requires=lora-bridge.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/gateway_run
+ExecStartPre=/bin/sleep 10
+ExecStartPre=/home/pi/gateway_run/reset_lgw.sh
+ExecStart=/home/pi/gateway_run/lora_pkt_fwd -c global_conf.json
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/home/pi/logs/pkt_fwd.log
+StandardError=append:/home/pi/logs/pkt_fwd.log
+
+[Install]
+WantedBy=multi-user.target
